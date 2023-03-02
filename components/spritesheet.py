@@ -16,10 +16,10 @@ class Spritesheet:
             bottom_y = current_y / texture.get_height()
 
             tex_coords = [
-                glm.vec2(right_x, top_y),
-                glm.vec2(right_x, bottom_y),
-                glm.vec2(left_x, bottom_y),
-                glm.vec2(left_x, top_y)
+                glm.fvec2(right_x, top_y),
+                glm.fvec2(right_x, bottom_y),
+                glm.fvec2(left_x, bottom_y),
+                glm.fvec2(left_x, top_y)
             ]
 
             sprite = Sprite(sprite_width, sprite_height, self._texture, tex_coords)

@@ -1,6 +1,5 @@
 import glm
 from glfw.GLFW import GLFW_PRESS, GLFW_RELEASE
-import metroid_maker.window
 
 class MouseListener:
 
@@ -75,12 +74,17 @@ class MouseListener:
         from metroid_maker.window import Window
         current_x = cls.get_x_pos()
         current_x = (current_x / Window.get_width()) * 2.0 - 1.0
-        tmp = glm.vec4(current_x, 0.0, 0.0, 1.0)
-        tmp2 = tmp * Window.get_scene().camera().get_inverse_projection()
-        tmp3 = tmp2 * Window.get_scene().camera().get_inverse_view()
-        current_x = tmp3.x
-        print(current_x)
+        tmp = glm.fvec4(current_x, 0.0, 0.0, 1.0)
+        current_x = (glm.mul(Window.get_scene().camera().get_inverse_view(), glm.mul(Window.get_scene().camera().get_inverse_projection(), tmp))).x
+
+        return current_x
 
     @classmethod
     def get_ortho_y(cls):
-        pass
+        from metroid_maker.window import Window
+        current_y = Window.get_height() - cls.get_y_pos()
+        current_y = (current_y / Window.get_height()) * 2.0 - 1.0
+        tmp = glm.fvec4(0.0, current_y, 0.0, 1.0)
+        current_y = (glm.mul(Window.get_scene().camera().get_inverse_view(), glm.mul(Window.get_scene().camera().get_inverse_projection(), tmp))).y
+
+        return current_y

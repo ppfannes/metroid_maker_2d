@@ -1,4 +1,4 @@
-from metroid_maker.component import Component
+from components.component import Component
 from metroid_maker.transform import Transform
 
 class GameObject:

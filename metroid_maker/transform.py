@@ -1,12 +1,12 @@
 import glm
 
 class Transform:
-    def __init__(self, position=glm.vec2(), scale=glm.vec2()):
+    def __init__(self, position=glm.fvec2(), scale=glm.fvec2()):
         self.position = position
         self.scale = scale
 
     def copy(self):
-        return Transform(glm.vec2(self.position), glm.vec2(self.scale))
+        return Transform(glm.fvec2(self.position), glm.fvec2(self.scale))
 
     def copy_to(self, transform: 'Transform'):
         transform.position.xy = self.position.xy

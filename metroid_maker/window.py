@@ -1,16 +1,14 @@
 import glfw
 from glfw.GLFW import GLFW_FALSE, GLFW_TRUE, GLFW_RESIZABLE, GLFW_VISIBLE, GLFW_MAXIMIZED
-import glm
-
 import OpenGL.GL as gl
-from metroid_maker.camera import Camera
+
 from metroid_maker.imgui_layer import ImGuiLayer
-from metroid_maker.level_editor_scene import LevelEditorScene
-from metroid_maker.level_scene import LevelScene
-from utils.mouse_listener import MouseListener
+from scenes.level_editor_scene import LevelEditorScene
+from scenes.level_scene import LevelScene
 from utils.key_listener import KeyListener
-from utils.time import Time
+from utils.mouse_listener import MouseListener
 from utils.singleton import Singleton
+from utils.time import Time
 
 
 class Window(metaclass=Singleton):
@@ -23,7 +21,6 @@ class Window(metaclass=Singleton):
         self._title = "Metroid Maker 2D"
         self._glfw_window = None
 
-        self._camera = Camera(glm.vec2((1.0, 1.0)))
         self._imgui_layer = None
 
         self._current_scene = None
@@ -35,6 +32,10 @@ class Window(metaclass=Singleton):
     @classmethod
     def get_width(cls):
         return cls.get()._width
+    
+    @classmethod
+    def get_height(cls):
+        return cls.get()._height
 
     
     def change_scene(self, new_scene: int) -> None | ValueError:

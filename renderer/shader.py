@@ -51,23 +51,23 @@ class Shader:
     def detach(self):
         gl.glUseProgram(0)
 
-    def upload_mat4(self, var_name: str, mat4: glm.mat4):
+    def upload_fmat4(self, var_name: str, mat4: glm.fmat4):
         self.use()
         gl.glUniformMatrix4fv(gl.glGetUniformLocation(self._shader_program_id, var_name), 1, gl.GL_FALSE, glm.value_ptr(mat4))
 
-    def upload_mat3(self, var_name: str, mat3: glm.mat3):
+    def upload_fmat3(self, var_name: str, mat3: glm.fmat3):
         self.use()
         gl.glUniformMatrix3fv(gl.glGetUniformLocation(self._shader_program_id, var_name), 1, gl.GL_FALSE, glm.value_ptr(mat3))
 
-    def upload_vec4(self, var_name: str, vec4: glm.vec4):
+    def upload_fvec4(self, var_name: str, vec4: glm.fvec4):
         self.use()
         gl.glUniform4f(gl.glGetUniformLocation(self._shader_program_id, var_name), vec4.x, vec4.y, vec4.z, vec4.w)
 
-    def upload_vec3(self, var_name: str, vec3: glm.vec3):
+    def upload_fvec3(self, var_name: str, vec3: glm.fvec3):
         self.use()
         gl.glUniform3f(gl.glGetUniformLocation(self._shader_program_id, var_name), vec3.x, vec3.y, vec3.z)
 
-    def upload_vec2(self, var_name: str, vec2: glm.vec2):
+    def upload_fvec2(self, var_name: str, vec2: glm.fvec2):
         self.use()
         gl.glUniform2f(gl.glGetUniformLocation(self._shader_program_id, var_name), vec2.x, vec2.y)
 

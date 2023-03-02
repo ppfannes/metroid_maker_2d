@@ -1,11 +1,11 @@
 import glm
 import imgui
 from components.sprite import Sprite
-from metroid_maker.component import Component
+from components.component import Component
 
 class SpriteRenderer(Component):
 
-    def __init__(self, color=glm.vec4(1.0, 1.0, 1.0, 1.0), sprite=Sprite()):
+    def __init__(self, color=glm.fvec4(1.0, 1.0, 1.0, 1.0), sprite=Sprite()):
         super().__init__()
         self._color = color
         self._sprite = sprite
@@ -25,7 +25,7 @@ class SpriteRenderer(Component):
         changed, color = imgui.color_edit4("Color Picker: ", *current_color)
             
         if changed:
-            self._color = glm.vec4(*color)
+            self._color = glm.fvec4(*color)
             self._is_dirty = True
 
     def get_color(self):

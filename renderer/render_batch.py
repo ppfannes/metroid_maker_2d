@@ -92,8 +92,8 @@ class RenderBatch:
             gl.glBufferSubData(gl.GL_ARRAY_BUFFER, 0, self._vertices)
 
         self._shader.use()
-        self._shader.upload_mat4("uProjection", camera.get_projection_matrix())
-        self._shader.upload_mat4("uView", camera.get_view_matrix())
+        self._shader.upload_fmat4("uProjection", camera.get_projection_matrix())
+        self._shader.upload_fmat4("uView", camera.get_view_matrix())
 
         for i in range(len(self._textures)):
             gl.glActiveTexture(self._texture_ids[i + 1])
