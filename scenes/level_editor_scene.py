@@ -10,6 +10,7 @@ from metroid_maker.camera import Camera
 from metroid_maker.game_object import GameObject
 from metroid_maker.prefabs import Prefabs
 from metroid_maker.transform import Transform
+from renderer.debug_draw import DebugDraw
 from scenes.scene import Scene
 from utils.asset_pool import AssetPool
 
@@ -27,6 +28,7 @@ class LevelEditorScene(Scene):
     def init(self):
         self._load_resources()
         self.sprites = AssetPool.get_spritesheet("assets/images/decorations_and_blocks.jpg")
+        DebugDraw.add_line_2d(glm.fvec2(0.0, 0.0), glm.fvec2(800.0, 800.0), glm.fvec3(1.0, 0.0, 0.0), 120)
 
         if self._level_loaded:
             print(self._game_objects)

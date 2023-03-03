@@ -3,6 +3,7 @@ from glfw.GLFW import GLFW_FALSE, GLFW_TRUE, GLFW_RESIZABLE, GLFW_VISIBLE, GLFW_
 import OpenGL.GL as gl
 
 from metroid_maker.imgui_layer import ImGuiLayer
+from renderer.debug_draw import DebugDraw
 from scenes.level_editor_scene import LevelEditorScene
 from scenes.level_scene import LevelScene
 from utils.key_listener import KeyListener
@@ -121,10 +122,13 @@ class Window(metaclass=Singleton):
             glfw.poll_events()
             self._imgui_layer.process_inputs()
 
+            DebugDraw.begin_frame()
+
             gl.glClearColor(self.r, self.g, self.b, self.a)
             gl.glClear(gl.GL_COLOR_BUFFER_BIT)
 
-            if (dt >= 0):
+            if dt >= 0:
+                DebugDraw.draw()
                 self._current_scene.update(dt)
 
             self._imgui_layer.update(self._current_scene)
@@ -133,6 +137,6 @@ class Window(metaclass=Singleton):
             end_time = Time.get_time()
             dt = end_time - start_time
             start_time = end_time
-        
+
         self._current_scene.save_exit()
         self._imgui_layer.shutdown()

@@ -9,7 +9,7 @@ class MouseListener:
     _last_y = 0.0
     _scroll_x = 0.0
     _scroll_y = 0.0
-    _mouse_button_pressed = [False for _ in range(5)]
+    _mouse_button_pressed = [False for _ in range(9)]
     _is_dragging = False
 
     @classmethod

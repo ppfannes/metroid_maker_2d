@@ -3,7 +3,7 @@ import fnmatch
 import glm
 import numpy as np
 import OpenGL.GL as gl
-from OpenGL.GL.shaders import compileShader, compileProgram
+import OpenGL.GL.shaders as shaders
 
 class Shader:
     def __init__(self, file_path: str, shader_name:str):
@@ -26,19 +26,19 @@ class Shader:
 
     def compile(self):
 
-        vertex_id = compileShader(self._vertex_source, gl.GL_VERTEX_SHADER)
+        vertex_id = shaders.compileShader(self._vertex_source, gl.GL_VERTEX_SHADER)
         success = gl.glGetShaderiv(vertex_id, gl.GL_COMPILE_STATUS)
 
         if success == gl.GL_FALSE:
             raise RuntimeError(gl.glGetShaderInfoLog(vertex_id))
 
-        fragment_id = compileShader(self._fragment_source, gl.GL_FRAGMENT_SHADER)
+        fragment_id = shaders.compileShader(self._fragment_source, gl.GL_FRAGMENT_SHADER)
         success = gl.glGetShaderiv(vertex_id, gl.GL_COMPILE_STATUS)
 
         if success == gl.GL_FALSE:
             raise RuntimeError(gl.glGetShaderInfoLog(fragment_id))
 
-        self._shader_program_id = compileProgram(vertex_id, fragment_id)
+        self._shader_program_id = shaders.compileProgram(vertex_id, fragment_id)
 
         success = gl.glGetProgramiv(self._shader_program_id, gl.GL_LINK_STATUS)
 

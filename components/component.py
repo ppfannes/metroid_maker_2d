@@ -3,7 +3,11 @@ import imgui
 import glm
 
 class Component(ABC):
+
+    _ID_COUNTER = 0
+
     def __init__(self):
+        self._uid = -1
         self.game_object = None
 
     def update(self, dt: float):
@@ -37,3 +41,15 @@ class Component(ABC):
 
     def exposed_fields(self):
         return self.__dict__
+
+    def get_uid(self):
+        return self._uid
+
+    def generate_id(self):
+        if self._uid == -1:
+            self._uid = Component._ID_COUNTER
+            Component._ID_COUNTER += 1
+
+    @classmethod
+    def init(cls, max_id):
+        cls._ID_COUNTER = max_id

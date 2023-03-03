@@ -21,7 +21,7 @@ class MouseControls(Component):
     def update(self, dt):
         if self._holding_object is not None:
             self._holding_object.transform.position.x = MouseListener.get_ortho_x() - 32
-            self._holding_object.transform.position.y = MouseListener.get_ortho_y() - 64
+            self._holding_object.transform.position.y = MouseListener.get_ortho_y() - 32
 
             if MouseListener.mouse_button_down(GLFW_MOUSE_BUTTON_LEFT):
                 self.place()

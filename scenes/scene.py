@@ -2,6 +2,7 @@ from abc import ABC, abstractmethod
 import imgui
 import jsonpickle
 
+from components.component import Component
 from metroid_maker.game_object import GameObject
 from renderer.renderer import Renderer
 
@@ -56,6 +57,8 @@ class Scene(ABC):
 
     def load(self):
         loaded_objects = None
+        max_game_object_id = -1
+        max_component_id = -1
 
         try:
             with open("serialized.pickle", "r") as file:
@@ -66,4 +69,15 @@ class Scene(ABC):
         for obj in loaded_objects:
             self.add_game_object_to_scene(obj)
 
+            for component in obj.get_all_components():
+                if component.get_uid() > max_component_id:
+                    max_component_id = component.get_uid()
+
+            if obj.get_uid() > max_game_object_id:
+                max_game_object_id = obj.get_uid()
+
+        max_game_object_id += 1
+        max_component_id += 1
+        GameObject.init(max_game_object_id)
+        Component.init(max_component_id)
         self._level_loaded = True
