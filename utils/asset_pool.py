@@ -22,7 +22,8 @@ class AssetPool:
         if resource_path in AssetPool._textures.keys():
             return AssetPool._textures[resource_path]
         else:
-            texture = Texture(resource_path)
+            texture = Texture()
+            texture.init(resource_path)
             AssetPool._textures[resource_path] = texture
             return texture
 

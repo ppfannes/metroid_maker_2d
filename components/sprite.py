@@ -9,6 +9,9 @@ class Sprite:
 
     def get_texture(self):
         return self._texture
+    
+    def set_texture(self, texture):
+        self._texture = texture
 
     def get_tex_coords(self):
         return self._tex_coords

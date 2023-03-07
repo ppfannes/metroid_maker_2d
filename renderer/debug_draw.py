@@ -1,10 +1,17 @@
 import ctypes
+from math import sin, cos, radians
 import glm
 import numpy as np
 import OpenGL.GL as gl
 
 from renderer.line_2d import Line2D
 from utils.asset_pool import AssetPool
+
+def rotate(point, angle, origin):
+    translated_point = glm.sub(point, origin)
+    new_x = translated_point.x * cos(radians(angle)) - translated_point.y * sin(radians(angle))
+    new_y = translated_point.x * sin(radians(angle)) + translated_point.y * cos(radians(angle))
+    return glm.add(glm.fvec2(new_x, new_y), origin)
 
 class DebugDraw:
 
@@ -89,7 +96,32 @@ class DebugDraw:
         cls._shader.detach()
 
     @classmethod
-    def add_line_2d(cls, start, end, color=glm.fvec3(0.0, 1.0, 0.0), lifetime=1):
+    def add_line_2d(cls, start, end, color=glm.fvec3(0.0, 1.0, 0.0), lifetime=2):
         if len(cls._lines) >= cls._MAX_LINES:
             return
         cls._lines.append(Line2D(start, end, color, lifetime))
+
+    @classmethod
+    def add_box_2d(cls, center, dimensions, rotation, color=glm.fvec3(0.0, 1.0, 0.0), lifetime=2):
+        min_vertex = glm.sub(center, glm.mul(dimensions, 0.5))
+        max_vertex = glm.add(center, glm.mul(dimensions, 0.5))
+
+        vertices = [glm.fvec2(min_vertex.x, min_vertex.y), glm.fvec2(min_vertex.x, max_vertex.y),
+                    glm.fvec2(max_vertex.x, max_vertex.y), glm.fvec2(max_vertex.x, min_vertex.y)]
+
+        if rotation != 0.0:
+            vertices[:] = [rotate(vertex, rotation, center) for vertex in vertices]
+
+        cls.add_line_2d(vertices[0], vertices[1], color, lifetime)
+        cls.add_line_2d(vertices[0], vertices[3], color, lifetime)
+        cls.add_line_2d(vertices[1], vertices[2], color, lifetime)
+        cls.add_line_2d(vertices[2], vertices[3], color, lifetime)
+
+    @classmethod
+    def add_circle(cls, center, radius, color=glm.fvec3(0.0, 1.0, 0.0), lifetime=2):
+        num_points = 20
+        increment = int(360 // num_points)
+        points = [glm.add(rotate(glm.fvec2(radius, 0.0), increment * i, glm.fvec2()), center) for i in range(num_points)]
+
+        for i, point in enumerate(points):
+            cls.add_line_2d(points[i - 1], point, color, lifetime)

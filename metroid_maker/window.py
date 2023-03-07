@@ -1,15 +1,16 @@
+import time
 import glfw
 from glfw.GLFW import GLFW_FALSE, GLFW_TRUE, GLFW_RESIZABLE, GLFW_VISIBLE, GLFW_MAXIMIZED
 import OpenGL.GL as gl
 
 from metroid_maker.imgui_layer import ImGuiLayer
 from renderer.debug_draw import DebugDraw
+from renderer.framebuffer import Framebuffer
 from scenes.level_editor_scene import LevelEditorScene
 from scenes.level_scene import LevelScene
 from utils.key_listener import KeyListener
 from utils.mouse_listener import MouseListener
 from utils.singleton import Singleton
-from utils.time import Time
 
 
 class Window(metaclass=Singleton):
@@ -23,6 +24,7 @@ class Window(metaclass=Singleton):
         self._glfw_window = None
 
         self._imgui_layer = None
+        self._framebuffer = None
 
         self._current_scene = None
 
@@ -69,6 +71,14 @@ class Window(metaclass=Singleton):
         cls.get().set_width(new_width)
         cls.get().set_height(new_height)
 
+    @classmethod
+    def get_framebuffer(cls):
+        return cls.get()._framebuffer
+    
+    @staticmethod
+    def get_target_aspect_ratio():
+        return 16.0 / 9.0
+
     def run(self) -> None:
         self.init()
         self.loop()
@@ -110,12 +120,15 @@ class Window(metaclass=Singleton):
         self._imgui_layer = ImGuiLayer(self._glfw_window)
         self._imgui_layer.init_imgui()
 
+        self._framebuffer = Framebuffer(1920, 1080)
+        gl.glViewport(0, 0, 1920, 1080)
+
         self.change_scene(0)
 
 
     def loop(self) -> None:
-        start_time = Time.get_time()
-        end_time = Time.get_time()
+        start_time = time.perf_counter_ns()
+        end_time = time.perf_counter_ns()
         dt = -1.0
 
         while not glfw.window_should_close(self._glfw_window):
@@ -124,17 +137,20 @@ class Window(metaclass=Singleton):
 
             DebugDraw.begin_frame()
 
+            self._framebuffer.bind()
+
             gl.glClearColor(self.r, self.g, self.b, self.a)
             gl.glClear(gl.GL_COLOR_BUFFER_BIT)
 
             if dt >= 0:
                 DebugDraw.draw()
                 self._current_scene.update(dt)
+            self._framebuffer.unbind()
 
             self._imgui_layer.update(self._current_scene)
             glfw.swap_buffers(self._glfw_window)
 
-            end_time = Time.get_time()
+            end_time = time.perf_counter_ns()
             dt = end_time - start_time
             start_time = end_time
 

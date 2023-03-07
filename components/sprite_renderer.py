@@ -33,6 +33,9 @@ class SpriteRenderer(Component):
 
     def get_texture(self):
         return self._sprite.get_texture()
+    
+    def set_texture(self, texture):
+        self._sprite.set_texture(texture)
 
     def get_tex_coords(self):
         return self._sprite.get_tex_coords()

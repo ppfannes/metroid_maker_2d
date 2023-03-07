@@ -1,6 +1,7 @@
 import glm
 import imgui
 
+from components.grid_lines import GridLines
 from components.mouse_controls import MouseControls
 from components.rigid_body import RigidBody
 from components.sprite_renderer import SpriteRenderer
@@ -18,7 +19,7 @@ class LevelEditorScene(Scene):
 
     sprites = None
     obj1 = None
-    mouse_controls = MouseControls()
+    level_editor_object = GameObject("Level Editor")
 
     def __init__(self):
         self._camera = Camera(glm.fvec2(-250.0, 0.0))
@@ -26,28 +27,29 @@ class LevelEditorScene(Scene):
         self._obj1_sprite = None
 
     def init(self):
+        self.level_editor_object.add_component(MouseControls())
+        self.level_editor_object.add_component(GridLines())
         self._load_resources()
         self.sprites = AssetPool.get_spritesheet("assets/images/decorations_and_blocks.jpg")
-        DebugDraw.add_line_2d(glm.fvec2(0.0, 0.0), glm.fvec2(800.0, 800.0), glm.fvec3(1.0, 0.0, 0.0), 120)
 
         if self._level_loaded:
-            print(self._game_objects)
-            self._active_game_object = self._game_objects[0]
+            if len(self._game_objects) > 0:
+                self._active_game_object = self._game_objects[0]
             return
 
-        self.obj1 = GameObject("Object 1", Transform(glm.fvec2(200.0, 100.0), glm.fvec2(256.0, 256.0)), 2)
-        self._obj1_sprite = SpriteRenderer(color=glm.fvec4(1.0, 0.0, 0.0, 1.0))
-        self.obj1.add_component(self._obj1_sprite)
-        self.obj1.add_component(RigidBody())
-        self.add_game_object_to_scene(self.obj1)
-        self._active_game_object = self.obj1
+        # self.obj1 = GameObject("Object 1", Transform(glm.fvec2(200.0, 100.0), glm.fvec2(256.0, 256.0)), 2)
+        # self._obj1_sprite = SpriteRenderer(color=glm.fvec4(1.0, 0.0, 0.0, 1.0))
+        # self.obj1.add_component(self._obj1_sprite)
+        # self.obj1.add_component(RigidBody())
+        # self.add_game_object_to_scene(self.obj1)
+        # self._active_game_object = self.obj1
 
-        obj2 = GameObject("Object 2", Transform(glm.fvec2(400.0, 100.0), glm.fvec2(256.0, 256.0)), 2)
-        obj2_sprite_renderer = SpriteRenderer(sprite=Sprite(
-            texture=AssetPool.get_texture("assets/images/blend_image_2.jpg")
-        ))
-        obj2.add_component(obj2_sprite_renderer)
-        self.add_game_object_to_scene(obj2)
+        # obj2 = GameObject("Object 2", Transform(glm.fvec2(400.0, 100.0), glm.fvec2(256.0, 256.0)), 2)
+        # obj2_sprite_renderer = SpriteRenderer(sprite=Sprite(
+        #     texture=AssetPool.get_texture("assets/images/blend_image_2.jpg")
+        # ))
+        # obj2.add_component(obj2_sprite_renderer)
+        # self.add_game_object_to_scene(obj2)
 
     def _load_resources(self):
         AssetPool.get_shader("assets/shaders", "default")
@@ -56,8 +58,15 @@ class LevelEditorScene(Scene):
                                     Spritesheet(AssetPool.get_texture("assets/images/decorations_and_blocks.jpg"), 16, 16, 81, 0))
         AssetPool.get_texture("assets/images/blend_image_2.jpg")
 
+        for game_object in self._game_objects:
+            if game_object.get_component(SpriteRenderer) is not None:
+                sprite_renderer = game_object.get_component(SpriteRenderer)
+                
+                if sprite_renderer.get_texture() is not None:
+                    sprite_renderer.set_texture(AssetPool.get_texture(sprite_renderer.get_texture().get_file_path()))
+
     def update(self, dt: float):
-        self.mouse_controls.update(dt)
+        self.level_editor_object.update(dt)
 
         for game_object in self._game_objects:
             game_object.update(dt)
@@ -75,15 +84,15 @@ class LevelEditorScene(Scene):
 
         for i in range(self.sprites.size()):
             sprite = self.sprites.get_sprite(i)
-            sprite_width = sprite.get_width() * 4
-            sprite_height = sprite.get_height() * 4
+            sprite_width = sprite.get_width() * 2
+            sprite_height = sprite.get_height() * 2
             sprite_id = sprite.get_tex_id()
             tex_coords = sprite.get_tex_coords()
 
             imgui.push_id(str(i))
-            if imgui.image_button(sprite_id, sprite_width, sprite_height, tex_coords[0].to_tuple(), tex_coords[2].to_tuple()):
-                game_object = Prefabs.generate_sprite_object(sprite, sprite_width, sprite_height)
-                self.mouse_controls.pickup_object(game_object)
+            if imgui.image_button(sprite_id, sprite_width, sprite_height, (tex_coords[2].x, tex_coords[0].y), (tex_coords[0].x, tex_coords[2].y)):
+                game_object = Prefabs.generate_sprite_object(sprite, 32, 32)
+                self.level_editor_object.get_component(MouseControls).pickup_object(game_object)
             imgui.pop_id()
 
             last_button_pos = glm.fvec2(*imgui.get_item_rect_max())
