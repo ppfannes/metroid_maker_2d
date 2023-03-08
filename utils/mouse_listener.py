@@ -11,6 +11,8 @@ class MouseListener:
     _scroll_y = 0.0
     _mouse_button_pressed = [False for _ in range(9)]
     _is_dragging = False
+    _game_viewport_pos = glm.fvec2()
+    _game_viewport_size = glm.fvec2()
 
     @classmethod
     def cursor_pos_callback(cls, window: int, x_pos: float, y_pos: float) -> None:
@@ -72,19 +74,33 @@ class MouseListener:
     @classmethod
     def get_ortho_x(cls):
         from metroid_maker.window import Window
-        current_x = cls.get_x_pos()
-        current_x = (current_x / Window.get_width()) * 2.0 - 1.0
+        current_x = cls.get_x_pos() - cls._game_viewport_pos.x
+        current_x = (current_x / cls._game_viewport_size.x) * 2.0 - 1.0
         tmp = glm.fvec4(current_x, 0.0, 0.0, 1.0)
-        current_x = (glm.mul(Window.get_scene().camera().get_inverse_view(), glm.mul(Window.get_scene().camera().get_inverse_projection(), tmp))).x
+
+        camera = Window.get_scene().camera()
+        view_projection = glm.mul(camera.get_inverse_view(), camera.get_inverse_projection())
+        current_x = (glm.mul(view_projection, tmp)).x
 
         return current_x
 
     @classmethod
     def get_ortho_y(cls):
         from metroid_maker.window import Window
-        current_y = Window.get_height() - cls.get_y_pos()
-        current_y = (current_y / Window.get_height()) * 2.0 - 1.0
-        tmp = glm.fvec4(0.0, current_y, 0.0, 1.0)
-        current_y = (glm.mul(Window.get_scene().camera().get_inverse_view(), glm.mul(Window.get_scene().camera().get_inverse_projection(), tmp))).y
+        current_y = cls.get_y_pos() - cls._game_viewport_pos.y
+        current_y = (current_y / cls._game_viewport_size.y) * 2.0 - 1.0
+        tmp = glm.fvec4(0.0, -current_y, 0.0, 1.0)
+        
+        camera = Window.get_scene().camera()
+        view_projection = glm.mul(camera.get_inverse_view(), camera.get_inverse_projection())
+        current_y = (glm.mul(view_projection, tmp)).y
 
         return current_y
+    
+    @classmethod
+    def set_game_viewport_pos(cls, game_viewport_pos):
+        cls._game_viewport_pos = game_viewport_pos
+
+    @classmethod
+    def set_game_viewport_size(cls, game_viewport_size):
+        cls._game_viewport_size = game_viewport_size

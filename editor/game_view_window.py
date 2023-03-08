@@ -1,6 +1,13 @@
+import glm
 import imgui
+from utils.mouse_listener import MouseListener
 
 class GameViewWindow:
+
+    left_x = 0.0
+    bottom_y = 0.0
+    top_y = 0.0
+    right_x = 0.0
 
     @staticmethod
     def imgui():
@@ -11,8 +18,15 @@ class GameViewWindow:
         window_pos = GameViewWindow.get_centered_position_for_viewport(window_size)
 
         imgui.set_cursor_pos(window_pos)
+
+        tmp = imgui.get_cursor_screen_pos()
+        top_left = (tmp.x - imgui.get_scroll_x(), tmp.y - imgui.get_scroll_y())
+
         texture_id = Window.get_framebuffer().get_texture_id()
         imgui.image(texture_id, window_size[0], window_size[1], (0, 1), (1, 0))
+
+        MouseListener.set_game_viewport_pos(glm.fvec2(*top_left))
+        MouseListener.set_game_viewport_size(glm.fvec2(*window_size))
 
         imgui.end()
 

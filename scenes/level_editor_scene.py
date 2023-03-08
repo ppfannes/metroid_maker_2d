@@ -34,6 +34,7 @@ class LevelEditorScene(Scene):
 
         if self._level_loaded:
             if len(self._game_objects) > 0:
+                print(self._game_objects)
                 self._active_game_object = self._game_objects[0]
             return
 
