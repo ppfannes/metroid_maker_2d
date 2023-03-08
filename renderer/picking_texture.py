@@ -42,7 +42,7 @@ class PickingTexture:
         gl.glBindFramebuffer(gl.GL_FRAMEBUFFER, 0)
 
         return True
-    
+
     def enable_writing(self):
         gl.glBindFramebuffer(gl.GL_DRAW_FRAMEBUFFER, self._fbo_id)
 
@@ -55,4 +55,4 @@ class PickingTexture:
 
         pixels = gl.glReadPixels(x, y, 1.0, 1.0, gl.GL_RGB, gl.GL_FLOAT, None)
 
-        return int(pixels[0]) - 1
+        return int(pixels[0][0][0]) - 1
