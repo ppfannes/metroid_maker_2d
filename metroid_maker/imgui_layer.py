@@ -1,18 +1,20 @@
 import glfw
 import imgui
-from imgui.integrations.glfw import GlfwRenderer
+from utils.glfw_renderer import GlfwRenderer
 from editor.game_view_window import GameViewWindow
-import OpenGL.GL as gl
+from editor.properties_window import PropertiesWindow
 
 class ImGuiLayer:
 
-    def __init__(self, glfw_window: int):
+    def __init__(self, glfw_window: int, picking_texture):
         self._glfw_window = glfw_window
         self._glfw_renderer = None
+        self._game_view_window = GameViewWindow()
+        self._properties_window = PropertiesWindow(picking_texture)
 
     def init_imgui(self):
         imgui.create_context()
-        self._glfw_renderer = GlfwRenderer(self._glfw_window, False)
+        self._glfw_renderer = GlfwRenderer(self._glfw_window, self._game_view_window)
         font_scaling_factor = self._fb_to_window_factor()
 
         io = self._glfw_renderer.io
@@ -24,12 +26,14 @@ class ImGuiLayer:
 
         self._glfw_renderer.refresh_font_texture()
 
-    def update(self, current_scene):
+    def update(self, dt, current_scene):
         imgui.new_frame()
         self.setup_dockspace()
-        current_scene.scene_imgui()
+        current_scene.imgui()
         imgui.show_test_window()
-        GameViewWindow.imgui()
+        self._game_view_window.imgui()
+        self._properties_window.update(dt, current_scene)
+        self._properties_window.imgui()
         imgui.end()
         imgui.render()
         self._glfw_renderer.render(imgui.get_draw_data())

@@ -31,12 +31,6 @@ class LevelEditorScene(Scene):
         self._load_resources()
         self.sprites = AssetPool.get_spritesheet("assets/images/decorations_and_blocks.jpg")
 
-        if self._level_loaded:
-            if len(self._game_objects) > 0:
-                print(self._game_objects)
-                self._active_game_object = self._game_objects[0]
-            return
-
         # self.obj1 = GameObject("Object 1", Transform(glm.fvec2(200.0, 100.0), glm.fvec2(256.0, 256.0)), 2)
         # self._obj1_sprite = SpriteRenderer(color=glm.fvec4(1.0, 0.0, 0.0, 1.0))
         # self.obj1.add_component(self._obj1_sprite)

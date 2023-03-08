@@ -53,6 +53,6 @@ class PickingTexture:
         gl.glBindFramebuffer(gl.GL_READ_FRAMEBUFFER, self._fbo_id)
         gl.glReadBuffer(gl.GL_COLOR_ATTACHMENT0)
 
-        pixels = gl.glReadPixels(x, y, 1.0, 1.0, gl.GL_RGB, gl.GL_FLOAT, None)
+        pixels = gl.glReadPixels(x, y, 1.0, 1.0, gl.GL_RGB, gl.GL_FLOAT)
 
         return int(pixels[0][0][0]) - 1

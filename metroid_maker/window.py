@@ -119,12 +119,13 @@ class Window(metaclass=Singleton):
         gl.glEnable(gl.GL_BLEND)
         gl.glBlendFunc(gl.GL_ONE, gl.GL_ONE_MINUS_SRC_ALPHA)
 
-        self._imgui_layer = ImGuiLayer(self._glfw_window)
-        self._imgui_layer.init_imgui()
 
         self._framebuffer = Framebuffer(1920, 1080)
         self._picking_texture = PickingTexture(1920, 1080)
         gl.glViewport(0, 0, 1920, 1080)
+
+        self._imgui_layer = ImGuiLayer(self._glfw_window, self._picking_texture)
+        self._imgui_layer.init_imgui()
 
         self.change_scene(0)
 
@@ -153,11 +154,6 @@ class Window(metaclass=Singleton):
             Renderer.bind_shader(picking_shader)
             self._current_scene.render()
 
-            if MouseListener.mouse_button_down(GLFW_MOUSE_BUTTON_LEFT):
-                x = MouseListener.get_screen_x()
-                y = MouseListener.get_screen_y()
-                print(self._picking_texture.read_pixel(x, y))
-
             self._picking_texture.disable_writing()
             gl.glEnable(gl.GL_BLEND)
 
@@ -175,7 +171,7 @@ class Window(metaclass=Singleton):
                 self._current_scene.render()
             self._framebuffer.unbind()
 
-            self._imgui_layer.update(self._current_scene)
+            self._imgui_layer.update(dt, self._current_scene)
             glfw.swap_buffers(self._glfw_window)
 
             end_time = time.perf_counter_ns()

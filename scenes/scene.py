@@ -1,6 +1,5 @@
 from abc import ABC, abstractmethod
 import glm
-import imgui
 import jsonpickle
 
 from components.component import Component
@@ -46,16 +45,11 @@ class Scene(ABC):
     def camera(self):
         return self._camera
 
-    def scene_imgui(self):
-        if self._active_game_object is not None:
-            imgui.begin("Inspector")
-            self._active_game_object.imgui()
-            imgui.end()
-
-        self.imgui()
-
     def imgui(self):
         pass
+
+    def get_game_object(self, game_object_id):
+        return next(filter(lambda game_object: game_object.get_uid() == game_object_id, self._game_objects), None)
 
     def save_exit(self):
         with open("serialized.pickle", "w+") as file:
