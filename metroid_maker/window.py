@@ -1,11 +1,12 @@
 import time
 import glfw
-from glfw.GLFW import GLFW_FALSE, GLFW_TRUE, GLFW_RESIZABLE, GLFW_VISIBLE, GLFW_MAXIMIZED
+from glfw.GLFW import GLFW_FALSE, GLFW_TRUE, GLFW_RESIZABLE, GLFW_VISIBLE, GLFW_MAXIMIZED, GLFW_MOUSE_BUTTON_LEFT
 import OpenGL.GL as gl
 
 from metroid_maker.imgui_layer import ImGuiLayer
 from renderer.debug_draw import DebugDraw
 from renderer.framebuffer import Framebuffer
+from renderer.picking_texture import PickingTexture
 from scenes.level_editor_scene import LevelEditorScene
 from scenes.level_scene import LevelScene
 from utils.key_listener import KeyListener
@@ -25,6 +26,7 @@ class Window(metaclass=Singleton):
 
         self._imgui_layer = None
         self._framebuffer = None
+        self._picking_texture = None
 
         self._current_scene = None
 
@@ -121,19 +123,43 @@ class Window(metaclass=Singleton):
         self._imgui_layer.init_imgui()
 
         self._framebuffer = Framebuffer(1920, 1080)
+        self._picking_texture = PickingTexture(1920, 1080)
         gl.glViewport(0, 0, 1920, 1080)
 
         self.change_scene(0)
 
 
     def loop(self) -> None:
+        from utils.asset_pool import AssetPool
+        from renderer.renderer import Renderer
         start_time = time.perf_counter_ns()
         end_time = time.perf_counter_ns()
         dt = -1.0
 
+        default_shader = AssetPool.get_shader("assets/shaders", "default")
+        picking_shader = AssetPool.get_shader("assets/shaders", "picking")
+
         while not glfw.window_should_close(self._glfw_window):
             glfw.poll_events()
             self._imgui_layer.process_inputs()
+
+            gl.glDisable(gl.GL_BLEND)
+            self._picking_texture.enable_writing()
+
+            gl.glViewport(0, 0, 1920, 1080)
+            gl.glClearColor(0.0, 0.0, 0.0, 0.0)
+            gl.glClear(gl.GL_COLOR_BUFFER_BIT | gl.GL_DEPTH_BUFFER_BIT)
+
+            Renderer.bind_shader(picking_shader)
+            self._current_scene.render()
+
+            if MouseListener.mouse_button_down(GLFW_MOUSE_BUTTON_LEFT):
+                x = MouseListener.get_screen_x()
+                y = MouseListener.get_screen_y()
+                print(self._picking_texture.read_pixel(x, y))
+
+            self._picking_texture.disable_writing()
+            gl.glEnable(gl.GL_BLEND)
 
             DebugDraw.begin_frame()
 
@@ -144,7 +170,9 @@ class Window(metaclass=Singleton):
 
             if dt >= 0:
                 DebugDraw.draw()
+                Renderer.bind_shader(default_shader)
                 self._current_scene.update(dt)
+                self._current_scene.render()
             self._framebuffer.unbind()
 
             self._imgui_layer.update(self._current_scene)

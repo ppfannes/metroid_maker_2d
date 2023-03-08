@@ -72,6 +72,20 @@ class MouseListener:
         return cls._mouse_button_pressed[button]
     
     @classmethod
+    def get_screen_x(cls):
+        current_x = cls.get_x_pos() - cls._game_viewport_pos.x
+        current_x = (current_x / cls._game_viewport_size.x) * 1920.0
+
+        return current_x
+    
+    @classmethod
+    def get_screen_y(cls):
+        current_y = cls.get_y_pos() - cls._game_viewport_pos.y
+        current_y = 1080.0 - (current_y / cls._game_viewport_size.y) * 1080.0
+
+        return current_y
+    
+    @classmethod
     def get_ortho_x(cls):
         from metroid_maker.window import Window
         current_x = cls.get_x_pos() - cls._game_viewport_pos.x

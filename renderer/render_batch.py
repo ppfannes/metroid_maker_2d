@@ -4,7 +4,6 @@ import numpy as np
 import OpenGL.GL as gl
 
 from components.sprite_renderer import SpriteRenderer
-from utils.asset_pool import AssetPool
 
 @total_ordering
 class RenderBatch:
@@ -13,17 +12,18 @@ class RenderBatch:
         self._COLOR_SIZE = 4
         self._TEX_COORDS_SIZE = 2
         self._TEX_ID_SIZE = 1
+        self._ENTITY_ID_SIZE = 1
 
         self._POS_OFFSET = 0
         self._COLOR_OFFSET = self._POS_OFFSET + self._POS_SIZE * np.float32(1).nbytes
         self._TEX_COORDS_OFFSET = self._COLOR_OFFSET + self._COLOR_SIZE * np.float32(1).nbytes
         self._TEX_ID_OFFSET = self._TEX_COORDS_OFFSET + self._TEX_COORDS_SIZE * np.float32(1).nbytes
-        self._VERTEX_SIZE = 9
+        self._ENTITY_ID_OFFSET = self._TEX_ID_OFFSET + self._TEX_ID_SIZE * np.float32(1).nbytes
+        self._VERTEX_SIZE = 10
         self._VERTEX_SIZE_BYTES = self._VERTEX_SIZE * np.float32(1).nbytes
 
         self._vao_id, self._vbo_id = 0, 0
 
-        self._shader = AssetPool.get_shader("assets/shaders", "default")
         self._sprites = [None for _ in range(max_batch_size)]
         self._textures = []
         self._tex_slots = np.array(list(range(8)), dtype=np.int32)
@@ -64,6 +64,9 @@ class RenderBatch:
         gl.glVertexAttribPointer(3, self._TEX_ID_SIZE, gl.GL_FLOAT, False, self._VERTEX_SIZE_BYTES, ctypes.c_void_p(self._TEX_ID_OFFSET))
         gl.glEnableVertexAttribArray(3)
 
+        gl.glVertexAttribPointer(4, self._ENTITY_ID_SIZE, gl.GL_FLOAT, False, self._VERTEX_SIZE_BYTES, ctypes.c_void_p(self._ENTITY_ID_OFFSET))
+        gl.glEnableVertexAttribArray(4)
+
     def add_sprite(self, sprite_renderer: SpriteRenderer):
         index = self._num_sprites
         self._sprites[index] = sprite_renderer
@@ -78,7 +81,9 @@ class RenderBatch:
         if self._num_sprites >= self._max_batch_size:
             self._has_room = False
 
-    def render(self, camera):
+    def render(self):
+        from metroid_maker.window import Window
+        from renderer.renderer import Renderer
         rebuffer_data = False
         for i in range(self._num_sprites):
             sprite_renderer = self._sprites[i]
@@ -91,15 +96,15 @@ class RenderBatch:
             gl.glBindBuffer(gl.GL_ARRAY_BUFFER, self._vbo_id)
             gl.glBufferSubData(gl.GL_ARRAY_BUFFER, 0, self._vertices)
 
-        self._shader.use()
-        self._shader.upload_fmat4("uProjection", camera.get_projection_matrix())
-        self._shader.upload_fmat4("uView", camera.get_view_matrix())
+        shader = Renderer.get_bound_shader()
+        shader.upload_fmat4("uProjection", Window.get_scene().camera().get_projection_matrix())
+        shader.upload_fmat4("uView", Window.get_scene().camera().get_view_matrix())
 
         for i in range(len(self._textures)):
             gl.glActiveTexture(self._texture_ids[i + 1])
             self._textures[i].bind()
         
-        self._shader.upload_int_array("uTextures", self._tex_slots)
+        shader.upload_int_array("uTextures", self._tex_slots)
 
         gl.glBindVertexArray(self._vao_id)
         gl.glEnableVertexAttribArray(0)
@@ -113,7 +118,7 @@ class RenderBatch:
         for texture in self._textures:
             texture.unbind()
 
-        self._shader.detach()
+        shader.detach()
 
     def _load_vertex_properties(self, index: int):
         sprite: SpriteRenderer = self._sprites[index]
@@ -153,6 +158,8 @@ class RenderBatch:
             self._vertices[offset + 7] = tex_coords[i].y
 
             self._vertices[offset + 8] = tex_id
+
+            self._vertices[offset + 9] = sprite.game_object.get_uid() + 1
 
             offset += self._VERTEX_SIZE
 

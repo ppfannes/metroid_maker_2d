@@ -1,18 +1,20 @@
 from abc import ABC, abstractmethod
+import glm
 import imgui
 import jsonpickle
 
 from components.component import Component
+from metroid_maker.camera import Camera
 from metroid_maker.game_object import GameObject
 from renderer.renderer import Renderer
 
 class Scene(ABC):
 
-    def __init__(self, camera):
+    def __init__(self):
         self._is_running = False
-        self._camera = camera
+        self._camera = Camera(glm.fvec2(-250.0, 0.0))
         self._game_objects = []
-        self._renderer = Renderer(camera)
+        self._renderer = Renderer()
         self._active_game_object = None
         self._level_loaded = False
 
@@ -36,7 +38,11 @@ class Scene(ABC):
     @abstractmethod
     def update(self, dt: float):
         raise NotImplementedError
-
+    
+    @abstractmethod
+    def render(self):
+        raise NotImplementedError
+    
     def camera(self):
         return self._camera
 

@@ -22,8 +22,7 @@ class LevelEditorScene(Scene):
     level_editor_object = GameObject("Level Editor")
 
     def __init__(self):
-        self._camera = Camera(glm.fvec2(-250.0, 0.0))
-        super().__init__(self._camera)
+        super().__init__()
         self._obj1_sprite = None
 
     def init(self):
@@ -72,6 +71,7 @@ class LevelEditorScene(Scene):
         for game_object in self._game_objects:
             game_object.update(dt)
 
+    def render(self):
         self._renderer.render()
 
     def imgui(self):

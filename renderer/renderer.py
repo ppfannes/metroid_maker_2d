@@ -3,8 +3,10 @@ from metroid_maker.game_object import GameObject
 from renderer.render_batch import RenderBatch
 
 class Renderer:
-    def __init__(self, camera) -> None:
-        self._camera = camera
+
+    _current_shader = None
+
+    def __init__(self) -> None:
         self._MAX_BATCH_SIZE = 1000
         self._batches = []
 
@@ -33,5 +35,14 @@ class Renderer:
             self._batches.sort()
 
     def render(self):
+        Renderer._current_shader.use()
         for render_batch in self._batches:
-            render_batch.render(self._camera)
+            render_batch.render()
+
+    @classmethod
+    def bind_shader(cls, shader):
+        cls._current_shader = shader
+
+    @classmethod
+    def get_bound_shader(cls):
+        return cls._current_shader
