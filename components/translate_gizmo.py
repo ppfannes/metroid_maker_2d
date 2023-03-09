@@ -25,11 +25,12 @@ class TranslateGizmo(Component):
 
     def start(self):
         self._x_axis_game_object.transform.rotation = 90.0
+        self._y_axis_game_object.transform.rotation = 180.0
 
     def update(self, dt):
         if self._active_game_object is not None:
-            self._x_axis_game_object.transform.position = self._active_game_object.transform.position
-            self._y_axis_game_object.transform.position = self._active_game_object.transform.position
+            self._x_axis_game_object.transform.position = self._active_game_object.transform.position + glm.fvec2(64.0, 8.0)
+            self._y_axis_game_object.transform.position = self._active_game_object.transform.position + glm.fvec2(24.0, 64.0)
 
         self._active_game_object = self._properties_window.get_active_game_object()
 

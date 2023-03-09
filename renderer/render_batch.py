@@ -1,5 +1,6 @@
 import ctypes
 from functools import total_ordering
+import math
 import glm
 import numpy as np
 import OpenGL.GL as gl
@@ -140,9 +141,9 @@ class RenderBatch:
         transform_matrix = glm.identity(glm.mat4)
 
         if is_rotated:
-            glm.translate(transform_matrix, sprite.game_object.transform.position)
-            glm.rotateZ(transform_matrix, sprite.game_object.transform.rotation)
-            glm.scale(transform_matrix, sprite.game_object.transform.scale)
+            transform_matrix = glm.translate(transform_matrix, glm.fvec3(sprite.game_object.transform.position, 0.0))
+            transform_matrix = glm.rotate(transform_matrix, math.radians(sprite.game_object.transform.rotation), glm.fvec3(0.0, 0.0, 1.0))
+            transform_matrix = glm.scale(transform_matrix, glm.fvec3(sprite.game_object.transform.scale, 1.0))
 
         x_add = 1.0
         y_add = 1.0
