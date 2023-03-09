@@ -1,5 +1,6 @@
 import ctypes
 from functools import total_ordering
+import glm
 import numpy as np
 import OpenGL.GL as gl
 
@@ -135,6 +136,14 @@ class RenderBatch:
                     tex_id = i + 1
                     break
 
+        is_rotated = sprite.game_object.transform.rotation != 0.0
+        transform_matrix = glm.identity(glm.mat4)
+
+        if is_rotated:
+            glm.translate(transform_matrix, sprite.game_object.transform.position)
+            glm.rotateZ(transform_matrix, sprite.game_object.transform.rotation)
+            glm.scale(transform_matrix, sprite.game_object.transform.scale)
+
         x_add = 1.0
         y_add = 1.0
 
@@ -146,8 +155,14 @@ class RenderBatch:
             elif i == 3:
                 y_add = 1.0
 
-            self._vertices[offset] = sprite.game_object.transform.position.x + (x_add * sprite.game_object.transform.scale.x)
-            self._vertices[offset + 1] = sprite.game_object.transform.position.y + (y_add * sprite.game_object.transform.scale.y)
+            current_pos = glm.fvec4(sprite.game_object.transform.position.x + (x_add * sprite.game_object.transform.scale.x),
+                                    sprite.game_object.transform.position.y + (y_add * sprite.game_object.transform.scale.y), 0.0, 1.0)
+            
+            if is_rotated:
+                current_pos = glm.mul(transform_matrix, glm.fvec4(x_add, y_add, 0.0, 1.0))
+
+            self._vertices[offset] = current_pos.x
+            self._vertices[offset + 1] = current_pos.y
 
             self._vertices[offset + 2] = color.x
             self._vertices[offset + 3] = color.y

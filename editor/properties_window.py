@@ -20,3 +20,6 @@ class PropertiesWindow():
             imgui.begin("Properties")
             self._active_game_object.imgui()
             imgui.end()
+
+    def get_active_game_object(self):
+        return self._active_game_object

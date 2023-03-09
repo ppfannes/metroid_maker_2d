@@ -122,8 +122,12 @@ class GlfwRenderer:
             io.add_input_character(char)
 
     def scroll_callback(self, window, x_offset, y_offset):
+        from utils.mouse_listener import MouseListener
         self.io.mouse_wheel_horizontal = x_offset
         self.io.mouse_wheel = y_offset
+
+        if not self.io.want_capture_mouse or self._game_view_window.want_capture_mouse():
+            MouseListener.scroll_callback(window, x_offset, y_offset)
 
     def process_inputs(self):
         io = imgui.get_io()

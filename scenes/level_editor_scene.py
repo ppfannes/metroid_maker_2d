@@ -1,12 +1,14 @@
 import glm
 import imgui
 
+from components.editor_camera import EditorCamera
 from components.grid_lines import GridLines
 from components.mouse_controls import MouseControls
 from components.rigid_body import RigidBody
 from components.sprite_renderer import SpriteRenderer
 from components.spritesheet import Spritesheet
 from components.sprite import Sprite
+from components.translate_gizmo import TranslateGizmo
 from metroid_maker.camera import Camera
 from metroid_maker.game_object import GameObject
 from metroid_maker.prefabs import Prefabs
@@ -26,10 +28,16 @@ class LevelEditorScene(Scene):
         self._obj1_sprite = None
 
     def init(self):
-        self.level_editor_object.add_component(MouseControls())
-        self.level_editor_object.add_component(GridLines())
+        from metroid_maker.window import Window
         self._load_resources()
         self.sprites = AssetPool.get_spritesheet("assets/images/decorations_and_blocks.jpg")
+        gizmos = AssetPool.get_spritesheet("assets/images/gizmos.jpg")
+
+        self.level_editor_object.add_component(MouseControls())
+        self.level_editor_object.add_component(GridLines())
+        self.level_editor_object.add_component(EditorCamera(self._camera))
+        self.level_editor_object.add_component(TranslateGizmo(gizmos.get_sprite(1), Window.get_imgui_layer().get_properties_window()))
+        self.level_editor_object.start()
 
         # self.obj1 = GameObject("Object 1", Transform(glm.fvec2(200.0, 100.0), glm.fvec2(256.0, 256.0)), 2)
         # self._obj1_sprite = SpriteRenderer(color=glm.fvec4(1.0, 0.0, 0.0, 1.0))
@@ -50,6 +58,8 @@ class LevelEditorScene(Scene):
 
         AssetPool.add_sprite_sheet("assets/images/decorations_and_blocks.jpg",
                                     Spritesheet(AssetPool.get_texture("assets/images/decorations_and_blocks.jpg"), 16, 16, 81, 0))
+        AssetPool.add_sprite_sheet("assets/images/gizmos.jpg",
+                                   Spritesheet(AssetPool.get_texture("assets/images/gizmos.jpg"), 24, 48, 2, 0))
         AssetPool.get_texture("assets/images/blend_image_2.jpg")
 
         for game_object in self._game_objects:
@@ -61,6 +71,7 @@ class LevelEditorScene(Scene):
 
     def update(self, dt: float):
         self.level_editor_object.update(dt)
+        self._camera.adjust_projection()
 
         for game_object in self._game_objects:
             game_object.update(dt)
@@ -69,6 +80,10 @@ class LevelEditorScene(Scene):
         self._renderer.render()
 
     def imgui(self):
+        imgui.begin("Level Editor Debug")
+        self.level_editor_object.imgui()
+        imgui.end()
+
         imgui.begin("Test window")
 
         window_position = glm.fvec2(*imgui.get_window_position())

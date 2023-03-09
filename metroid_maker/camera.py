@@ -8,11 +8,12 @@ class Camera:
         self._view_matrix = glm.fmat4(0.0)
         self._inverse_view_matrix = glm.fmat4(0.0)
         self._position = position
+        self._zoom = 1.0
         self.adjust_projection()
 
     def adjust_projection(self):
         self._projection_matrix = glm.identity(glm.fmat4)
-        self._projection_matrix = glm.ortho(0.0, self._projection_size.x, 0.0, self._projection_size.y, 0.0, 100.0)
+        self._projection_matrix = glm.ortho(0.0, self._projection_size.x * self._zoom, 0.0, self._projection_size.y * self._zoom, 0.0, 100.0)
         self._inverse_projection_matrix = glm.inverse(self._projection_matrix)
     
     def get_view_matrix(self):
@@ -40,3 +41,12 @@ class Camera:
     
     def get_projection_size(self):
         return self._projection_size
+    
+    def get_zoom(self):
+        return self._zoom
+    
+    def set_zoom(self, value):
+        self._zoom = value
+
+    def add_zoom(self, add_zoom):
+        self._zoom += add_zoom

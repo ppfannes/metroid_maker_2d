@@ -64,3 +64,6 @@ class ImGuiLayer:
         imgui.pop_style_var(2)
 
         imgui.dockspace(imgui.get_id("Dockspace"))
+
+    def get_properties_window(self):
+        return self._properties_window

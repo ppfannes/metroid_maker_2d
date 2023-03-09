@@ -80,6 +80,10 @@ class Window(metaclass=Singleton):
     @staticmethod
     def get_target_aspect_ratio():
         return 16.0 / 9.0
+    
+    @classmethod
+    def get_imgui_layer(cls):
+        return cls.get()._imgui_layer
 
     def run(self) -> None:
         self.init()
@@ -133,8 +137,8 @@ class Window(metaclass=Singleton):
     def loop(self) -> None:
         from utils.asset_pool import AssetPool
         from renderer.renderer import Renderer
-        start_time = time.perf_counter_ns()
-        end_time = time.perf_counter_ns()
+        start_time = time.perf_counter_ns() * 1e-9
+        end_time = time.perf_counter_ns() * 1e-9
         dt = -1.0
 
         default_shader = AssetPool.get_shader("assets/shaders", "default")
@@ -173,8 +177,9 @@ class Window(metaclass=Singleton):
 
             self._imgui_layer.update(dt, self._current_scene)
             glfw.swap_buffers(self._glfw_window)
+            MouseListener.end_frame()
 
-            end_time = time.perf_counter_ns()
+            end_time = time.perf_counter_ns() * 1e-9
             dt = end_time - start_time
             start_time = end_time
 

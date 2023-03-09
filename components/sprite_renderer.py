@@ -47,7 +47,7 @@ class SpriteRenderer(Component):
     def set_color(self, color):
         if self._color != color:
             self._is_dirty = True
-            self._color.xyzw = color.xyzw
+            self._color = glm.fvec4(color)
 
     def is_dirty(self):
         return self._is_dirty
