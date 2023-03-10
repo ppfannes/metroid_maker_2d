@@ -12,6 +12,7 @@ class GameObject:
         self._components = []
         self.transform = transform
         self._z_index = z_index
+        self._do_serialize = True
 
     def get_component(self, component_class: Component):
         for component in self._components:
@@ -55,3 +56,9 @@ class GameObject:
 
     def get_all_components(self):
         return self._components
+    
+    def set_no_serialize(self):
+        self._do_serialize = False
+
+    def do_serialize(self):
+        return self._do_serialize

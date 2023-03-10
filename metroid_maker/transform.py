@@ -1,10 +1,10 @@
 import glm
 
 class Transform:
-    def __init__(self, position=glm.fvec2(), scale=glm.fvec2(), rotation=0.0):
+    def __init__(self, position=glm.fvec2(), scale=glm.fvec2()):
         self.position = position
         self.scale = scale
-        self.rotation = rotation
+        self.rotation = 0.0
 
     def copy(self):
         return Transform(glm.fvec2(self.position), glm.fvec2(self.scale))

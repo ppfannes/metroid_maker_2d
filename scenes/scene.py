@@ -53,7 +53,8 @@ class Scene(ABC):
 
     def save_exit(self):
         with open("serialized.pickle", "w+") as file:
-            file.write(jsonpickle.encode(self._game_objects, indent=4))
+            objects_to_serialize = [game_object for game_object in self._game_objects if game_object.do_serialize()]
+            file.write(jsonpickle.encode(objects_to_serialize, indent=4))
 
     def load(self):
         loaded_objects = None
