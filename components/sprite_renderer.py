@@ -2,6 +2,7 @@ import glm
 import imgui
 from components.sprite import Sprite
 from components.component import Component
+from editor.mimgui import MImGui
 
 class SpriteRenderer(Component):
 
@@ -21,12 +22,10 @@ class SpriteRenderer(Component):
             self._is_dirty = True
 
     def imgui(self):
-        current_color = (self._color.x, self._color.y, self._color.z, self._color.w)
-        changed, color = imgui.color_edit4("Color Picker: ", *current_color)
-            
-        if changed:
-            self._color = glm.fvec4(*color)
-            self._is_dirty = True
+        current_color = glm.fvec4(self._color.x, self._color.y, self._color.z, self._color.w)
+        color = MImGui.color_picker4("Color Picker: ", current_color)
+        self._color = color
+        self._is_dirty = True
 
     def get_color(self):
         return self._color
@@ -58,8 +57,10 @@ class SpriteRenderer(Component):
     def __getstate__(self):
         state = self.__dict__.copy()
         del state['_is_dirty']
+        del state["_last_transform"]
         return state
 
     def __setstate__(self, state):
         self.__dict__.update(state)
         self._is_dirty = True
+        self._last_transform = None

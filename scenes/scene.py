@@ -3,6 +3,7 @@ import glm
 import jsonpickle
 
 from components.component import Component
+from components.transform import Transform
 from metroid_maker.camera import Camera
 from metroid_maker.game_object import GameObject
 from renderer.renderer import Renderer
@@ -82,3 +83,9 @@ class Scene(ABC):
         GameObject.init(max_game_object_id)
         Component.init(max_component_id)
         self._level_loaded = True
+
+    def create_game_object(self, name):
+        game_object = GameObject(name)
+        game_object.add_component(Transform())
+        game_object.transform = game_object.get_component(Transform)
+        return game_object

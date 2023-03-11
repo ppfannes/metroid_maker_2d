@@ -37,6 +37,8 @@ class Gizmo(Component):
     def start(self):
         self._x_axis_game_object.transform.rotation = 90.0
         self._y_axis_game_object.transform.rotation = 180.0
+        self._x_axis_game_object.transform.z_index = 100
+        self._y_axis_game_object.transform.z_index = 100
         self._x_axis_game_object.set_no_serialize()
         self._y_axis_game_object.set_no_serialize()
 

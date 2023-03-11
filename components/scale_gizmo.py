@@ -10,7 +10,7 @@ class ScaleGizmo(Gizmo):
         if self._active_game_object is not None:
             if self._x_axis_active and not self._y_axis_active:
                 self._active_game_object.transform.scale.x -= MouseListener.get_world_dx()
-            if self._y_axis_active and not self._x_axis_active:
+            elif self._y_axis_active:
                 self._active_game_object.transform.scale.y -= MouseListener.get_world_dy()
         
         super().update(dt)

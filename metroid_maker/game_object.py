@@ -1,17 +1,17 @@
+import imgui
 from components.component import Component
-from metroid_maker.transform import Transform
+from components.transform import Transform
 
 class GameObject:
 
     _ID_COUNTER = 0
 
-    def __init__(self, name: str, transform=Transform(), z_index=0):
+    def __init__(self, name: str):
         self._name = name
         self._uid = GameObject._ID_COUNTER
         GameObject._ID_COUNTER += 1
         self._components = []
-        self.transform = transform
-        self._z_index = z_index
+        self.transform = None
         self._do_serialize = True
 
     def get_component(self, component_class: Component):
@@ -40,12 +40,11 @@ class GameObject:
         for component in self._components:
             component.start()
 
-    def z_index(self):
-        return self._z_index
-
     def imgui(self):
         for component in self._components:
-            component.imgui()
+            expanded, _ = imgui.collapsing_header(component.__class__.__name__)
+            if expanded:
+                component.imgui()
 
     def get_uid(self):
         return self._uid
@@ -56,9 +55,18 @@ class GameObject:
 
     def get_all_components(self):
         return self._components
-    
+
     def set_no_serialize(self):
         self._do_serialize = False
 
     def do_serialize(self):
         return self._do_serialize
+    
+    def __getstate__(self):
+        state = self.__dict__.copy()
+        del state["transform"]
+        return state
+
+    def __setstate__(self, state):
+        self.__dict__.update(state)
+        self.transform = self.get_component(Transform)

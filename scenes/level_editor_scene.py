@@ -12,7 +12,7 @@ from components.sprite import Sprite
 from metroid_maker.camera import Camera
 from metroid_maker.game_object import GameObject
 from metroid_maker.prefabs import Prefabs
-from metroid_maker.transform import Transform
+from components.transform import Transform
 from renderer.debug_draw import DebugDraw
 from scenes.scene import Scene
 from utils.asset_pool import AssetPool
@@ -21,11 +21,11 @@ class LevelEditorScene(Scene):
 
     sprites = None
     obj1 = None
-    level_editor_object = GameObject("Level Editor")
 
     def __init__(self):
         super().__init__()
         self._obj1_sprite = None
+        self.level_editor_object = self.create_game_object("Level Editor")
 
     def init(self):
         self._load_resources()

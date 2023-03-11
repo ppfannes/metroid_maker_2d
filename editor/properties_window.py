@@ -3,7 +3,7 @@ from glfw.GLFW import GLFW_MOUSE_BUTTON_LEFT
 from components.non_pickable import NonPickable
 from utils.mouse_listener import MouseListener
 
-class PropertiesWindow():
+class PropertiesWindow:
 
     def __init__(self, picking_texture):
         self._active_game_object = None

@@ -19,7 +19,7 @@ class Renderer:
         added = False
 
         for render_batch in self._batches:
-            if render_batch.has_room() and render_batch.z_index() == sprite_renderer.game_object.z_index():
+            if render_batch.has_room() and render_batch.z_index() == sprite_renderer.game_object.transform.z_index:
                 texture = sprite_renderer.get_texture()
 
                 if render_batch.has_texture(texture) or render_batch.has_texture_room() or texture is None:
@@ -28,7 +28,7 @@ class Renderer:
                     break
 
         if not added:
-            new_batch = RenderBatch(self._MAX_BATCH_SIZE, sprite_renderer.game_object.z_index())
+            new_batch = RenderBatch(self._MAX_BATCH_SIZE, sprite_renderer.game_object.transform.z_index)
             new_batch.start()
             self._batches.append(new_batch)
             new_batch.add_sprite(sprite_renderer)

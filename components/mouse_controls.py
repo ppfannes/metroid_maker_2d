@@ -1,3 +1,4 @@
+import glm
 from glfw.GLFW import GLFW_MOUSE_BUTTON_LEFT
 
 from components.component import Component
@@ -21,11 +22,11 @@ class MouseControls(Component):
 
     def update(self, dt):
         if self._holding_object is not None:
-            self._holding_object.transform.position.x = MouseListener.get_ortho_x()
-            self._holding_object.transform.position.y = MouseListener.get_ortho_y()
+            self._holding_object.transform.position = glm.fvec2(MouseListener.get_ortho_x(),
+                                                                MouseListener.get_ortho_y())
 
-            self._holding_object.transform.position.x = int((self._holding_object.transform.position.x // GRID_WIDTH) * GRID_WIDTH)
-            self._holding_object.transform.position.y = int((self._holding_object.transform.position.y // GRID_HEIGHT) * GRID_HEIGHT)
+            self._holding_object.transform.position = glm.fvec2(int((self._holding_object.transform.position.x // GRID_WIDTH) * GRID_WIDTH),
+                                                                int((self._holding_object.transform.position.y // GRID_HEIGHT) * GRID_HEIGHT))
 
             if MouseListener.mouse_button_down(GLFW_MOUSE_BUTTON_LEFT):
                 self.place()
