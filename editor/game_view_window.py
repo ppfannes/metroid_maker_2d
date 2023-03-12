@@ -1,5 +1,8 @@
 import glm
 import imgui
+from observers.event_system import EventSystem
+from observers.events.event_type import EventType
+from observers.events.event import Event
 from utils.mouse_listener import MouseListener
 
 class GameViewWindow:
@@ -8,10 +11,25 @@ class GameViewWindow:
     bottom_y = 0.0
     top_y = 0.0
     right_x = 0.0
+    _is_playing = False
 
     def imgui(self):
         from metroid_maker.window import Window
-        imgui.begin("Game Viewport", imgui.WINDOW_NO_SCROLLBAR | imgui.WINDOW_NO_SCROLL_WITH_MOUSE)
+        imgui.begin("Game Viewport", flags=imgui.WINDOW_NO_SCROLLBAR | imgui.WINDOW_NO_SCROLL_WITH_MOUSE | imgui.WINDOW_MENU_BAR)
+
+        if imgui.begin_menu_bar():
+            clicked_start, _ = imgui.menu_item("Play", "", GameViewWindow._is_playing, not GameViewWindow._is_playing)
+            clicked_stop, _ = imgui.menu_item("Stop", "", not GameViewWindow._is_playing, GameViewWindow._is_playing)
+            
+            if clicked_start:
+                GameViewWindow._is_playing = True
+                EventSystem.notify(None, Event(EventType.GAME_ENGINE_START_PLAYING))
+
+            if clicked_stop:
+                GameViewWindow._is_playing = False
+                EventSystem.notify(None, Event(EventType.GAME_ENGINE_STOP_PLAYING))
+            
+            imgui.end_menu_bar()
 
         window_size = self._get_largest_size_for_viewport()
         window_pos = self._get_centered_position_for_viewport(window_size)

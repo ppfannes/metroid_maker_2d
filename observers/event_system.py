@@ -1,7 +1,7 @@
 class EventSystem:
 
     _observers = []
-    
+
     @classmethod
     def add_observer(cls, observer):
         cls._observers.append(observer)

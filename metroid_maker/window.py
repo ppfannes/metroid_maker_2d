@@ -1,9 +1,13 @@
 import time
 import glfw
-from glfw.GLFW import GLFW_FALSE, GLFW_TRUE, GLFW_RESIZABLE, GLFW_VISIBLE, GLFW_MAXIMIZED, GLFW_MOUSE_BUTTON_LEFT
+from glfw.GLFW import GLFW_FALSE, GLFW_TRUE, GLFW_RESIZABLE, GLFW_VISIBLE, GLFW_MAXIMIZED
 import OpenGL.GL as gl
+from typing import Any
 
 from metroid_maker.imgui_layer import ImGuiLayer
+from observers.event_system import EventSystem
+from observers.events.event_type import EventType
+from observers.observer import Observer
 from renderer.debug_draw import DebugDraw
 from renderer.framebuffer import Framebuffer
 from renderer.picking_texture import PickingTexture
@@ -11,14 +15,17 @@ from scenes.level_editor_scene import LevelEditorScene
 from scenes.level_scene import LevelScene
 from utils.key_listener import KeyListener
 from utils.mouse_listener import MouseListener
-from utils.singleton import Singleton
 
 
-class Window(metaclass=Singleton):
+class Window(Observer):
 
-    r, g, b, a, = 1, 1, 1, 1
+    _instance = None
 
     def __init__(self):
+        if Window._instance is not None:
+            raise Exception("Singleton")
+        else:
+            Window._instance = self
         self._width = 1920
         self._height = 1080
         self._title = "Metroid Maker 2D"
@@ -29,10 +36,13 @@ class Window(metaclass=Singleton):
         self._picking_texture = None
 
         self._current_scene = None
+        EventSystem.add_observer(self)
 
     @staticmethod
-    def get() -> 'Window':
-        return Window()
+    def get():
+        if Window._instance is None:
+            Window()
+        return Window._instance
     
     @classmethod
     def get_width(cls):
@@ -84,6 +94,12 @@ class Window(metaclass=Singleton):
     @classmethod
     def get_imgui_layer(cls):
         return cls.get()._imgui_layer
+    
+    def on_notify(self, game_object, event):
+        if event.type == EventType.GAME_ENGINE_START_PLAYING:
+            print("Start playing...")
+        if event.type == EventType.GAME_ENGINE_STOP_PLAYING:
+            print("Stop playing...")
 
     def run(self) -> None:
         self.init()
@@ -165,7 +181,7 @@ class Window(metaclass=Singleton):
 
             self._framebuffer.bind()
 
-            gl.glClearColor(self.r, self.g, self.b, self.a)
+            gl.glClearColor(1.0, 1.0, 1.0, 1.0)
             gl.glClear(gl.GL_COLOR_BUFFER_BIT)
 
             if dt >= 0:

@@ -563,8 +563,8 @@
                             "py/object": "glm.vec2",
                             "py/state": {
                                 "py/tuple": [
-                                    -29.5081787109375,
-                                    198.29510498046875
+                                    -69.70161437988281,
+                                    206.95216369628906
                                 ]
                             }
                         },
@@ -806,6 +806,108 @@
                                         "py/tuple": [
                                             0.2857142984867096,
                                             0.3333333432674408
+                                        ]
+                                    }
+                                }
+                            ],
+                            "_width": 16,
+                            "_height": 16
+                        }
+                    }
+                }
+            ],
+            "_do_serialize": true
+        }
+    },
+    {
+        "py/object": "metroid_maker.game_object.GameObject",
+        "py/state": {
+            "_name": "Sprite_Object_Gen",
+            "_uid": 25,
+            "_components": [
+                {
+                    "py/object": "components.transform.Transform",
+                    "py/state": {
+                        "_uid": 127,
+                        "position": {
+                            "py/object": "glm.vec2",
+                            "py/state": {
+                                "py/tuple": [
+                                    148.7147674560547,
+                                    179.4783477783203
+                                ]
+                            }
+                        },
+                        "scale": {
+                            "py/object": "glm.vec2",
+                            "py/state": {
+                                "py/tuple": [
+                                    32.0,
+                                    32.0
+                                ]
+                            }
+                        },
+                        "rotation": 0.0,
+                        "z_index": 0
+                    }
+                },
+                {
+                    "py/object": "components.sprite_renderer.SpriteRenderer",
+                    "py/state": {
+                        "_uid": 128,
+                        "game_object": {
+                            "py/id": 131
+                        },
+                        "_color": {
+                            "py/object": "glm.vec4",
+                            "py/state": {
+                                "py/tuple": [
+                                    1.0,
+                                    1.0,
+                                    1.0,
+                                    1.0
+                                ]
+                            }
+                        },
+                        "_sprite": {
+                            "py/object": "components.sprite.Sprite",
+                            "_texture": {
+                                "py/id": 12
+                            },
+                            "_tex_coords": [
+                                {
+                                    "py/object": "glm.vec2",
+                                    "py/state": {
+                                        "py/tuple": [
+                                            0.8571428656578064,
+                                            1.0
+                                        ]
+                                    }
+                                },
+                                {
+                                    "py/object": "glm.vec2",
+                                    "py/state": {
+                                        "py/tuple": [
+                                            0.8571428656578064,
+                                            0.9166666865348816
+                                        ]
+                                    }
+                                },
+                                {
+                                    "py/object": "glm.vec2",
+                                    "py/state": {
+                                        "py/tuple": [
+                                            0.7142857313156128,
+                                            0.9166666865348816
+                                        ]
+                                    }
+                                },
+                                {
+                                    "py/object": "glm.vec2",
+                                    "py/state": {
+                                        "py/tuple": [
+                                            0.7142857313156128,
+                                            1.0
                                         ]
                                     }
                                 }
