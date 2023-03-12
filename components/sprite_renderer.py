@@ -1,5 +1,4 @@
 import glm
-import imgui
 from components.sprite import Sprite
 from components.component import Component
 from editor.mimgui import MImGui

@@ -7,4 +7,4 @@ pillow==9.4.0
 imgui==1.4.1
 jsonpickle==3.0.1
 swig==4.1.1
-Box2D==2.3.10
+box2d-py==2.3.8

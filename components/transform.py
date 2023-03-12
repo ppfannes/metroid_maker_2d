@@ -1,6 +1,5 @@
 import glm
 from components.component import Component
-from editor.mimgui import MImGui
 
 class Transform(Component):
     def __init__(self, position=glm.fvec2(), scale=glm.fvec2()):
