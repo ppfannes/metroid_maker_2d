@@ -49,6 +49,9 @@ class SpriteRenderer(Component):
 
     def is_dirty(self):
         return self._is_dirty
+    
+    def set_dirty(self):
+        self._is_dirty = True
 
     def set_clean(self):
         self._is_dirty = False

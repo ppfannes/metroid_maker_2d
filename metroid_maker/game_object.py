@@ -13,6 +13,12 @@ class GameObject:
         self._components = []
         self.transform = None
         self._do_serialize = True
+        self._is_dead = False
+
+    def destroy(self):
+        self._is_dead = True
+        for component in self._components:
+            component.destroy()
 
     def get_component(self, component_class: Component):
         for component in self._components:
@@ -20,6 +26,9 @@ class GameObject:
                 return component
 
         return None
+
+    def is_dead(self):
+        return self._is_dead
 
     def remove_component(self, component_class: Component):
         for component in self._components:
@@ -61,7 +70,7 @@ class GameObject:
 
     def do_serialize(self):
         return self._do_serialize
-    
+
     def __getstate__(self):
         state = self.__dict__.copy()
         del state["transform"]

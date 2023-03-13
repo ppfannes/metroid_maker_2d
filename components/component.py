@@ -75,6 +75,9 @@ class Component(ABC):
             self._uid = Component._ID_COUNTER
             Component._ID_COUNTER += 1
 
+    def destroy(self):
+        pass
+
     @classmethod
     def init(cls, max_id):
         cls._ID_COUNTER = max_id

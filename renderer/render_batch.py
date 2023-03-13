@@ -83,6 +83,17 @@ class RenderBatch:
         if self._num_sprites >= self._max_batch_size:
             self._has_room = False
 
+    def destroy_if_exists(self, game_object):
+        sprite_renderer = game_object.get_component(SpriteRenderer)
+
+        for i, sprite in enumerate(self._sprites):
+            if sprite == sprite_renderer:
+                self._sprites.pop(i)
+                for new_sprite in self._sprites[i:]:
+                    new_sprite.set_dirty()
+                    return True
+        return False
+
     def render(self):
         from metroid_maker.window import Window
         from renderer.renderer import Renderer

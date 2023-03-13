@@ -2,7 +2,6 @@ import time
 import glfw
 from glfw.GLFW import GLFW_FALSE, GLFW_TRUE, GLFW_RESIZABLE, GLFW_VISIBLE, GLFW_MAXIMIZED
 import OpenGL.GL as gl
-from typing import Any
 
 from metroid_maker.imgui_layer import ImGuiLayer
 from observers.event_system import EventSystem
@@ -11,8 +10,8 @@ from observers.observer import Observer
 from renderer.debug_draw import DebugDraw
 from renderer.framebuffer import Framebuffer
 from renderer.picking_texture import PickingTexture
-from scenes.level_editor_scene import LevelEditorScene
-from scenes.level_scene import LevelScene
+from scenes.level_editor_scene_initializer import LevelEditorSceneInitializer
+from scenes.scene import Scene
 from utils.key_listener import KeyListener
 from utils.mouse_listener import MouseListener
 
@@ -43,25 +42,21 @@ class Window(Observer):
         if Window._instance is None:
             Window()
         return Window._instance
-    
+
     @classmethod
     def get_width(cls):
         return cls.get()._width
-    
+
     @classmethod
     def get_height(cls):
         return cls.get()._height
 
-    
-    def change_scene(self, new_scene: int) -> None | ValueError:
-        match new_scene:
-            case 0:
-                self._current_scene = LevelEditorScene()
-            case 1:
-                self._current_scene = LevelScene()
-            case _:
-                raise ValueError("Unknown scene '" + str(new_scene) +"'")
-            
+
+    def change_scene(self, scene_initializer):
+        if self._current_scene is not None:
+            pass
+
+        self._current_scene = Scene(scene_initializer)
         self._current_scene.load()
         self._current_scene.init()
         self._current_scene.start()
@@ -69,7 +64,7 @@ class Window(Observer):
     @classmethod
     def get_scene(cls):
         return cls.get()._current_scene
-    
+
     @classmethod
     def set_height(cls, new_height):
         cls.get()._height = new_height
@@ -86,15 +81,15 @@ class Window(Observer):
     @classmethod
     def get_framebuffer(cls):
         return cls.get()._framebuffer
-    
+
     @staticmethod
     def get_target_aspect_ratio():
         return 16.0 / 9.0
-    
+
     @classmethod
     def get_imgui_layer(cls):
         return cls.get()._imgui_layer
-    
+
     def on_notify(self, game_object, event):
         if event.type == EventType.GAME_ENGINE_START_PLAYING:
             print("Start playing...")
@@ -114,7 +109,7 @@ class Window(Observer):
 
         if not glfw.init():
             raise RuntimeError("Unable to initialize GLFW.")
-        
+
         glfw.default_window_hints()
         glfw.window_hint(GLFW_VISIBLE, GLFW_FALSE)
         glfw.window_hint(GLFW_RESIZABLE, GLFW_TRUE)
@@ -147,7 +142,7 @@ class Window(Observer):
         self._imgui_layer = ImGuiLayer(self._glfw_window, self._picking_texture)
         self._imgui_layer.init_imgui()
 
-        self.change_scene(0)
+        self.change_scene(LevelEditorSceneInitializer())
 
 
     def loop(self) -> None:

@@ -5,54 +5,32 @@ from components.editor_camera import EditorCamera
 from components.gizmo_system import GizmoSystem
 from components.grid_lines import GridLines
 from components.mouse_controls import MouseControls
-from components.rigid_body import RigidBody
 from components.sprite_renderer import SpriteRenderer
 from components.spritesheet import Spritesheet
-from components.sprite import Sprite
-from metroid_maker.camera import Camera
-from metroid_maker.game_object import GameObject
 from metroid_maker.prefabs import Prefabs
-from components.transform import Transform
-from renderer.debug_draw import DebugDraw
-from scenes.scene import Scene
+from scenes.scene_initializer import SceneInitializer
 from utils.asset_pool import AssetPool
 
-class LevelEditorScene(Scene):
-
-    sprites = None
-    obj1 = None
+class LevelEditorSceneInitializer(SceneInitializer):
 
     def __init__(self):
         super().__init__()
-        self._obj1_sprite = None
-        self.level_editor_object = self.create_game_object("Level Editor")
+        self.sprites = None
+        self.level_editor_object = None
 
-    def init(self):
-        self._load_resources()
+    def init(self, scene):
         self.sprites = AssetPool.get_spritesheet("assets/images/decorations_and_blocks.jpg")
         gizmos = AssetPool.get_spritesheet("assets/images/gizmos.jpg")
 
+        self.level_editor_object = scene.create_game_object("Level Editor")
+        self.level_editor_object.set_no_serialize()
         self.level_editor_object.add_component(MouseControls())
         self.level_editor_object.add_component(GridLines())
-        self.level_editor_object.add_component(EditorCamera(self._camera))
+        self.level_editor_object.add_component(EditorCamera(scene.camera()))
         self.level_editor_object.add_component(GizmoSystem(gizmos))
-        self.level_editor_object.start()
+        scene.add_game_object_to_scene(self.level_editor_object)
 
-        # self.obj1 = GameObject("Object 1", Transform(glm.fvec2(200.0, 100.0), glm.fvec2(256.0, 256.0)), 2)
-        # self._obj1_sprite = SpriteRenderer(color=glm.fvec4(1.0, 0.0, 0.0, 1.0))
-        # self.obj1.add_component(self._obj1_sprite)
-        # self.obj1.add_component(RigidBody())
-        # self.add_game_object_to_scene(self.obj1)
-        # self._active_game_object = self.obj1
-
-        # obj2 = GameObject("Object 2", Transform(glm.fvec2(400.0, 100.0), glm.fvec2(256.0, 256.0)), 2)
-        # obj2_sprite_renderer = SpriteRenderer(sprite=Sprite(
-        #     texture=AssetPool.get_texture("assets/images/blend_image_2.jpg")
-        # ))
-        # obj2.add_component(obj2_sprite_renderer)
-        # self.add_game_object_to_scene(obj2)
-
-    def _load_resources(self):
+    def load_resources(self, scene):
         AssetPool.get_shader("assets/shaders", "default")
 
         AssetPool.add_sprite_sheet("assets/images/decorations_and_blocks.jpg",
@@ -61,22 +39,12 @@ class LevelEditorScene(Scene):
                                    Spritesheet(AssetPool.get_texture("assets/images/gizmos.jpg"), 24, 48, 3, 0))
         AssetPool.get_texture("assets/images/blend_image_2.jpg")
 
-        for game_object in self._game_objects:
+        for game_object in scene.get_game_objects():
             if game_object.get_component(SpriteRenderer) is not None:
                 sprite_renderer = game_object.get_component(SpriteRenderer)
                 
                 if sprite_renderer.get_texture() is not None:
                     sprite_renderer.set_texture(AssetPool.get_texture(sprite_renderer.get_texture().get_file_path()))
-
-    def update(self, dt: float):
-        self.level_editor_object.update(dt)
-        self._camera.adjust_projection()
-
-        for game_object in self._game_objects:
-            game_object.update(dt)
-
-    def render(self):
-        self._renderer.render()
 
     def imgui(self):
         imgui.begin("Level Editor Debug")

@@ -34,6 +34,13 @@ class Renderer:
             new_batch.add_sprite(sprite_renderer)
             self._batches.sort()
 
+    def destroy_game_object(self, game_object):
+        if game_object.get_component(SpriteRenderer) is None:
+            return
+        for render_batch in self._batches:
+            if render_batch.destroy_if_exists(game_object):
+                return
+
     def render(self):
         Renderer._current_shader.use()
         for render_batch in self._batches:

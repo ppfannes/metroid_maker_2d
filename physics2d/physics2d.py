@@ -58,7 +58,13 @@ class Physics2D:
             rigid_body.raw_body = body
             body.CreateFixture(shape=shape, density=rigid_body.mass)
 
+    def destroy_game_object(self, game_object):
+        rigid_body = game_object.get_component(RigidBody2D)
 
+        if rigid_body is not None:
+            if rigid_body.raw_body is not None:
+                self._world.DestroyBody(rigid_body.raw_body)
+                rigid_body.raw_body = None
 
     def update(self, dt):
         self._physics_time += dt
