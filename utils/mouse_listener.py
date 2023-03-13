@@ -16,8 +16,8 @@ class MouseListener:
     _mouse_button_pressed = [False for _ in range(9)]
     _is_dragging = False
     _mouse_button_down = 0
-    _game_viewport_pos = glm.fvec2()
-    _game_viewport_size = glm.fvec2()
+    _game_viewport_pos = glm.fvec2(1.0, 1.0)
+    _game_viewport_size = glm.fvec2(1.0, 1.0)
 
     @classmethod
     def cursor_pos_callback(cls, window: int, x_pos: float, y_pos: float) -> None:
