@@ -35,6 +35,7 @@ class Window(Observer):
         self._picking_texture = None
 
         self._current_scene = None
+        self._runtime_playing = False
         EventSystem.add_observer(self)
 
     @staticmethod
@@ -54,8 +55,9 @@ class Window(Observer):
 
     def change_scene(self, scene_initializer):
         if self._current_scene is not None:
-            pass
+            self._current_scene.destroy()
 
+        self.get_imgui_layer().get_properties_window().set_active_game_object(None)
         self._current_scene = Scene(scene_initializer)
         self._current_scene.load()
         self._current_scene.init()
@@ -91,10 +93,18 @@ class Window(Observer):
         return cls.get()._imgui_layer
 
     def on_notify(self, game_object, event):
-        if event.type == EventType.GAME_ENGINE_START_PLAYING:
-            print("Start playing...")
-        if event.type == EventType.GAME_ENGINE_STOP_PLAYING:
-            print("Stop playing...")
+        match event.type:
+            case EventType.GAME_ENGINE_START_PLAYING:
+                self._runtime_playing = True
+                self._current_scene.save()
+                self.change_scene(LevelEditorSceneInitializer())
+            case EventType.GAME_ENGINE_STOP_PLAYING:
+                self._runtime_playing = False
+                self.change_scene(LevelEditorSceneInitializer())
+            case EventType.SAVE_LEVEL:
+                self._current_scene.save()
+            case EventType.LOAD_LEVEL:
+                self.change_scene(LevelEditorSceneInitializer())
 
     def run(self) -> None:
         self.init()
@@ -182,7 +192,10 @@ class Window(Observer):
             if dt >= 0:
                 DebugDraw.draw()
                 Renderer.bind_shader(default_shader)
-                self._current_scene.update(dt)
+                if self._runtime_playing:
+                    self._current_scene.update(dt)
+                else:
+                    self._current_scene.editor_update(dt)
                 self._current_scene.render()
             self._framebuffer.unbind()
 
@@ -194,5 +207,4 @@ class Window(Observer):
             dt = end_time - start_time
             start_time = end_time
 
-        self._current_scene.save_exit()
         self._imgui_layer.shutdown()

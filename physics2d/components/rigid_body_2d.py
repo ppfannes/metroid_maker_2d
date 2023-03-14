@@ -86,3 +86,12 @@ class RigidBody2D(Component):
     @raw_body.setter
     def raw_body(self, value):
         self._raw_body = value
+
+    def __getstate__(self):
+        state = self.__dict__.copy()
+        del state["_raw_body"]
+        return state
+
+    def __setstate__(self, state):
+        self.__dict__.update(state)
+        self._raw_body = None

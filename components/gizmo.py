@@ -43,6 +43,10 @@ class Gizmo(Component):
         self._y_axis_game_object.set_no_serialize()
 
     def update(self, dt):
+        if self._using:
+            self.set_inactive()
+
+    def editor_update(self, dt):
         if not self._using:
             return
         from utils.mouse_listener import MouseListener

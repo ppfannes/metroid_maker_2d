@@ -2,6 +2,7 @@ import glfw
 import imgui
 from utils.glfw_renderer import GlfwRenderer
 from editor.game_view_window import GameViewWindow
+from editor.menu_bar import MenuBar
 from editor.properties_window import PropertiesWindow
 
 class ImGuiLayer:
@@ -11,6 +12,7 @@ class ImGuiLayer:
         self._glfw_renderer = None
         self._game_view_window = GameViewWindow()
         self._properties_window = PropertiesWindow(picking_texture)
+        self._menu_bar = MenuBar()
 
     def init_imgui(self):
         imgui.create_context()
@@ -34,6 +36,7 @@ class ImGuiLayer:
         self._game_view_window.imgui()
         self._properties_window.update(dt, current_scene)
         self._properties_window.imgui()
+        self._menu_bar.imgui()
         imgui.end()
         imgui.render()
         self._glfw_renderer.render(imgui.get_draw_data())

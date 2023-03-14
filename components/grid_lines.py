@@ -5,7 +5,7 @@ from utils.settings import GRID_WIDTH, GRID_HEIGHT
 
 class GridLines(Component):
 
-    def update(self, dt):
+    def editor_update(self, dt):
         from metroid_maker.window import Window
         camera = Window.get_scene().camera()
         camera_position = camera.get_position()

@@ -17,7 +17,6 @@ class Scene():
         self._renderer = Renderer()
         self._active_game_object = None
         self._scene_initializer = scene_initializer
-        self._level_loaded = False
         self._physics2d = Physics2D()
 
     def destroy(self):
@@ -33,6 +32,7 @@ class Scene():
         for game_object in self._game_objects:
             game_object.start()
             self._renderer.add_game_object(game_object)
+            self._physics2d.add(game_object)
         self._is_running = True
 
     def add_game_object_to_scene(self, game_object: GameObject):
@@ -42,9 +42,19 @@ class Scene():
             self._game_objects.append(game_object)
             game_object.start()
             self._renderer.add_game_object(game_object)
+            self._physics2d.add(game_object)
+
+    def editor_update(self, dt):
+        self._camera.adjust_projection()
+
+        self._game_objects[:] = [game_object for game_object in self._game_objects if not self._process_dead_game_object(game_object)]
+
+        for game_object in self._game_objects:
+            game_object.editor_update(dt)
 
     def update(self, dt: float):
         self._camera.adjust_projection()
+        self._physics2d.update(dt)
 
         self._game_objects[:] = [game_object for game_object in self._game_objects if not self._process_dead_game_object(game_object)]
 
@@ -73,7 +83,7 @@ class Scene():
     def get_game_objects(self):
         return self._game_objects
 
-    def save_exit(self):
+    def save(self):
         with open("serialized.pickle", "w+") as file:
             objects_to_serialize = [game_object for game_object in self._game_objects if game_object.do_serialize()]
             file.write(jsonpickle.encode(objects_to_serialize, indent=4))
@@ -103,7 +113,6 @@ class Scene():
         max_component_id += 1
         GameObject.init(max_game_object_id)
         Component.init(max_component_id)
-        self._level_loaded = True
 
     def create_game_object(self, name):
         game_object = GameObject(name)

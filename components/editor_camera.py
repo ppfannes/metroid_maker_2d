@@ -15,7 +15,7 @@ class EditorCamera(Component):
         self._lerp_time = 0.0
         self._reset = False
 
-    def update(self, dt):
+    def editor_update(self, dt):
         from utils.key_listener import KeyListener
         from utils.mouse_listener import MouseListener
         if MouseListener.mouse_button_down(glfw.MOUSE_BUTTON_MIDDLE) and self._drag_debounce > 0:

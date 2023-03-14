@@ -41,6 +41,10 @@ class GameObject:
         self._components.append(component)
         component.game_object = self
 
+    def editor_update(self, dt):
+        for component in self._components:
+            component.editor_update(dt)
+
     def update(self, dt: float):
         for component in self._components:
             component.update(dt)
@@ -78,4 +82,7 @@ class GameObject:
 
     def __setstate__(self, state):
         self.__dict__.update(state)
+        components = self._components
+        for component in components:
+            component.game_object = self
         self.transform = self.get_component(Transform)

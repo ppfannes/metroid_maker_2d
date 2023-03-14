@@ -1,5 +1,6 @@
 import glm
 from physics2d.components.collider import Collider
+from renderer.debug_draw import DebugDraw
 
 class Box2DCollider(Collider):
 
@@ -19,7 +20,11 @@ class Box2DCollider(Collider):
     @property
     def origin(self):
         return self._origin
-    
+
     @origin.setter
     def origin(self, value):
         self._origin = value
+
+    def editor_update(self, dt):
+        center = glm.add(glm.fvec2(self.game_object.transform.position), self.offset)
+        DebugDraw.add_box_2d(center, self._half_size, self.game_object.transform.rotation)

@@ -11,6 +11,9 @@ class Component(ABC):
         self._uid = -1
         self.game_object = None
 
+    def editor_update(self, dt):
+        pass
+
     def update(self, dt: float):
         pass
 

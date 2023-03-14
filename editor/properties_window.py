@@ -51,3 +51,6 @@ class PropertiesWindow:
 
     def get_active_game_object(self):
         return self._active_game_object
+    
+    def set_active_game_object(self, game_object):
+        self._active_game_object = game_object

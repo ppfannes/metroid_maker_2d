@@ -15,6 +15,11 @@ class SpriteRenderer(Component):
     def start(self):
         self._last_transform = self.game_object.transform.copy()
 
+    def editor_update(self, dt: float):
+        if not self._last_transform == self.game_object.transform:
+            self.game_object.transform.copy_to(self._last_transform)
+            self._is_dirty = True
+
     def update(self, dt: float):
         if not self._last_transform == self.game_object.transform:
             self.game_object.transform.copy_to(self._last_transform)

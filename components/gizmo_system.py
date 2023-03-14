@@ -16,7 +16,7 @@ class GizmoSystem(Component):
         self.game_object.add_component(TranslateGizmo(self._gizmos.get_sprite(1), Window.get_imgui_layer().get_properties_window()))
         self.game_object.add_component(ScaleGizmo(self._gizmos.get_sprite(2), Window.get_imgui_layer().get_properties_window()))
 
-    def update(self, dt):
+    def editor_update(self, dt):
         if self._using_gizmo == 0:
             self.game_object.get_component(TranslateGizmo).set_using()
             self.game_object.get_component(ScaleGizmo).set_not_using()
