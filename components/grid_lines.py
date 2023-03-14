@@ -11,16 +11,16 @@ class GridLines(Component):
         camera_position = camera.get_position()
         projection_size = camera.get_projection_size()
 
-        first_x = int(((camera_position.x // GRID_WIDTH) - 1) * GRID_WIDTH)
-        first_y = int(((camera_position.y // GRID_HEIGHT) - 1) * GRID_HEIGHT)
+        first_x = ((camera_position.x // GRID_WIDTH) - 1) * GRID_WIDTH
+        first_y = ((camera_position.y // GRID_HEIGHT) - 1) * GRID_HEIGHT
 
-        num_vertical_lines = (int(projection_size.x * camera.get_zoom()) // GRID_WIDTH) + 2
-        num_horizontal_lines = (int(projection_size.y * camera.get_zoom()) // GRID_HEIGHT) + 2
+        num_vertical_lines = ((projection_size.x * camera.get_zoom()) // GRID_WIDTH) + 2
+        num_horizontal_lines = ((projection_size.y * camera.get_zoom()) // GRID_HEIGHT) + 2
 
-        height = int(projection_size.y * camera.get_zoom()) + GRID_HEIGHT * 2
-        width = int(projection_size.x * camera.get_zoom()) + GRID_WIDTH * 2
+        height = projection_size.y * camera.get_zoom() + GRID_HEIGHT * 2
+        width = projection_size.x * camera.get_zoom() + GRID_WIDTH * 2
 
-        max_lines = max(num_vertical_lines, num_horizontal_lines)
+        max_lines = int(max(num_vertical_lines, num_horizontal_lines))
         color = glm.fvec3(0.2, 0.2, 0.2)
 
         for i in range(max_lines):

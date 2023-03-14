@@ -1,4 +1,5 @@
 from abc import ABC
+from enum import Enum
 import imgui
 import glm
 from editor.mimgui import MImGui
@@ -62,6 +63,16 @@ class Component(ABC):
                 if changed:
                     vec_value = glm.fvec4(*value)
                     setattr(self, name, vec_value)
+
+                continue
+
+            if isinstance(field, Enum):
+                value_names = field.__class__._member_names_
+                changed, current = imgui.combo(name + ": ", value_names.index(field.name), value_names)
+
+                if changed:
+                    new_value = field.__class__._member_map_[value_names[current]]
+                    setattr(self, name, new_value)
 
                 continue
 

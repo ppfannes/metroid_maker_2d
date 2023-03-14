@@ -3,7 +3,9 @@ import glm
 class Camera:
     def __init__(self, position: glm.vec2):
         self._projection_matrix = glm.fmat4(0.0)
-        self._projection_size = glm.fvec2(32.0 * 40.0, 32.0 * 21.0)
+        self._projection_width = 6.0
+        self._projection_height = 3.0
+        self._projection_size = glm.fvec2(self._projection_width, self._projection_height)
         self._inverse_projection_matrix = glm.fmat4(0.0)
         self._view_matrix = glm.fmat4(0.0)
         self._inverse_view_matrix = glm.fmat4(0.0)
@@ -15,7 +17,7 @@ class Camera:
         self._projection_matrix = glm.identity(glm.fmat4)
         self._projection_matrix = glm.ortho(0.0, self._projection_size.x * self._zoom, 0.0, self._projection_size.y * self._zoom, 0.0, 100.0)
         self._inverse_projection_matrix = glm.inverse(self._projection_matrix)
-    
+
     def get_view_matrix(self):
         camera_front = glm.fvec3(0.0, 0.0, -1.0)
         camera_up = glm.fvec3(0.0, 1.0, 0.0)
@@ -29,7 +31,7 @@ class Camera:
 
     def get_projection_matrix(self):
         return self._projection_matrix
-    
+
     def get_inverse_projection(self):
         return self._inverse_projection_matrix
     

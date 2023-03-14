@@ -68,7 +68,7 @@ class LevelEditorSceneInitializer(SceneInitializer):
 
             imgui.push_id(str(i))
             if imgui.image_button(sprite_id, sprite_width, sprite_height, (tex_coords[2].x, tex_coords[0].y), (tex_coords[0].x, tex_coords[2].y)):
-                game_object = Prefabs.generate_sprite_object(sprite, 32, 32)
+                game_object = Prefabs.generate_sprite_object(sprite, 0.25, 0.25)
                 self.level_editor_object.get_component(MouseControls).pickup_object(game_object)
             imgui.pop_id()
 

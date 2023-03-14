@@ -16,16 +16,16 @@ class Gizmo(Component):
         self._y_axis_color = glm.fvec4(0.3, 1.0, 0.3, 1.0)
         self._y_axis_color_hover = glm.fvec4(0.0, 1.0, 0.0, 1.0)
 
-        self._x_axis_game_object = Prefabs.generate_sprite_object(arrow_sprite, 16.0, 48.0)
-        self._y_axis_game_object = Prefabs.generate_sprite_object(arrow_sprite, 16.0, 48.0)
+        self._gizmo_width = 16 / 80.0
+        self._gizmo_height = 48 / 80.0
+        self._x_axis_game_object = Prefabs.generate_sprite_object(arrow_sprite, self._gizmo_width, self._gizmo_height)
+        self._y_axis_game_object = Prefabs.generate_sprite_object(arrow_sprite, self._gizmo_width, self._gizmo_height)
         self._x_axis_game_object.add_component(NonPickable())
         self._y_axis_game_object.add_component(NonPickable())
         self._x_axis_sprite = self._x_axis_game_object.get_component(SpriteRenderer)
         self._y_axis_sprite = self._y_axis_game_object.get_component(SpriteRenderer)
-        self._x_axis_offset = glm.fvec2(72.0, 8.0)
-        self._y_axis_offset = glm.fvec2(24.0, 72.0)
-        self._gizmo_width = 16
-        self._gizmo_height = 48
+        self._x_axis_offset = glm.fvec2(32.0 / 80.0, 0.0)
+        self._y_axis_offset = glm.fvec2(0.0, 32.0 / 80.0)
         self._active_game_object = None
         self._x_axis_active = False
         self._y_axis_active = False
@@ -87,10 +87,10 @@ class Gizmo(Component):
         from utils.mouse_listener import MouseListener
         mouse_pos = glm.fvec2(MouseListener.get_ortho_x(), MouseListener.get_ortho_y())
 
-        if mouse_pos.x <= self._x_axis_game_object.transform.position.x and \
-            mouse_pos.x >= self._x_axis_game_object.transform.position.x - self._gizmo_height and \
-            mouse_pos.y >= self._x_axis_game_object.transform.position.y and \
-            mouse_pos.y <= self._x_axis_game_object.transform.position.y + self._gizmo_width:
+        if mouse_pos.x <= self._x_axis_game_object.transform.position.x + (self._gizmo_height / 2.0) and \
+            mouse_pos.x >= self._x_axis_game_object.transform.position.x - (self._gizmo_height / 2.0) and \
+            mouse_pos.y >= self._x_axis_game_object.transform.position.y - (self._gizmo_width / 2.0) and \
+            mouse_pos.y <= self._x_axis_game_object.transform.position.y + (self._gizmo_width / 2.0):
 
             self._x_axis_sprite.set_color(self._x_axis_color_hover)
             return True
@@ -102,10 +102,10 @@ class Gizmo(Component):
         from utils.mouse_listener import MouseListener
         mouse_pos = glm.fvec2(MouseListener.get_ortho_x(), MouseListener.get_ortho_y())
 
-        if mouse_pos.x <= self._y_axis_game_object.transform.position.x and \
-            mouse_pos.x >= self._y_axis_game_object.transform.position.x - self._gizmo_width and \
-            mouse_pos.y <= self._y_axis_game_object.transform.position.y and \
-            mouse_pos.y >= self._y_axis_game_object.transform.position.y - self._gizmo_height:
+        if mouse_pos.x <= self._y_axis_game_object.transform.position.x + (self._gizmo_width / 2.0) and \
+            mouse_pos.x >= self._y_axis_game_object.transform.position.x - (self._gizmo_width / 2.0) and \
+            mouse_pos.y <= self._y_axis_game_object.transform.position.y + (self._gizmo_height / 2.0) and \
+            mouse_pos.y >= self._y_axis_game_object.transform.position.y - (self._gizmo_height / 2.0):
 
             self._y_axis_sprite.set_color(self._y_axis_color_hover)
             return True

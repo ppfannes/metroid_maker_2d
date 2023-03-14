@@ -156,16 +156,16 @@ class RenderBatch:
             transform_matrix = glm.rotate(transform_matrix, math.radians(sprite.game_object.transform.rotation), glm.fvec3(0.0, 0.0, 1.0))
             transform_matrix = glm.scale(transform_matrix, glm.fvec3(sprite.game_object.transform.scale, 1.0))
 
-        x_add = 1.0
-        y_add = 1.0
+        x_add = 0.5
+        y_add = 0.5
 
         for i in range(4):
             if i == 1:
-                y_add = 0.0
+                y_add = -0.5
             elif i == 2:
-                x_add = 0.0
+                x_add = -0.5
             elif i == 3:
-                y_add = 1.0
+                y_add = 0.5
 
             current_pos = glm.fvec4(sprite.game_object.transform.position.x + (x_add * sprite.game_object.transform.scale.x),
                                     sprite.game_object.transform.position.y + (y_add * sprite.game_object.transform.scale.y), 0.0, 1.0)
