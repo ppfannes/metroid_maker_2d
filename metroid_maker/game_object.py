@@ -61,6 +61,10 @@ class GameObject:
 
     def get_uid(self):
         return self._uid
+    
+    def generate_uid(self):
+        self._uid = GameObject._ID_COUNTER
+        GameObject._ID_COUNTER += 1
 
     @classmethod
     def init(cls, max_id):

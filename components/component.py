@@ -85,9 +85,8 @@ class Component(ABC):
         return self._uid
 
     def generate_id(self):
-        if self._uid == -1:
-            self._uid = Component._ID_COUNTER
-            Component._ID_COUNTER += 1
+        self._uid = Component._ID_COUNTER
+        Component._ID_COUNTER += 1
 
     def destroy(self):
         pass
