@@ -16,8 +16,8 @@ class MouseListener:
     _mouse_button_pressed = [False for _ in range(9)]
     _is_dragging = False
     _mouse_button_down = 0
-    _game_viewport_pos = glm.fvec2(1.0, 1.0)
-    _game_viewport_size = glm.fvec2(1.0, 1.0)
+    _game_viewport_pos = glm.fvec2(1.0)
+    _game_viewport_size = glm.fvec2(1.0)
 
     @classmethod
     def cursor_pos_callback(cls, window: int, x_pos: float, y_pos: float) -> None:
@@ -63,7 +63,7 @@ class MouseListener:
     @classmethod
     def get_dx(cls) -> float:
         return float(cls._last_x - cls._x_pos)
-    
+
     @classmethod
     def get_world_dx(cls):
         return float(cls._last_world_x - cls._world_x)
@@ -71,7 +71,7 @@ class MouseListener:
     @classmethod
     def get_dy(cls) -> float:
         return float(cls._last_y - cls._y_pos)
-    
+
     @classmethod
     def get_world_dy(cls):
         return float(cls._last_world_y - cls._world_y)
@@ -91,27 +91,24 @@ class MouseListener:
     @classmethod
     def mouse_button_down(cls, button: int):
         return cls._mouse_button_pressed[button]
-    
+
     @classmethod
     def get_screen_x(cls):
-        assert cls._game_viewport_size.x > 0.0
         current_x = cls.get_x_pos() - cls._game_viewport_pos.x
         current_x = (current_x / cls._game_viewport_size.x) * 1920.0
 
         return current_x
-    
+
     @classmethod
     def get_screen_y(cls):
-        assert cls._game_viewport_size.y > 0.0
         current_y = cls.get_y_pos() - cls._game_viewport_pos.y
         current_y = 1080.0 - (current_y / cls._game_viewport_size.y) * 1080.0
 
         return current_y
-    
+
     @classmethod
     def calc_ortho_x(cls):
         from metroid_maker.window import Window
-        assert cls._game_viewport_pos.x > 0.0
         current_x = cls.get_x_pos() - cls._game_viewport_pos.x
         current_x = (current_x / cls._game_viewport_size.x) * 2.0 - 1.0
         tmp = glm.fvec4(current_x, 0.0, 0.0, 1.0)
@@ -119,19 +116,18 @@ class MouseListener:
         camera = Window.get_scene().camera()
         view_projection = glm.mul(camera.get_inverse_view(), camera.get_inverse_projection())
         cls._world_x = (glm.mul(view_projection, tmp)).x
-    
+
     @classmethod
     def get_ortho_x(cls):
         return cls._world_x
-    
+
     @classmethod
     def calc_ortho_y(cls):
         from metroid_maker.window import Window
-        assert cls._game_viewport_pos.y > 0.0
         current_y = cls.get_y_pos() - cls._game_viewport_pos.y
         current_y = (current_y / cls._game_viewport_size.y) * 2.0 - 1.0
         tmp = glm.fvec4(0.0, -current_y, 0.0, 1.0)
-        
+
         camera = Window.get_scene().camera()
         view_projection = glm.mul(camera.get_inverse_view(), camera.get_inverse_projection())
         cls._world_y = (glm.mul(view_projection, tmp)).y
@@ -139,7 +135,7 @@ class MouseListener:
     @classmethod
     def get_ortho_y(cls):
         return cls._world_y
-    
+
     @classmethod
     def set_game_viewport_pos(cls, game_viewport_pos):
         cls._game_viewport_pos = game_viewport_pos

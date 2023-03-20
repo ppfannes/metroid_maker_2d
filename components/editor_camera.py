@@ -1,6 +1,5 @@
 import glfw
 import glm
-import math
 from components.component import Component
 
 class EditorCamera(Component):

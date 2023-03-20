@@ -28,7 +28,7 @@ class Renderer:
                     break
 
         if not added:
-            new_batch = RenderBatch(self._MAX_BATCH_SIZE, sprite_renderer.game_object.transform.z_index)
+            new_batch = RenderBatch(self._MAX_BATCH_SIZE, sprite_renderer.game_object.transform.z_index, self)
             new_batch.start()
             self._batches.append(new_batch)
             new_batch.add_sprite(sprite_renderer)

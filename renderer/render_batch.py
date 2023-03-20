@@ -2,14 +2,13 @@ import ctypes
 from functools import total_ordering
 import math
 import glm
-import numpy as np
 import OpenGL.GL as gl
 
 from components.sprite_renderer import SpriteRenderer
 
 @total_ordering
 class RenderBatch:
-    def __init__(self, max_batch_size: int, z_index: int) -> None:
+    def __init__(self, max_batch_size: int, z_index: int, renderer) -> None:
         self._POS_SIZE = 2
         self._COLOR_SIZE = 4
         self._TEX_COORDS_SIZE = 2
@@ -17,22 +16,23 @@ class RenderBatch:
         self._ENTITY_ID_SIZE = 1
 
         self._POS_OFFSET = 0
-        self._COLOR_OFFSET = self._POS_OFFSET + self._POS_SIZE * np.float32(1).nbytes
-        self._TEX_COORDS_OFFSET = self._COLOR_OFFSET + self._COLOR_SIZE * np.float32(1).nbytes
-        self._TEX_ID_OFFSET = self._TEX_COORDS_OFFSET + self._TEX_COORDS_SIZE * np.float32(1).nbytes
-        self._ENTITY_ID_OFFSET = self._TEX_ID_OFFSET + self._TEX_ID_SIZE * np.float32(1).nbytes
+        self._COLOR_OFFSET = self._POS_OFFSET + self._POS_SIZE * glm.sizeof(glm.float32)
+        self._TEX_COORDS_OFFSET = self._COLOR_OFFSET + self._COLOR_SIZE * glm.sizeof(glm.float32)
+        self._TEX_ID_OFFSET = self._TEX_COORDS_OFFSET + self._TEX_COORDS_SIZE * glm.sizeof(glm.float32)
+        self._ENTITY_ID_OFFSET = self._TEX_ID_OFFSET + self._TEX_ID_SIZE * glm.sizeof(glm.float32)
         self._VERTEX_SIZE = 10
-        self._VERTEX_SIZE_BYTES = self._VERTEX_SIZE * np.float32(1).nbytes
+        self._VERTEX_SIZE_BYTES = self._VERTEX_SIZE * glm.sizeof(glm.float32)
 
         self._vao_id, self._vbo_id = 0, 0
 
-        self._sprites = [None for _ in range(max_batch_size)]
+        self._sprites = [SpriteRenderer() for _ in range(max_batch_size)]
         self._textures = []
-        self._tex_slots = np.array(list(range(8)), dtype=np.int32)
+        self._tex_slots = glm.array.from_numbers(glm.int32, 0, 1, 2, 3, 4, 5, 6, 7)
         self._max_batch_size = max_batch_size
         self._z_index = z_index
+        self._renderer = renderer
 
-        self._vertices = np.zeros(max_batch_size * 4 * self._VERTEX_SIZE, dtype=np.float32)
+        self._vertices = glm.array.zeros(max_batch_size * 4 * self._VERTEX_SIZE, glm.float32)
         
         self._num_sprites = 0
         self._has_room = True
@@ -47,12 +47,12 @@ class RenderBatch:
 
         self._vbo_id = gl.glGenBuffers(1)
         gl.glBindBuffer(gl.GL_ARRAY_BUFFER, self._vbo_id)
-        gl.glBufferData(gl.GL_ARRAY_BUFFER, self._vertices.size * np.float32(1).nbytes, self._vertices, gl.GL_DYNAMIC_DRAW)
+        gl.glBufferData(gl.GL_ARRAY_BUFFER, self._vertices.nbytes, self._vertices.ptr, gl.GL_DYNAMIC_DRAW)
 
         ebo_id = gl.glGenBuffers(1)
         indices = self._generate_indices()
         gl.glBindBuffer(gl.GL_ELEMENT_ARRAY_BUFFER, ebo_id)
-        gl.glBufferData(gl.GL_ELEMENT_ARRAY_BUFFER, indices.size * np.float32(1).nbytes, indices, gl.GL_STATIC_DRAW)
+        gl.glBufferData(gl.GL_ELEMENT_ARRAY_BUFFER, indices.nbytes, indices.ptr, gl.GL_STATIC_DRAW)
 
         gl.glVertexAttribPointer(0, self._POS_SIZE, gl.GL_FLOAT, False, self._VERTEX_SIZE_BYTES, ctypes.c_void_p(self._POS_OFFSET))
         gl.glEnableVertexAttribArray(0)
@@ -91,32 +91,37 @@ class RenderBatch:
                 self._sprites.pop(i)
                 for new_sprite in self._sprites[i:]:
                     new_sprite.set_dirty()
-                    return True
+                self._num_sprites -= 1
+                return True
         return False
 
     def render(self):
         from metroid_maker.window import Window
         from renderer.renderer import Renderer
         rebuffer_data = False
-        for i in range(self._num_sprites):
+        for i in reversed(range(self._num_sprites)):
             sprite_renderer = self._sprites[i]
             if sprite_renderer.is_dirty():
                 self._load_vertex_properties(i)
                 sprite_renderer.set_clean()
                 rebuffer_data = True
 
+                if sprite_renderer.game_object.transform.z_index != self._z_index:
+                    self.destroy_if_exists(sprite_renderer.game_object)
+                    self._renderer.add_game_object(sprite_renderer.game_object)
+
         if rebuffer_data:
             gl.glBindBuffer(gl.GL_ARRAY_BUFFER, self._vbo_id)
-            gl.glBufferSubData(gl.GL_ARRAY_BUFFER, 0, self._vertices)
+            gl.glBufferSubData(gl.GL_ARRAY_BUFFER, 0, size=self._vertices.nbytes, data=self._vertices.ptr)
 
         shader = Renderer.get_bound_shader()
         shader.upload_fmat4("uProjection", Window.get_scene().camera().get_projection_matrix())
         shader.upload_fmat4("uView", Window.get_scene().camera().get_view_matrix())
 
-        for i in range(len(self._textures)):
+        for i, texture in enumerate(self._textures):
             gl.glActiveTexture(self._texture_ids[i + 1])
-            self._textures[i].bind()
-        
+            texture.bind()
+
         shader.upload_int_array("uTextures", self._tex_slots)
 
         gl.glBindVertexArray(self._vao_id)
@@ -143,8 +148,8 @@ class RenderBatch:
         tex_id = 0
 
         if sprite.get_texture() is not None:
-            for i in range(len(self._textures)):
-                if self._textures[i] == sprite.get_texture():
+            for i, texture in enumerate(self._textures):
+                if texture == sprite.get_texture():
                     tex_id = i + 1
                     break
 
@@ -169,7 +174,7 @@ class RenderBatch:
 
             current_pos = glm.fvec4(sprite.game_object.transform.position.x + (x_add * sprite.game_object.transform.scale.x),
                                     sprite.game_object.transform.position.y + (y_add * sprite.game_object.transform.scale.y), 0.0, 1.0)
-            
+
             if is_rotated:
                 current_pos = glm.mul(transform_matrix, glm.fvec4(x_add, y_add, 0.0, 1.0))
 
@@ -191,7 +196,7 @@ class RenderBatch:
             offset += self._VERTEX_SIZE
 
     def _generate_indices(self):
-        elements = np.zeros(6 * self._max_batch_size, dtype=np.uint32)
+        elements = glm.array.zeros(6 * self._max_batch_size, glm.uint32)
 
         for i in range(self._max_batch_size):
             self._load_element_indices(elements, i)

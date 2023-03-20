@@ -83,6 +83,6 @@ class Shader:
         self.use()
         gl.glUniform1i(gl.glGetUniformLocation(self._shader_program_id, var_name), slot)
 
-    def upload_int_array(self, var_name: str, array: np.array):
+    def upload_int_array(self, var_name: str, array: glm.array):
         self.use()
-        gl.glUniform1iv(gl.glGetUniformLocation(self._shader_program_id, var_name), array.size, array)
+        gl.glUniform1iv(gl.glGetUniformLocation(self._shader_program_id, var_name), array.nbytes, array.ptr)

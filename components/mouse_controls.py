@@ -25,8 +25,8 @@ class MouseControls(Component):
             self._holding_object.transform.position = glm.fvec2(MouseListener.get_ortho_x(),
                                                                 MouseListener.get_ortho_y())
 
-            self._holding_object.transform.position = glm.fvec2(int((self._holding_object.transform.position.x // GRID_WIDTH) * GRID_WIDTH),
-                                                                int((self._holding_object.transform.position.y // GRID_HEIGHT) * GRID_HEIGHT))
+            self._holding_object.transform.position = glm.fvec2(int((self._holding_object.transform.position.x // GRID_WIDTH)) * GRID_WIDTH,
+                                                                int((self._holding_object.transform.position.y // GRID_HEIGHT)) * GRID_HEIGHT)
 
             if MouseListener.mouse_button_down(GLFW_MOUSE_BUTTON_LEFT):
                 self.place()

@@ -71,6 +71,11 @@ class Gizmo(Component):
                 glm.add(new_object.transform.position, glm.fvec2(0.1, 0.1))
                 self._properties_window.set_active_game_object(new_object)
                 return
+            elif KeyListener.is_key_pressed(glfw.KEY_DELETE):
+                self._active_game_object.destroy()
+                self.set_inactive()
+                self._properties_window.set_active_game_object(None)
+                return
         else:
             self.set_inactive()
             return
