@@ -1,13 +1,14 @@
 import imgui
+import pickle
 from components.component import Component
 from components.transform import Transform
 
-class GameObject:
 
+class GameObject:
     _ID_COUNTER = 0
 
     def __init__(self, name: str):
-        self._name = name
+        self.name = name
         self._uid = GameObject._ID_COUNTER
         GameObject._ID_COUNTER += 1
         self._components = []
@@ -53,6 +54,26 @@ class GameObject:
         for component in self._components:
             component.start()
 
+    def copy(self):
+        from components.sprite_renderer import SpriteRenderer
+        from utils.asset_pool import AssetPool
+
+        pickled_object = pickle.dumps(self)
+        new_object = pickle.loads(pickled_object)
+
+        new_object.generate_uid()
+
+        for component in new_object._components:
+            component.generate_id()
+
+        sprite_renderer = new_object.get_component(SpriteRenderer)
+        if sprite_renderer is not None and sprite_renderer.get_texture() is not None:
+            sprite_renderer.set_texture(
+                AssetPool.get_texture(sprite_renderer.get_texture().get_file_path())
+            )
+
+        return new_object
+
     def imgui(self):
         for component in self._components:
             expanded, _ = imgui.collapsing_header(component.__class__.__name__)
@@ -61,7 +82,7 @@ class GameObject:
 
     def get_uid(self):
         return self._uid
-    
+
     def generate_uid(self):
         self._uid = GameObject._ID_COUNTER
         GameObject._ID_COUNTER += 1

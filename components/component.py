@@ -4,8 +4,8 @@ import imgui
 import glm
 from editor.mimgui import MImGui
 
-class Component(ABC):
 
+class Component(ABC):
     _ID_COUNTER = 0
 
     def __init__(self):
@@ -53,12 +53,20 @@ class Component(ABC):
 
             if isinstance(field, glm.fvec3):
                 value = MImGui.draw_vec3_control(name, field)
-                setattr(self, name, vec_value)
+                setattr(self, name, value)
 
                 continue
 
             if isinstance(field, glm.fvec4):
-                changed, value = imgui.drag_float4(name + ": ", field.x, field.y, field.z, field.w, min_value=-100.0, max_value=100.0)
+                changed, value = imgui.drag_float4(
+                    name + ": ",
+                    field.x,
+                    field.y,
+                    field.z,
+                    field.w,
+                    min_value=-100.0,
+                    max_value=100.0,
+                )
 
                 if changed:
                     vec_value = glm.fvec4(*value)
@@ -68,7 +76,9 @@ class Component(ABC):
 
             if isinstance(field, Enum):
                 value_names = field.__class__._member_names_
-                changed, current = imgui.combo(name + ": ", value_names.index(field.name), value_names)
+                changed, current = imgui.combo(
+                    name + ": ", value_names.index(field.name), value_names
+                )
 
                 if changed:
                     new_value = field.__class__._member_map_[value_names[current]]

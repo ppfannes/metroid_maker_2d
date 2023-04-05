@@ -3,10 +3,10 @@ from observers.event_system import EventSystem
 from observers.events.event import Event
 from observers.events.event_type import EventType
 
-class MenuBar:
 
+class MenuBar:
     def imgui(self):
-        if imgui.begin_main_menu_bar():
+        if imgui.begin_menu_bar():
             if imgui.begin_menu("File"):
                 clicked_save, _ = imgui.menu_item("Save", "Ctrl+S")
                 clicked_load, _ = imgui.menu_item("Load", "Ctrl+O")
@@ -19,4 +19,4 @@ class MenuBar:
 
                 imgui.end_menu()
 
-            imgui.end_main_menu_bar()
+            imgui.end_menu_bar()

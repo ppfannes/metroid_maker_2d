@@ -1,8 +1,8 @@
 import glm
 import imgui
 
-class MImGui:
 
+class MImGui:
     @classmethod
     def draw_vec2_control(cls, label, values, reset_value=0.0, column_width=220.0):
         imgui.push_id(label)
@@ -177,3 +177,24 @@ class MImGui:
         imgui.pop_id()
 
         return values
+
+    @classmethod
+    def input_text(cls, label, value, column_width=220.0):
+        imgui.push_id(label)
+
+        imgui.columns(2)
+        imgui.set_column_width(0, column_width)
+        imgui.text(label.capitalize())
+        imgui.next_column()
+
+        changed, val = imgui.input_text("##" + label, value, 256)
+        if changed:
+            imgui.columns(1)
+            imgui.pop_id()
+
+            return val
+
+        imgui.columns(1)
+        imgui.pop_id()
+
+        return value

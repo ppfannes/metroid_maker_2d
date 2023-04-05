@@ -8,8 +8,8 @@ from metroid_maker.game_object import GameObject
 from physics2d.physics2d import Physics2D
 from renderer.renderer import Renderer
 
-class Scene():
 
+class Scene:
     def __init__(self, scene_initializer):
         self._is_running = False
         self._camera = None
@@ -24,7 +24,7 @@ class Scene():
             game_object.destroy()
 
     def init(self):
-        self._camera = Camera(glm.fvec2(-250.0, 0.0))
+        self._camera = Camera(glm.fvec2(0.0, 0.0))
         self._scene_initializer.load_resources(self)
         self._scene_initializer.init(self)
 
@@ -47,7 +47,11 @@ class Scene():
     def editor_update(self, dt):
         self._camera.adjust_projection()
 
-        self._game_objects[:] = [game_object for game_object in self._game_objects if not self._process_dead_game_object(game_object)]
+        self._game_objects[:] = [
+            game_object
+            for game_object in self._game_objects
+            if not self._process_dead_game_object(game_object)
+        ]
 
         for game_object in self._game_objects:
             game_object.editor_update(dt)
@@ -56,7 +60,11 @@ class Scene():
         self._camera.adjust_projection()
         self._physics2d.update(dt)
 
-        self._game_objects[:] = [game_object for game_object in self._game_objects if not self._process_dead_game_object(game_object)]
+        self._game_objects[:] = [
+            game_object
+            for game_object in self._game_objects
+            if not self._process_dead_game_object(game_object)
+        ]
 
         for game_object in self._game_objects:
             game_object.update(dt)
@@ -78,14 +86,24 @@ class Scene():
         self._scene_initializer.imgui()
 
     def get_game_object(self, game_object_id):
-        return next(filter(lambda game_object: game_object.get_uid() == game_object_id, self._game_objects), None)
-    
+        return next(
+            filter(
+                lambda game_object: game_object.get_uid() == game_object_id,
+                self._game_objects,
+            ),
+            None,
+        )
+
     def get_game_objects(self):
         return self._game_objects
 
     def save(self):
         with open("serialized.pickle", "w+") as file:
-            objects_to_serialize = [game_object for game_object in self._game_objects if game_object.do_serialize()]
+            objects_to_serialize = [
+                game_object
+                for game_object in self._game_objects
+                if game_object.do_serialize()
+            ]
             file.write(jsonpickle.encode(objects_to_serialize, indent=4))
 
     def load(self):
