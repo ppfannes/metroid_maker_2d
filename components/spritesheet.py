@@ -1,6 +1,7 @@
 import glm
 from components.sprite import Sprite
 
+
 class Spritesheet:
     def __init__(self, texture, sprite_width, sprite_height, num_sprites, spacing):
         self._sprites = []
@@ -19,7 +20,7 @@ class Spritesheet:
                 glm.fvec2(right_x, top_y),
                 glm.fvec2(right_x, bottom_y),
                 glm.fvec2(left_x, bottom_y),
-                glm.fvec2(left_x, top_y)
+                glm.fvec2(left_x, top_y),
             ]
 
             sprite = Sprite(sprite_width, sprite_height, self._texture, tex_coords)
@@ -33,6 +34,6 @@ class Spritesheet:
 
     def get_sprite(self, index):
         return self._sprites[index]
-    
+
     def size(self):
         return len(self._sprites)

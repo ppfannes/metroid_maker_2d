@@ -52,6 +52,13 @@ class Gizmo(Component):
         if self._using:
             self.set_inactive()
 
+        self._x_axis_game_object.get_component(SpriteRenderer).set_color(
+            (0.0, 0.0, 0.0, 0.0)
+        )
+        self._y_axis_game_object.get_component(SpriteRenderer).set_color(
+            (0.0, 0.0, 0.0, 0.0)
+        )
+
     def editor_update(self, dt):
         if not self._using:
             return

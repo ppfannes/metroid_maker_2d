@@ -17,7 +17,7 @@ class PropertiesWindow:
         self._debounce -= dt
 
         if (
-            not MouseListener.is_dragging()
+            not MouseListener.get_is_dragging()
             and MouseListener.mouse_button_down(GLFW_MOUSE_BUTTON_LEFT)
             and self._debounce < 0
         ):

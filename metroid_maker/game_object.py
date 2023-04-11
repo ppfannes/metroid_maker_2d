@@ -23,7 +23,7 @@ class GameObject:
 
     def get_component(self, component_class: Component):
         for component in self._components:
-            if issubclass(component_class, component.__class__):
+            if type(component) == component_class:
                 return component
 
         return None
@@ -31,16 +31,17 @@ class GameObject:
     def is_dead(self):
         return self._is_dead
 
-    def remove_component(self, component_class: Component):
-        for component in self._components:
-            if issubclass(component_class, component.__class__):
-                self._components.remove(component)
-                return
+    def remove_component(self, component_class):
+        self._components[:] = [
+            component
+            for component in self._components
+            if type(component) != component_class
+        ]
 
-    def add_component(self, component: Component):
+    def add_component(self, component):
         component.generate_id()
-        self._components.append(component)
         component.game_object = self
+        self._components.append(component)
 
     def editor_update(self, dt):
         for component in self._components:
@@ -107,7 +108,6 @@ class GameObject:
 
     def __setstate__(self, state):
         self.__dict__.update(state)
-        components = self._components
-        for component in components:
+        for component in self._components:
             component.game_object = self
         self.transform = self.get_component(Transform)

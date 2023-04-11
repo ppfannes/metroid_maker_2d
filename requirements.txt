@@ -1,9 +1,10 @@
 glfw==2.5.6
 numpy==1.24.2
-pyglet==2.0.4
 PyOpenGL==3.1.6
+PyOpenAL==0.7.11a1
 PyGLM==2.7.0
 pillow==9.4.0
-jsonpickle==3.0.1
 swig==4.1.1
 box2d-py==2.3.8
+jsonpickle==3.0.1
+soundfile==0.12.1

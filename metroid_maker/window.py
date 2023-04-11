@@ -1,7 +1,15 @@
 import time
 import glfw
-from glfw.GLFW import GLFW_FALSE, GLFW_TRUE, GLFW_RESIZABLE, GLFW_VISIBLE, GLFW_MAXIMIZED
+from glfw.GLFW import (
+    GLFW_FALSE,
+    GLFW_TRUE,
+    GLFW_RESIZABLE,
+    GLFW_VISIBLE,
+    GLFW_MAXIMIZED,
+)
 import OpenGL.GL as gl
+import openal.alc as alc
+import openal.al as al
 
 from metroid_maker.imgui_layer import ImGuiLayer
 from observers.event_system import EventSystem
@@ -17,7 +25,6 @@ from utils.mouse_listener import MouseListener
 
 
 class Window(Observer):
-
     _instance = None
 
     def __init__(self):
@@ -51,7 +58,6 @@ class Window(Observer):
     @classmethod
     def get_height(cls):
         return cls.get()._height
-
 
     def change_scene(self, scene_initializer):
         if self._current_scene is not None:
@@ -114,9 +120,7 @@ class Window(Observer):
 
         glfw.terminate()
 
-
     def init(self) -> None:
-
         if not glfw.init():
             raise RuntimeError("Unable to initialize GLFW.")
 
@@ -125,14 +129,20 @@ class Window(Observer):
         glfw.window_hint(GLFW_RESIZABLE, GLFW_TRUE)
         glfw.window_hint(GLFW_MAXIMIZED, GLFW_TRUE)
 
-        self._glfw_window = glfw.create_window(self._width, self._height, self._title, None, None)
+        self._glfw_window = glfw.create_window(
+            self._width, self._height, self._title, None, None
+        )
 
         if not self._glfw_window:
             raise RuntimeError("Could not create the GLFW window.")
 
         glfw.make_context_current(self._glfw_window)
-        glfw.set_cursor_pos_callback(self._glfw_window, MouseListener.cursor_pos_callback)
-        glfw.set_mouse_button_callback(self._glfw_window, MouseListener.mouse_button_callback)
+        glfw.set_cursor_pos_callback(
+            self._glfw_window, MouseListener.cursor_pos_callback
+        )
+        glfw.set_mouse_button_callback(
+            self._glfw_window, MouseListener.mouse_button_callback
+        )
         glfw.set_scroll_callback(self._glfw_window, MouseListener.scroll_callback)
         glfw.set_key_callback(self._glfw_window, KeyListener.key_callback)
         glfw.set_window_size_callback(self._glfw_window, Window.resize_window_callback)
@@ -141,9 +151,15 @@ class Window(Observer):
 
         glfw.show_window(self._glfw_window)
 
+        default_device_name = None
+        audio_device = alc.alcOpenDevice(default_device_name)
+
+        attributes = None
+        audio_context = alc.alcCreateContext(audio_device, attributes)
+        alc.alcMakeContextCurrent(audio_context)
+
         gl.glEnable(gl.GL_BLEND)
         gl.glBlendFunc(gl.GL_ONE, gl.GL_ONE_MINUS_SRC_ALPHA)
-
 
         self._framebuffer = Framebuffer(1920, 1080)
         self._picking_texture = PickingTexture(1920, 1080)
@@ -154,10 +170,10 @@ class Window(Observer):
 
         self.change_scene(LevelEditorSceneInitializer())
 
-
     def loop(self) -> None:
         from utils.asset_pool import AssetPool
         from renderer.renderer import Renderer
+
         start_time = time.perf_counter_ns() * 1e-9
         end_time = time.perf_counter_ns() * 1e-9
         dt = -1.0

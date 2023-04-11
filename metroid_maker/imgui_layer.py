@@ -116,7 +116,6 @@ class ImGuiLayer:
 
         self.setup_dockspace()
         current_scene.imgui()
-        imgui.show_test_window()
         self._game_view_window.imgui()
         self._properties_window.update(dt, current_scene)
         self._properties_window.imgui()

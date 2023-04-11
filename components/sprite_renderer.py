@@ -3,8 +3,8 @@ from components.sprite import Sprite
 from components.component import Component
 from editor.mimgui import MImGui
 
-class SpriteRenderer(Component):
 
+class SpriteRenderer(Component):
     def __init__(self, color=glm.fvec4(1.0, 1.0, 1.0, 1.0), sprite=Sprite()):
         super().__init__()
         self._color = color
@@ -26,7 +26,9 @@ class SpriteRenderer(Component):
             self._is_dirty = True
 
     def imgui(self):
-        current_color = glm.fvec4(self._color.x, self._color.y, self._color.z, self._color.w)
+        current_color = glm.fvec4(
+            self._color.x, self._color.y, self._color.z, self._color.w
+        )
         color = MImGui.color_picker4("Color Picker: ", current_color)
         self._color = color
         self._is_dirty = True
@@ -36,7 +38,7 @@ class SpriteRenderer(Component):
 
     def get_texture(self):
         return self._sprite.get_texture()
-    
+
     def set_texture(self, texture):
         self._sprite.set_texture(texture)
 
@@ -54,7 +56,7 @@ class SpriteRenderer(Component):
 
     def is_dirty(self):
         return self._is_dirty
-    
+
     def set_dirty(self):
         self._is_dirty = True
 
@@ -63,7 +65,7 @@ class SpriteRenderer(Component):
 
     def __getstate__(self):
         state = self.__dict__.copy()
-        del state['_is_dirty']
+        del state["_is_dirty"]
         del state["_last_transform"]
         return state
 

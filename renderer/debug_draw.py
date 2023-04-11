@@ -7,14 +7,19 @@ import OpenGL.GL as gl
 from renderer.line_2d import Line2D
 from utils.asset_pool import AssetPool
 
+
 def rotate(point, angle, origin):
     translated_point = glm.sub(point, origin)
-    new_x = translated_point.x * cos(radians(angle)) - translated_point.y * sin(radians(angle))
-    new_y = translated_point.x * sin(radians(angle)) + translated_point.y * cos(radians(angle))
+    new_x = translated_point.x * cos(radians(angle)) - translated_point.y * sin(
+        radians(angle)
+    )
+    new_y = translated_point.x * sin(radians(angle)) + translated_point.y * cos(
+        radians(angle)
+    )
     return glm.add(glm.fvec2(new_x, new_y), origin)
 
-class DebugDraw:
 
+class DebugDraw:
     _MAX_LINES = 500
 
     _lines = []
@@ -32,12 +37,26 @@ class DebugDraw:
 
         cls._vbo_id = gl.glGenBuffers(1)
         gl.glBindBuffer(gl.GL_ARRAY_BUFFER, cls._vbo_id)
-        gl.glBufferData(gl.GL_ARRAY_BUFFER, cls._vertex_array.nbytes, cls._vertex_array, gl.GL_DYNAMIC_DRAW)
+        gl.glBufferData(
+            gl.GL_ARRAY_BUFFER,
+            cls._vertex_array.nbytes,
+            cls._vertex_array,
+            gl.GL_DYNAMIC_DRAW,
+        )
 
-        gl.glVertexAttribPointer(0, 3, gl.GL_FLOAT, False, 6 * np.float32(1).nbytes, None)
+        gl.glVertexAttribPointer(
+            0, 3, gl.GL_FLOAT, False, 6 * np.float32(1).nbytes, None
+        )
         gl.glEnableVertexAttribArray(0)
 
-        gl.glVertexAttribPointer(1, 3, gl.GL_FLOAT, False, 6 * np.float32(1).nbytes, ctypes.c_void_p(3 * np.float32(1).nbytes))
+        gl.glVertexAttribPointer(
+            1,
+            3,
+            gl.GL_FLOAT,
+            False,
+            6 * np.float32(1).nbytes,
+            ctypes.c_void_p(3 * np.float32(1).nbytes),
+        )
         gl.glEnableVertexAttribArray(1)
 
         gl.glLineWidth(2.0)
@@ -53,9 +72,10 @@ class DebugDraw:
     @classmethod
     def draw(cls):
         from metroid_maker.window import Window
+
         if len(cls._lines) <= 0:
             return
-        
+
         index = 0
         for line in cls._lines:
             for i in range(2):
@@ -78,10 +98,17 @@ class DebugDraw:
                 index += 6
 
         gl.glBindBuffer(gl.GL_ARRAY_BUFFER, cls._vbo_id)
-        gl.glBufferSubData(gl.GL_ARRAY_BUFFER, 0, len(cls._vertex_array[0:len(cls._lines) * 6 * 2]) * np.float32(1).nbytes, cls._vertex_array[0:len(cls._lines) * 6 * 2])
+        gl.glBufferSubData(
+            gl.GL_ARRAY_BUFFER,
+            0,
+            len(cls._vertex_array[0 : len(cls._lines) * 6 * 2]) * np.float32(1).nbytes,
+            cls._vertex_array[0 : len(cls._lines) * 6 * 2],
+        )
 
         cls._shader.use()
-        cls._shader.upload_fmat4("uProjection", Window.get_scene().camera().get_projection_matrix())
+        cls._shader.upload_fmat4(
+            "uProjection", Window.get_scene().camera().get_projection_matrix()
+        )
         cls._shader.upload_fmat4("uView", Window.get_scene().camera().get_view_matrix())
 
         gl.glBindVertexArray(cls._vao_id)
@@ -102,12 +129,18 @@ class DebugDraw:
         cls._lines.append(Line2D(start, end, color, lifetime))
 
     @classmethod
-    def add_box_2d(cls, center, dimensions, rotation, color=glm.fvec3(0.0, 1.0, 0.0), lifetime=2):
+    def add_box_2d(
+        cls, center, dimensions, rotation, color=glm.fvec3(0.0, 1.0, 0.0), lifetime=2
+    ):
         min_vertex = glm.sub(center, glm.mul(dimensions, 0.5))
         max_vertex = glm.add(center, glm.mul(dimensions, 0.5))
 
-        vertices = [glm.fvec2(min_vertex.x, min_vertex.y), glm.fvec2(min_vertex.x, max_vertex.y),
-                    glm.fvec2(max_vertex.x, max_vertex.y), glm.fvec2(max_vertex.x, min_vertex.y)]
+        vertices = [
+            glm.fvec2(min_vertex.x, min_vertex.y),
+            glm.fvec2(min_vertex.x, max_vertex.y),
+            glm.fvec2(max_vertex.x, max_vertex.y),
+            glm.fvec2(max_vertex.x, min_vertex.y),
+        ]
 
         if rotation != 0.0:
             vertices[:] = [rotate(vertex, rotation, center) for vertex in vertices]
@@ -121,7 +154,10 @@ class DebugDraw:
     def add_circle(cls, center, radius, color=glm.fvec3(0.0, 1.0, 0.0), lifetime=2):
         num_points = 20
         increment = int(360 // num_points)
-        points = [glm.add(rotate(glm.fvec2(radius, 0.0), increment * i, glm.fvec2()), center) for i in range(num_points)]
+        points = [
+            glm.add(rotate(glm.fvec2(radius, 0.0), increment * i, glm.fvec2()), center)
+            for i in range(num_points)
+        ]
 
         for i, point in enumerate(points):
             cls.add_line_2d(points[i - 1], point, color, lifetime)

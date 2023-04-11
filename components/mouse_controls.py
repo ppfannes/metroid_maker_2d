@@ -3,6 +3,7 @@ from glfw.GLFW import GLFW_MOUSE_BUTTON_LEFT, GLFW_KEY_ESCAPE
 
 from components.component import Component
 from components.non_pickable import NonPickable
+from components.state_machine import StateMachine
 from utils.mouse_listener import MouseListener
 from utils.key_listener import KeyListener
 from utils.settings import GRID_WIDTH, GRID_HEIGHT
@@ -34,6 +35,10 @@ class MouseControls(Component):
         from components.sprite_renderer import SpriteRenderer
 
         new_game_object = self._holding_object.copy()
+
+        if new_game_object.get_component(StateMachine):
+            new_game_object.get_component(StateMachine).refresh_textures()
+
         new_game_object.get_component(SpriteRenderer).set_color(
             glm.fvec4(1.0, 1.0, 1.0, 1.0)
         )
