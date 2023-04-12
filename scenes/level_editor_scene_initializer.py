@@ -4,12 +4,12 @@ import imgui
 from components.editor_camera import EditorCamera
 from components.gizmo_system import GizmoSystem
 from components.grid_lines import GridLines
+from components.key_controls import KeyControls
 from components.mouse_controls import MouseControls
 from components.sprite_renderer import SpriteRenderer
 from components.spritesheet import Spritesheet
 from components.state_machine import StateMachine
 from metroid_maker.prefabs import Prefabs
-from metroid_maker.sound import Sound
 from scenes.scene_initializer import SceneInitializer
 from utils.asset_pool import AssetPool
 
@@ -28,6 +28,7 @@ class LevelEditorSceneInitializer(SceneInitializer):
 
         self.level_editor_object = scene.create_game_object("Level Editor")
         self.level_editor_object.set_no_serialize()
+        self.level_editor_object.add_component(KeyControls())
         self.level_editor_object.add_component(MouseControls())
         self.level_editor_object.add_component(GridLines())
         self.level_editor_object.add_component(EditorCamera(scene.camera()))
@@ -75,23 +76,21 @@ class LevelEditorSceneInitializer(SceneInitializer):
         )
         AssetPool.get_texture("assets/images/blend_image_2.jpg")
 
-        AssetPool.add_sound(
-            "assets/sounds/assets_sounds_main-theme-overworld.ogg", True
-        )
-        AssetPool.add_sound("assets/sounds/assets_sounds_flagpole.ogg", False)
-        AssetPool.add_sound("assets/sounds/assets_sounds_break_block.ogg", False)
-        AssetPool.add_sound("assets/sounds/assets_sounds_bump.ogg", False)
-        AssetPool.add_sound("assets/sounds/assets_sounds_coin.ogg", False)
-        AssetPool.add_sound("assets/sounds/assets_sounds_gameover.ogg", False)
-        AssetPool.add_sound("assets/sounds/assets_sounds_jump-small.ogg", False)
-        AssetPool.add_sound("assets/sounds/assets_sounds_mario_die.ogg", False)
-        AssetPool.add_sound("assets/sounds/assets_sounds_pipe.ogg", False)
-        AssetPool.add_sound("assets/sounds/assets_sounds_powerup.ogg", False)
-        AssetPool.add_sound("assets/sounds/assets_sounds_powerup_appears.ogg", False)
-        AssetPool.add_sound("assets/sounds/assets_sounds_stage_clear.ogg", False)
-        AssetPool.add_sound("assets/sounds/assets_sounds_stomp.ogg", False)
-        AssetPool.add_sound("assets/sounds/assets_sounds_kick.ogg", False)
-        AssetPool.add_sound("assets/sounds/assets_sounds_invincible.ogg", False)
+        AssetPool.add_sound("assets/sounds/main-theme-overworld.ogg", True)
+        AssetPool.add_sound("assets/sounds/flagpole.ogg", False)
+        AssetPool.add_sound("assets/sounds/break_block.ogg", False)
+        AssetPool.add_sound("assets/sounds/bump.ogg", False)
+        AssetPool.add_sound("assets/sounds/coin.ogg", False)
+        AssetPool.add_sound("assets/sounds/gameover.ogg", False)
+        AssetPool.add_sound("assets/sounds/jump-small.ogg", False)
+        AssetPool.add_sound("assets/sounds/mario_die.ogg", False)
+        AssetPool.add_sound("assets/sounds/pipe.ogg", False)
+        AssetPool.add_sound("assets/sounds/powerup.ogg", False)
+        AssetPool.add_sound("assets/sounds/powerup_appears.ogg", False)
+        AssetPool.add_sound("assets/sounds/stage_clear.ogg", False)
+        AssetPool.add_sound("assets/sounds/stomp.ogg", False)
+        AssetPool.add_sound("assets/sounds/kick.ogg", False)
+        AssetPool.add_sound("assets/sounds/invincible.ogg", False)
 
         for game_object in scene.get_game_objects():
             if game_object.get_component(SpriteRenderer) is not None:

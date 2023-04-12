@@ -1,41 +1,30 @@
 import imgui
 from glfw.GLFW import GLFW_MOUSE_BUTTON_LEFT
+import typing
 from components.non_pickable import NonPickable
 from utils.mouse_listener import MouseListener
 from physics2d.components.rigid_body_2d import RigidBody2D
 from physics2d.components.box_2d_collider import Box2DCollider
 from physics2d.components.circle_collider import CircleCollider
 
+if typing.TYPE_CHECKING:
+    from typing import List
+    from metroid_maker.game_object import GameObject
+
 
 class PropertiesWindow:
     def __init__(self, picking_texture):
+        self._active_game_objects: List[GameObject] = []
         self._active_game_object = None
         self._picking_texture = picking_texture
         self._debounce = 0.2
 
-    def update(self, dt, current_scene):
-        self._debounce -= dt
-
-        if (
-            not MouseListener.get_is_dragging()
-            and MouseListener.mouse_button_down(GLFW_MOUSE_BUTTON_LEFT)
-            and self._debounce < 0
-        ):
-            x = MouseListener.get_screen_x()
-            y = MouseListener.get_screen_y()
-            game_object_id = self._picking_texture.read_pixel(x, y)
-            picked_object = current_scene.get_game_object(game_object_id)
-            if (
-                picked_object is not None
-                and picked_object.get_component(NonPickable) is None
-            ):
-                self._active_game_object = picked_object
-            elif picked_object is None and not MouseListener.get_is_dragging():
-                self._active_game_object = None
-            self._debounce = 0.2
-
     def imgui(self):
-        if self._active_game_object is not None:
+        if (
+            len(self._active_game_objects) == 1
+            and self._active_game_objects[0] is not None
+        ):
+            self._active_game_object = self._active_game_objects[0]
             imgui.begin("Properties")
 
             if imgui.begin_popup_context_window("ColliderAdder"):
@@ -69,7 +58,23 @@ class PropertiesWindow:
             imgui.end()
 
     def get_active_game_object(self):
-        return self._active_game_object
+        if len(self._active_game_objects) == 1:
+            return self._active_game_objects[0]
+        return None
+
+    def get_active_game_objects(self):
+        return self._active_game_objects
+
+    def clear_selected(self):
+        self._active_game_objects.clear()
 
     def set_active_game_object(self, game_object):
-        self._active_game_object = game_object
+        if game_object is not None:
+            self.clear_selected()
+            self._active_game_objects.append(game_object)
+
+    def add_active_game_object(self, game_object):
+        self._active_game_objects.append(game_object)
+
+    def get_picking_texture(self):
+        return self._picking_texture

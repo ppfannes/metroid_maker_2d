@@ -17,6 +17,9 @@ class ImGuiLayer:
         self._menu_bar = MenuBar()
         self._scene_hierarchy_window = SceneHierarchyWindow()
 
+    def get_game_view_window(self):
+        return self._game_view_window
+
     def _fb_to_window_factor(self):
         window_width, window_height = glfw.get_window_size(self._glfw_window)
         framebuffer_width, framebuffer_height = glfw.get_framebuffer_size(
@@ -86,6 +89,8 @@ class ImGuiLayer:
 
         if not io.want_capture_mouse or self._game_view_window.want_capture_mouse():
             MouseListener.scroll_callback(window, x_offset, y_offset)
+        else:
+            MouseListener.clear()
 
     def init_imgui(self):
         imgui.create_context()
@@ -117,7 +122,6 @@ class ImGuiLayer:
         self.setup_dockspace()
         current_scene.imgui()
         self._game_view_window.imgui()
-        self._properties_window.update(dt, current_scene)
         self._properties_window.imgui()
         self._scene_hierarchy_window.imgui()
 

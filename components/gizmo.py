@@ -62,42 +62,11 @@ class Gizmo(Component):
     def editor_update(self, dt):
         if not self._using:
             return
-        from metroid_maker.window import Window
         from utils.mouse_listener import MouseListener
-        from utils.key_listener import KeyListener
-        from utils.asset_pool import AssetPool
 
         self._active_game_object = self._properties_window.get_active_game_object()
         if self._active_game_object is not None:
             self.set_active()
-            if KeyListener.is_key_pressed(
-                glfw.KEY_LEFT_CONTROL
-            ) and KeyListener.key_begin_press(glfw.KEY_D):
-                new_object = copy.deepcopy(self._active_game_object)
-
-                new_object.generate_uid()
-                for component in new_object.get_all_components():
-                    component.generate_id()
-                sprite_renderer = new_object.get_component(SpriteRenderer)
-                if (
-                    sprite_renderer is not None
-                    and sprite_renderer.get_texture() is not None
-                ):
-                    sprite_renderer.set_texture(
-                        AssetPool.get_texture(
-                            sprite_renderer.get_texture().get_file_path()
-                        )
-                    )
-
-                Window.get_scene().add_game_object_to_scene(new_object)
-                glm.add(new_object.transform.position, glm.fvec2(0.1, 0.1))
-                self._properties_window.set_active_game_object(new_object)
-                return
-            elif KeyListener.is_key_pressed(glfw.KEY_DELETE):
-                self._active_game_object.destroy()
-                self.set_inactive()
-                self._properties_window.set_active_game_object(None)
-                return
         else:
             self.set_inactive()
             return

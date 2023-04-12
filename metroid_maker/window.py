@@ -206,18 +206,18 @@ class Window(Observer):
             gl.glClear(gl.GL_COLOR_BUFFER_BIT)
 
             if dt >= 0:
-                DebugDraw.draw()
                 Renderer.bind_shader(default_shader)
                 if self._runtime_playing:
                     self._current_scene.update(dt)
                 else:
                     self._current_scene.editor_update(dt)
                 self._current_scene.render()
+                DebugDraw.draw()
             self._framebuffer.unbind()
 
             self._imgui_layer.update(dt, self._current_scene)
-            glfw.swap_buffers(self._glfw_window)
             MouseListener.end_frame()
+            glfw.swap_buffers(self._glfw_window)
 
             end_time = time.perf_counter_ns() * 1e-9
             dt = end_time - start_time

@@ -1,8 +1,9 @@
 import sys
+import glm
 import OpenGL.GL as gl
 
-class PickingTexture:
 
+class PickingTexture:
     def __init__(self, width, height) -> None:
         self._picking_texture_id = 0
         self._fbo_id = 0
@@ -22,19 +23,54 @@ class PickingTexture:
         gl.glTexParameteri(gl.GL_TEXTURE_2D, gl.GL_TEXTURE_WRAP_T, gl.GL_REPEAT)
         gl.glTexParameteri(gl.GL_TEXTURE_2D, gl.GL_TEXTURE_MAG_FILTER, gl.GL_NEAREST)
         gl.glTexParameteri(gl.GL_TEXTURE_2D, gl.GL_TEXTURE_MIN_FILTER, gl.GL_NEAREST)
-        gl.glTexImage2D(gl.GL_TEXTURE_2D, 0, gl.GL_RGB32F, width, height, 0, gl.GL_RGB, gl.GL_FLOAT, None)
-        gl.glFramebufferTexture2D(gl.GL_FRAMEBUFFER, gl.GL_COLOR_ATTACHMENT0, gl.GL_TEXTURE_2D, self._picking_texture_id, 0)
+        gl.glTexImage2D(
+            gl.GL_TEXTURE_2D,
+            0,
+            gl.GL_RGB32F,
+            width,
+            height,
+            0,
+            gl.GL_RGB,
+            gl.GL_FLOAT,
+            None,
+        )
+        gl.glFramebufferTexture2D(
+            gl.GL_FRAMEBUFFER,
+            gl.GL_COLOR_ATTACHMENT0,
+            gl.GL_TEXTURE_2D,
+            self._picking_texture_id,
+            0,
+        )
 
         gl.glEnable(gl.GL_TEXTURE_2D)
         self._depth_texture_id = gl.glGenTextures(1)
         gl.glBindTexture(gl.GL_TEXTURE_2D, self._depth_texture_id)
-        gl.glTexImage2D(gl.GL_TEXTURE_2D, 0, gl.GL_DEPTH_COMPONENT, width, height, 0, gl.GL_DEPTH_COMPONENT, gl.GL_FLOAT, None)
-        gl.glFramebufferTexture2D(gl.GL_FRAMEBUFFER, gl.GL_DEPTH_ATTACHMENT, gl.GL_TEXTURE_2D, self._depth_texture_id, 0)
+        gl.glTexImage2D(
+            gl.GL_TEXTURE_2D,
+            0,
+            gl.GL_DEPTH_COMPONENT,
+            width,
+            height,
+            0,
+            gl.GL_DEPTH_COMPONENT,
+            gl.GL_FLOAT,
+            None,
+        )
+        gl.glFramebufferTexture2D(
+            gl.GL_FRAMEBUFFER,
+            gl.GL_DEPTH_ATTACHMENT,
+            gl.GL_TEXTURE_2D,
+            self._depth_texture_id,
+            0,
+        )
 
         gl.glReadBuffer(gl.GL_NONE)
         gl.glDrawBuffer(gl.GL_COLOR_ATTACHMENT0)
 
-        if not gl.glCheckFramebufferStatus(gl.GL_FRAMEBUFFER) == gl.GL_FRAMEBUFFER_COMPLETE:
+        if (
+            not gl.glCheckFramebufferStatus(gl.GL_FRAMEBUFFER)
+            == gl.GL_FRAMEBUFFER_COMPLETE
+        ):
             print("Error: Framebuffer is not complete.")
             return False
 
@@ -56,3 +92,18 @@ class PickingTexture:
         pixels = gl.glReadPixels(x, y, 1.0, 1.0, gl.GL_RGB, gl.GL_FLOAT)
 
         return int(pixels[0][0][0]) - 1
+
+    def read_pixels(self, start, end):
+        gl.glBindFramebuffer(gl.GL_READ_FRAMEBUFFER, self._fbo_id)
+        gl.glReadBuffer(gl.GL_COLOR_ATTACHMENT0)
+
+        size = glm.sub(glm.ivec2(end), glm.ivec2(start))
+
+        pixels = gl.glReadPixels(
+            start.x, start.y, size.x, size.y, gl.GL_RGB, gl.GL_FLOAT
+        )
+
+        pixels = set(pixels.flatten().flatten())
+        pixels = {pixel - 1 for pixel in pixels}
+
+        return pixels

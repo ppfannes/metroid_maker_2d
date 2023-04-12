@@ -7,8 +7,12 @@ class MouseListener:
     _y_pos = 0.0
     _scroll_x = 0.0
     _scroll_y = 0.0
+    _last_x = 0.0
+    _last_y = 0.0
     _world_x = 0.0
     _world_y = 0.0
+    _last_world_x = 0.0
+    _last_world_y = 0.0
     _mouse_button_pressed = [False for _ in range(9)]
     _is_dragging = False
     _mouse_button_down = 0
@@ -17,9 +21,16 @@ class MouseListener:
 
     @classmethod
     def cursor_pos_callback(cls, window: int, x_pos: float, y_pos: float) -> None:
+        from metroid_maker.window import Window
+
+        if not Window.get_imgui_layer().get_game_view_window().want_capture_mouse():
+            cls.clear()
+
         if cls._mouse_button_down > 0:
             cls._is_dragging = True
 
+        cls._last_x, cls._last_y = cls._x_pos, cls._y_pos
+        cls._last_world_x, cls._last_world_y = cls._world_x, cls._world_y
         cls._x_pos, cls._y_pos = x_pos, y_pos
 
     @classmethod
@@ -78,6 +89,43 @@ class MouseListener:
         return glm.fvec2(current_x, current_y)
 
     @classmethod
+    def screen_to_world(cls, screen_coords):
+        from metroid_maker.window import Window
+
+        normalized_screen_coords = glm.fvec2(
+            screen_coords.x / Window.get_width(), screen_coords.y / Window.get_height()
+        )
+        normalized_screen_coords = glm.sub(
+            glm.mul(2.0, normalized_screen_coords), glm.fvec2(1.0)
+        )
+        camera = Window.get_scene().camera()
+        tmp = glm.fvec4(
+            normalized_screen_coords.x, normalized_screen_coords.y, 0.0, 1.0
+        )
+        inverse_view = glm.fmat4(camera.get_inverse_view())
+        inverse_projection = glm.fmat4(camera.get_inverse_projection())
+        tmp = glm.mul(glm.mul(inverse_view, inverse_projection), tmp)
+        return glm.fvec2(tmp)
+
+    @classmethod
+    def world_to_screen(cls, world_coords):
+        from metroid_maker.window import Window
+
+        camera = Window.get_scene().camera()
+        ndc_space_pos = glm.fvec4(world_coords.x, world_coords.y, 0.0, 1.0)
+        view = camera.get_view_matrix()
+        projection = camera.get_projection_matrix()
+        ndc_space_pos = glm.mul(glm.mul(ndc_space_pos, projection), view)
+        window_space = glm.mul(
+            glm.fvec2(ndc_space_pos.x, ndc_space_pos.x), 1.0 / ndc_space_pos.w
+        )
+        window_space = glm.mul(glm.add(window_space, glm.fvec2(1.0)), 0.5)
+        window_space = glm.mul(
+            window_space, glm.fvec2(Window.get_width(), Window.get_height())
+        )
+        return glm.fvec2(window_space)
+
+    @classmethod
     def get_screen_x(cls):
         return cls.get_screen().x
 
@@ -117,3 +165,12 @@ class MouseListener:
     @classmethod
     def set_game_viewport_size(cls, game_viewport_size):
         cls._game_viewport_size = game_viewport_size
+
+    @classmethod
+    def clear(cls):
+        cls._x_pos, cls._y_pos = 0.0, 0.0
+        cls._scroll_x, cls._scroll_y = 0.0, 0.0
+        cls._last_x, cls._last_y = 0.0, 0.0
+        cls._mouse_button_down = 0
+        cls._is_dragging = False
+        cls._mouse_button_pressed[:] = [False for _ in cls._mouse_button_pressed]
