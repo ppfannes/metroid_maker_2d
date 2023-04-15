@@ -21,20 +21,7 @@ class KeyControls(Component):
             and KeyListener.key_begin_press(glfw.KEY_D)
             and active_game_object is not None
         ):
-            new_object = copy.deepcopy(active_game_object)
-
-            new_object.generate_uid()
-            for component in new_object.get_all_components():
-                component.generate_id()
-            sprite_renderer = new_object.get_component(SpriteRenderer)
-            if (
-                sprite_renderer is not None
-                and sprite_renderer.get_texture() is not None
-            ):
-                sprite_renderer.set_texture(
-                    AssetPool.get_texture(sprite_renderer.get_texture().get_file_path())
-                )
-
+            new_object = active_game_object.copy()
             Window.get_scene().add_game_object_to_scene(new_object)
             new_object.transform.position = glm.add(
                 new_object.transform.position, glm.fvec2(GRID_WIDTH, 0.0)
@@ -48,7 +35,7 @@ class KeyControls(Component):
             game_objects = copy.copy(active_game_objects)
             properties_window.clear_selected()
             for game_object in game_objects:
-                game_object_copy = copy.deepcopy(game_object)
+                game_object_copy = game_object.copy()
                 Window.get_scene().add_game_object_to_scene(game_object_copy)
                 properties_window.add_active_game_object(game_object_copy)
         elif KeyListener.is_key_pressed(glfw.KEY_DELETE):

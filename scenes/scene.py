@@ -19,6 +19,9 @@ class Scene:
         self._scene_initializer = scene_initializer
         self._physics2d = Physics2D()
 
+    def get_physics(self):
+        return self._physics2d
+
     def destroy(self):
         for game_object in self._game_objects:
             game_object.destroy()

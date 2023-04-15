@@ -1,10 +1,14 @@
+import typing
 import glm
 import math
 from components.component import Component
 from physics2d.enums.body_types import BodyType
 
-class RigidBody2D(Component):
+if typing.TYPE_CHECKING:
+    from Box2D.b2 import body
 
+
+class RigidBody2D(Component):
     def __init__(self) -> None:
         super().__init__()
         self._velocity = glm.fvec2()
@@ -12,15 +16,29 @@ class RigidBody2D(Component):
         self._linear_damping = 0.9
         self._mass = 0
         self._body_type = BodyType.DYNAMIC
+        self._friction = 0.1
+        self._angular_velocity = 0.0
+        self._gravity_scale = 1.0
+        self._is_sensor = False
 
         self._fixed_rotation = False
         self._continuous_collision = True
 
-        self._raw_body = None
+        self._raw_body: body = None
+
+    def apply_force(self, force):
+        if self._raw_body is not None:
+            self._raw_body.ApplyForceToCenter(force)
+
+    def apply_impulse(self, impulse):
+        if self._raw_body is not None:
+            self._raw_body.ApplyLinearImpulse(impulse, self._raw_body.worldCenter)
 
     def update(self, dt):
         if self._raw_body is not None:
-            self.game_object.transform.position = glm.fvec2(self._raw_body.position.x, self._raw_body.position.y)
+            self.game_object.transform.position = glm.fvec2(
+                self._raw_body.position.x, self._raw_body.position.y
+            )
             self.game_object.transform.rotation = math.degrees(self._raw_body.angle)
 
     @property
@@ -30,6 +48,52 @@ class RigidBody2D(Component):
     @velocity.setter
     def velocity(self, value):
         self._velocity = value
+
+        if self._raw_body is not None:
+            self._raw_body.linearVelocity = value
+
+    @property
+    def angular_velocity(self):
+        return self._angular_velocity
+
+    @angular_velocity.setter
+    def angular_velocity(self, value):
+        self._angular_velocity = value
+
+        if self._raw_body is not None:
+            self._raw_body.angularVelocity = value
+
+    @property
+    def gravity_scale(self):
+        return self._gravity_scale
+
+    @gravity_scale.setter
+    def gravity_scale(self, value):
+        self._gravity_scale = value
+
+        if self._raw_body is not None:
+            self._raw_body.gravityScale = value
+
+    @property
+    def is_sensor(self):
+        return self._is_sensor
+
+    @is_sensor.setter
+    def is_sensor(self, value):
+        from metroid_maker.window import Window
+
+        self._is_sensor = value
+
+        if self._raw_body is not None:
+            Window.get_physics().set_is_sensor(self, value)
+
+    @property
+    def friction(self):
+        return self._friction
+
+    @friction.setter
+    def friction(self, value):
+        self._friction = value
 
     @property
     def angular_damping(self):

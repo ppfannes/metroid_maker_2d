@@ -1,8 +1,6 @@
 import imgui
-from glfw.GLFW import GLFW_MOUSE_BUTTON_LEFT
 import typing
-from components.non_pickable import NonPickable
-from utils.mouse_listener import MouseListener
+import glm
 from physics2d.components.rigid_body_2d import RigidBody2D
 from physics2d.components.box_2d_collider import Box2DCollider
 from physics2d.components.circle_collider import CircleCollider
@@ -15,6 +13,7 @@ if typing.TYPE_CHECKING:
 class PropertiesWindow:
     def __init__(self, picking_texture):
         self._active_game_objects: List[GameObject] = []
+        self._active_game_objects_og_color = []
         self._active_game_object = None
         self._picking_texture = picking_texture
         self._debounce = 0.2
@@ -66,7 +65,17 @@ class PropertiesWindow:
         return self._active_game_objects
 
     def clear_selected(self):
+        from components.sprite_renderer import SpriteRenderer
+
+        if len(self._active_game_objects_og_color) > 0:
+            for game_object, og_color in zip(
+                self._active_game_objects, self._active_game_objects_og_color
+            ):
+                sprite_renderer = game_object.get_component(SpriteRenderer)
+                if sprite_renderer is not None:
+                    sprite_renderer.set_color(og_color)
         self._active_game_objects.clear()
+        self._active_game_objects_og_color.clear()
 
     def set_active_game_object(self, game_object):
         if game_object is not None:
@@ -74,6 +83,17 @@ class PropertiesWindow:
             self._active_game_objects.append(game_object)
 
     def add_active_game_object(self, game_object):
+        from components.sprite_renderer import SpriteRenderer
+
+        sprite_renderer = game_object.get_component(SpriteRenderer)
+        if sprite_renderer is not None:
+            self._active_game_objects_og_color.append(
+                glm.fvec4(sprite_renderer.get_color())
+            )
+            sprite_renderer.set_color(glm.fvec4(0.8, 0.8, 0.0, 0.8))
+        else:
+            self._active_game_objects_og_color.append(glm.fvec4(0.0))
+
         self._active_game_objects.append(game_object)
 
     def get_picking_texture(self):

@@ -53,6 +53,7 @@ class Sound:
                 ctypes.c_int(al.AL_POSITION),
                 (ctypes.c_float * 3)(0.0, 0.0, 0.0),
             )
+            self.delete()
 
         if not self._is_playing:
             al.alSourcePlay(self._source_id)
@@ -62,6 +63,7 @@ class Sound:
         if self._is_playing:
             al.alSourceStop(self._source_id)
             self._is_playing = False
+            self.delete()
 
     @property
     def file_path(self):

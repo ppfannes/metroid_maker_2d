@@ -113,11 +113,11 @@ class MouseListener:
 
         camera = Window.get_scene().camera()
         ndc_space_pos = glm.fvec4(world_coords.x, world_coords.y, 0.0, 1.0)
-        view = camera.get_view_matrix()
-        projection = camera.get_projection_matrix()
-        ndc_space_pos = glm.mul(glm.mul(ndc_space_pos, projection), view)
+        view = glm.fmat4(camera.get_view_matrix())
+        projection = glm.fmat4(camera.get_projection_matrix())
+        ndc_space_pos = glm.mul(glm.mul(projection, view), ndc_space_pos)
         window_space = glm.mul(
-            glm.fvec2(ndc_space_pos.x, ndc_space_pos.x), 1.0 / ndc_space_pos.w
+            glm.fvec2(ndc_space_pos.x, ndc_space_pos.y), 1.0 / ndc_space_pos.w
         )
         window_space = glm.mul(glm.add(window_space, glm.fvec2(1.0)), 0.5)
         window_space = glm.mul(
@@ -138,9 +138,9 @@ class MouseListener:
         from metroid_maker.window import Window
 
         current_x = cls.get_x_pos() - cls._game_viewport_pos.x
-        current_x = (current_x / cls._game_viewport_size.x) * 2.0 - 1.0
+        current_x = (2.0 * (current_x / cls._game_viewport_size.x)) - 1.0
         current_y = cls.get_y_pos() - cls._game_viewport_pos.y
-        current_y = (1.0 - (current_y / cls._game_viewport_size.y)) * 2.0 - 1.0
+        current_y = (2.0 * (1.0 - (current_y / cls._game_viewport_size.y))) - 1.0
         tmp = glm.fvec4(current_x, current_y, 0.0, 1.0)
 
         camera = Window.get_scene().camera()

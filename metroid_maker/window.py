@@ -70,6 +70,10 @@ class Window(Observer):
         self._current_scene.start()
 
     @classmethod
+    def get_physics(cls):
+        return cls.get()._current_scene.get_physics()
+
+    @classmethod
     def get_scene(cls):
         return cls.get()._current_scene
 
@@ -216,6 +220,7 @@ class Window(Observer):
             self._framebuffer.unbind()
 
             self._imgui_layer.update(dt, self._current_scene)
+            KeyListener.end_frame()
             MouseListener.end_frame()
             glfw.swap_buffers(self._glfw_window)
 

@@ -14,7 +14,7 @@ class MouseControls(Component):
     def __init__(self) -> None:
         super().__init__()
         self._holding_object = None
-        self._debounce_time = 0.05
+        self._debounce_time = 0.2
         self._debounce = self._debounce_time
         self._box_select_set = False
         self._box_select_start = glm.fvec2()
@@ -40,7 +40,7 @@ class MouseControls(Component):
 
         new_game_object = self._holding_object.copy()
 
-        if new_game_object.get_component(StateMachine):
+        if new_game_object.get_component(StateMachine) is not None:
             new_game_object.get_component(StateMachine).refresh_textures()
 
         new_game_object.get_component(SpriteRenderer).set_color(
@@ -58,25 +58,38 @@ class MouseControls(Component):
         )
         current_scene = Window.get_scene()
 
-        if self._holding_object is not None and self._debounce <= 0.0:
-            self._holding_object.transform.position = MouseListener.get_world()
+        if self._holding_object is not None:
+            x = MouseListener.get_world_x()
+            y = MouseListener.get_world_y()
 
-            self._holding_object.transform.position = glm.fvec2(
-                (
-                    int((self._holding_object.transform.position.x // GRID_WIDTH))
-                    * GRID_WIDTH
-                )
-                + GRID_WIDTH / 2.0,
-                (
-                    int((self._holding_object.transform.position.y // GRID_HEIGHT))
-                    * GRID_HEIGHT
-                )
-                + GRID_HEIGHT / 2.0,
-            )
+            print(MouseListener.world_to_screen(glm.fvec2(x, y)))
+
+            self._holding_object.transform.position.x = (
+                int((x // GRID_WIDTH)) * GRID_WIDTH
+            ) + GRID_WIDTH / 2.0
+            self._holding_object.transform.position.y = (
+                int((y // GRID_HEIGHT)) * GRID_HEIGHT
+            ) + GRID_HEIGHT / 2.0
 
             if MouseListener.mouse_button_down(GLFW_MOUSE_BUTTON_LEFT):
-                self.place()
-                self._debounce = self._debounce_time
+                half_width = GRID_WIDTH / 2.0
+                half_height = GRID_HEIGHT / 2.0
+
+                if MouseListener.get_is_dragging() and not self._block_in_square(
+                    self._holding_object.transform.position.x - half_width,
+                    self._holding_object.transform.position.y - half_height,
+                ):
+                    self.place()
+                elif (
+                    not MouseListener.get_is_dragging()
+                    and not self._block_in_square(
+                        self._holding_object.transform.position.x - half_width,
+                        self._holding_object.transform.position.y - half_height,
+                    )
+                    and self._debounce < 0
+                ):
+                    self.place()
+                    self._debounce = self._debounce_time
 
             if KeyListener.is_key_pressed(GLFW_KEY_ESCAPE):
                 self._holding_object.destroy()
@@ -153,3 +166,25 @@ class MouseControls(Component):
                     Window.get_imgui_layer().get_properties_window().add_active_game_object(
                         picked_obj
                     )
+
+    def _block_in_square(self, x, y):
+        from metroid_maker.window import Window
+
+        properties_window = Window.get_imgui_layer().get_properties_window()
+        start = glm.fvec2(x, y)
+        end = glm.add(start, glm.fvec2(GRID_WIDTH, GRID_HEIGHT))
+        start_screenf = MouseListener.world_to_screen(start)
+        end_screenf = MouseListener.world_to_screen(end)
+        start_screen = glm.ivec2(int(start_screenf.x + 2), int(start_screenf.y + 2))
+        end_screen = glm.ivec2(int(end_screenf.x - 2), int(end_screenf.y - 2))
+        game_object_ids = properties_window.get_picking_texture().read_pixels(
+            start_screen, end_screen
+        )
+
+        for game_object_id in game_object_ids:
+            if game_object_id >= 0:
+                picked_obj = Window.get_scene().get_game_object(game_object_id)
+                if picked_obj.get_component(NonPickable) is None:
+                    return True
+
+        return False

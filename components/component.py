@@ -21,6 +21,18 @@ class Component(ABC):
     def start(self):
         pass
 
+    def begin_collision(self, colliding_object, contact, collision_normal):
+        pass
+
+    def end_collision(self, colliding_object, contact, collision_normal):
+        pass
+
+    def pre_solve(self, colliding_object, contact, collision_normal):
+        pass
+
+    def post_solve(self, colliding_object, contact, collision_normal):
+        pass
+
     def imgui(self):
         fields = self.exposed_fields()
 
