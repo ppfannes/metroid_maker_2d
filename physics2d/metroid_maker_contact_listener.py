@@ -1,9 +1,12 @@
-import typing
-from Box2D.b2 import contactListener, vec2
-
-if typing.TYPE_CHECKING:
-    from Box2D.b2 import manifold, contact, collisionImpulse, worldManifold
-    from metroid_maker.game_object import GameObject
+from Box2D.b2 import (
+    contactListener,
+    vec2,
+    manifold,
+    contact,
+    contactImpulse,
+    worldManifold,
+)
+from metroid_maker.game_object import GameObject
 
 
 class MetroidMakerContactListener(contactListener):
@@ -49,7 +52,7 @@ class MetroidMakerContactListener(contactListener):
         for component in object_b.get_all_components():
             component.pre_solve(object_a, contact, b_normal)
 
-    def PostSolve(self, contact: contact, impulse: collisionImpulse):
+    def PostSolve(self, contact: contact, impulse: contactImpulse):
         object_a: GameObject = contact.fixtureA.userData
         object_b: GameObject = contact.fixtureB.userData
         world_manifold: worldManifold = contact.worldManifold

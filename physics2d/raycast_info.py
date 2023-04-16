@@ -1,9 +1,5 @@
-import typing
-from Box2D.b2 import rayCastCallback, vec2
-
-if typing.TYPE_CHECKING:
-    from Box2D.b2 import fixture
-    from metroid_maker.game_object import GameObject
+from Box2D.b2 import rayCastCallback, vec2, fixture
+from metroid_maker.game_object import GameObject
 
 
 class RaycastInfo(rayCastCallback):

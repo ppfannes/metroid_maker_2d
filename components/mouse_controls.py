@@ -62,8 +62,6 @@ class MouseControls(Component):
             x = MouseListener.get_world_x()
             y = MouseListener.get_world_y()
 
-            print(MouseListener.world_to_screen(glm.fvec2(x, y)))
-
             self._holding_object.transform.position.x = (
                 int((x // GRID_WIDTH)) * GRID_WIDTH
             ) + GRID_WIDTH / 2.0

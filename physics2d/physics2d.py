@@ -14,6 +14,7 @@ from physics2d.components.box_2d_collider import Box2DCollider
 from physics2d.components.circle_collider import CircleCollider
 from physics2d.components.rigid_body_2d import RigidBody2D
 from physics2d.enums.body_types import BodyType
+from physics2d.metroid_maker_contact_listener import MetroidMakerContactListener
 from physics2d.raycast_info import RaycastInfo
 
 
@@ -25,6 +26,8 @@ class Physics2D:
         self._physics_time_step = 1.0 / 60.0
         self._velocity_iterations = 8
         self._position_iterations = 3
+
+        self._world.contactListener = MetroidMakerContactListener()
 
     def add(self, game_object):
         rigid_body = game_object.get_component(RigidBody2D)
