@@ -1,0 +1,2 @@
+class PillboxCollider():
+    pass
