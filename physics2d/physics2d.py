@@ -148,10 +148,30 @@ class Physics2D:
         fixture_def.isSensor = rigid_body.is_sensor
         body.CreateFixture(fixture_def)
 
+    def reset_pillbox_collider(self, rigid_body, pillbox_collider):
+        body = rigid_body.raw_body
+        if body is None:
+            return
+
+        for fixture in reversed(body.fixtures):
+            body.DestroyFixture(fixture)
+
+        self.add_pillbox_collider(rigid_body, pillbox_collider)
+        body.ResetMassData()
+
+    def add_pillbox_collider(self, rigid_body, pillbox_collider):
+        body = rigid_body.raw_body
+        if body is None:
+            return
+
+        self.add_box_2d_collider(rigid_body, pillbox_collider.box)
+        self.add_circle_collider(rigid_body, pillbox_collider.top_circle)
+        self.add_circle_collider(rigid_body, pillbox_collider.bottom_circle)
+
     def raycast(self, requesting_object, point1, point2):
         callback = RaycastInfo(requesting_object)
         self._world.Raycast(callback, point1, point2)
         return callback
 
-    def _fixture_list_size(self, body):
-        return len(body.fixtures)
+    def is_locked(self):
+        return self.world.IsLocked
