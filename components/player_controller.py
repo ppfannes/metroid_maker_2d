@@ -31,7 +31,7 @@ class PlayerController(Component):
 
     def start(self):
         self._rigid_body = self.game_object.get_component(RigidBody2D)
-        self._state_machine = self.game_object.get_comnponent(StateMachine)
+        self._state_machine = self.game_object.get_component(StateMachine)
         self._rigid_body.gravity_scale = 0.0
 
     def update(self, dt):

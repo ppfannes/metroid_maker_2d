@@ -174,4 +174,12 @@ class Physics2D:
         return callback
 
     def is_locked(self):
-        return self.world.IsLocked
+        return self._world.IsLocked
+    
+    @property
+    def gravity(self):
+        return self._gravity
+    
+    @gravity.setter
+    def gravity(self, value):
+        self._gravity = value

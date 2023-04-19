@@ -24,6 +24,7 @@ class Prefabs:
     @classmethod
     def generate_mario(cls):
         from utils.asset_pool import AssetPool
+        from components.state_machine import StateTrigger
 
         player_sprites = AssetPool.get_spritesheet("assets/images/spritesheet.jpg")
         big_player_sprites = AssetPool.get_spritesheet("assets/images/big_spritesheet.jpg")
@@ -191,6 +192,9 @@ class Prefabs:
         state_machine.add_state_trigger(fire_idle.title, big_idle.title, "die")
         state_machine.add_state_trigger(fire_jump.title, big_jump.title, "die")
         mario.add_component(state_machine)
+
+        test_trigger = StateTrigger("fire_run", "jump")
+        print(state_machine._state_transfers[test_trigger])
 
         pillbox_collider = PillboxCollider()
         pillbox_collider.width = 0.39

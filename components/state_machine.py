@@ -5,7 +5,7 @@ import imgui
 from components.component import Component
 
 
-@dataclass(init=True, eq=True, frozen=True)
+@dataclass(init=True, eq=True, order=True, frozen=True)
 class StateTrigger:
     state: str
     trigger: str
@@ -13,7 +13,8 @@ class StateTrigger:
 
 class StateMachine(Component):
     def __init__(self):
-        self._state_transfers: Dict[StateTrigger, str] = dict()
+        super().__init__()
+        self._state_transfers: Dict = {}
         self._states = []
         self._current_state = None
         self._default_state_title = ""
@@ -23,7 +24,9 @@ class StateMachine(Component):
             animation_state.refresh_textures()
 
     def add_state_trigger(self, state_from, state_to, on_trigger):
-        self._state_transfers.update([(StateTrigger(state_from, on_trigger), state_to)])
+        new_state_trigger = StateTrigger(state_from, on_trigger)
+        self._state_transfers[new_state_trigger] = state_to
+        print(self._state_transfers[new_state_trigger])
 
     def add_state(self, state):
         self._states.append(state)
@@ -40,10 +43,12 @@ class StateMachine(Component):
         print(f"Unable to find state {animation_title} in set default state.")
 
     def trigger(self, trigger: str):
+        test_trigger = StateTrigger("fire_run", "jump")
+        print(self._state_transfers[test_trigger])
         state_triggers = [
             state_trigger
             for state_trigger in self._state_transfers.keys()
-            if state_trigger.state.title == self._current_state.title
+            if self._states[state_trigger.state].title == self._current_state.title
             and state_trigger.trigger == trigger
         ]
 

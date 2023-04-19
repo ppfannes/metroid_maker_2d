@@ -74,6 +74,18 @@ class LevelEditorSceneInitializer(SceneInitializer):
                 AssetPool.get_texture("assets/images/gizmos.jpg"), 24, 48, 3, 0
             ),
         )
+        AssetPool.add_sprite_sheet(
+            "assets/images/big_spritesheet.jpg",
+            Spritesheet(
+                AssetPool.get_texture("assets/images/big_spritesheet.jpg"), 16, 32, 42, 0
+            )
+        )
+        AssetPool.add_sprite_sheet(
+            "assets/images/pipes.jpg",
+            Spritesheet(
+                AssetPool.get_texture("assets/images/pipes.jpg"), 32, 32, 4, 0
+            )
+        )
         AssetPool.get_texture("assets/images/blend_image_2.jpg")
 
         AssetPool.add_sound("assets/sounds/main-theme-overworld.ogg", True)

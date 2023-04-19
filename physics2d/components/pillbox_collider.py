@@ -1,6 +1,6 @@
 import glm
 from components.component import Component
-from components.rigid_body_2d import RigidBody2D
+from physics2d.components.rigid_body_2d import RigidBody2D
 from physics2d.components.box_2d_collider import Box2DCollider
 from physics2d.components.circle_collider import CircleCollider
 
@@ -33,22 +33,6 @@ class PillboxCollider(Component):
     def update(self, dt):
         if self._reset_fixture_next_frame:
             self.reset_fixture()
-
-    @property
-    def width(self):
-        return self.width
-
-    @width.setter
-    def width(self, value):
-        self.width = value
-
-    @property
-    def height(self):
-        return self.height
-
-    @height.setter
-    def height(self, value):
-        self.height = value
 
     @property
     def top_circle(self):
