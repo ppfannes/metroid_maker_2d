@@ -12,6 +12,7 @@ from Box2D.b2 import (
 )
 from physics2d.components.box_2d_collider import Box2DCollider
 from physics2d.components.circle_collider import CircleCollider
+from physics2d.components.pillbox_collider import PillboxCollider
 from physics2d.components.rigid_body_2d import RigidBody2D
 from physics2d.enums.body_types import BodyType
 from physics2d.metroid_maker_contact_listener import MetroidMakerContactListener
@@ -64,6 +65,10 @@ class Physics2D:
             if game_object.get_component(Box2DCollider) is not None:
                 box_collider = game_object.get_component(Box2DCollider)
                 self.add_box_2d_collider(rigid_body, box_collider)
+
+            if game_object.get_component(PillboxCollider) is not None:
+                pillbox_collider = game_object.get_component(PillboxCollider)
+                self.add_pillbox_collider(rigid_body, pillbox_collider)
 
     def destroy_game_object(self, game_object):
         rigid_body = game_object.get_component(RigidBody2D)
@@ -175,11 +180,11 @@ class Physics2D:
 
     def is_locked(self):
         return self._world.IsLocked
-    
+
     @property
     def gravity(self):
         return self._gravity
-    
+
     @gravity.setter
     def gravity(self, value):
         self._gravity = value

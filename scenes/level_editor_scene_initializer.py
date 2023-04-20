@@ -3,6 +3,7 @@ import imgui
 
 from components.editor_camera import EditorCamera
 from components.gizmo_system import GizmoSystem
+from components.ground import Ground
 from components.grid_lines import GridLines
 from components.key_controls import KeyControls
 from components.mouse_controls import MouseControls
@@ -10,6 +11,9 @@ from components.sprite_renderer import SpriteRenderer
 from components.spritesheet import Spritesheet
 from components.state_machine import StateMachine
 from metroid_maker.prefabs import Prefabs
+from physics2d.components.box_2d_collider import Box2DCollider
+from physics2d.components.rigid_body_2d import RigidBody2D
+from physics2d.enums.body_types import BodyType
 from scenes.scene_initializer import SceneInitializer
 from utils.asset_pool import AssetPool
 
@@ -77,14 +81,16 @@ class LevelEditorSceneInitializer(SceneInitializer):
         AssetPool.add_sprite_sheet(
             "assets/images/big_spritesheet.jpg",
             Spritesheet(
-                AssetPool.get_texture("assets/images/big_spritesheet.jpg"), 16, 32, 42, 0
-            )
+                AssetPool.get_texture("assets/images/big_spritesheet.jpg"),
+                16,
+                32,
+                42,
+                0,
+            ),
         )
         AssetPool.add_sprite_sheet(
             "assets/images/pipes.jpg",
-            Spritesheet(
-                AssetPool.get_texture("assets/images/pipes.jpg"), 32, 32, 4, 0
-            )
+            Spritesheet(AssetPool.get_texture("assets/images/pipes.jpg"), 32, 32, 4, 0),
         )
         AssetPool.get_texture("assets/images/blend_image_2.jpg")
 
@@ -135,6 +141,11 @@ class LevelEditorSceneInitializer(SceneInitializer):
                 window_x2 = window_position.x + window_size.x
 
                 for i in range(self.sprites.size()):
+                    if i == 34:
+                        continue
+                    if i >= 38 and i < 61:
+                        continue
+
                     sprite = self.sprites.get_sprite(i)
                     sprite_width = sprite.get_width() * 2
                     sprite_height = sprite.get_height() * 2
@@ -150,6 +161,17 @@ class LevelEditorSceneInitializer(SceneInitializer):
                         (tex_coords[0].x, tex_coords[2].y),
                     ):
                         game_object = Prefabs.generate_sprite_object(sprite, 0.25, 0.25)
+                        rigid_body = RigidBody2D()
+                        rigid_body.body_type = BodyType.STATIC
+                        game_object.add_component(rigid_body)
+                        box_2d_collider = Box2DCollider()
+                        box_2d_collider.half_size = glm.fvec2(0.25, 0.25)
+                        game_object.add_component(box_2d_collider)
+                        game_object.add_component(Ground())
+
+                        # if i == 12:
+                        #     game_object.add_component(Breakable())
+
                         self.level_editor_object.get_component(
                             MouseControls
                         ).pickup_object(game_object)

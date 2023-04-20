@@ -27,7 +27,9 @@ class Prefabs:
         from components.state_machine import StateTrigger
 
         player_sprites = AssetPool.get_spritesheet("assets/images/spritesheet.jpg")
-        big_player_sprites = AssetPool.get_spritesheet("assets/images/big_spritesheet.jpg")
+        big_player_sprites = AssetPool.get_spritesheet(
+            "assets/images/big_spritesheet.jpg"
+        )
         mario = cls.generate_sprite_object(player_sprites.get_sprite(0), 0.25, 0.25)
 
         # Little mario animations
@@ -85,17 +87,31 @@ class Prefabs:
         fire_offset = 21
         fire_run = AnimationState()
         fire_run.title = "fire_run"
-        fire_run.add_frame(big_player_sprites.get_sprite(fire_offset + 0), default_frame_time)
-        fire_run.add_frame(big_player_sprites.get_sprite(fire_offset + 1), default_frame_time)
-        fire_run.add_frame(big_player_sprites.get_sprite(fire_offset + 2), default_frame_time)
-        fire_run.add_frame(big_player_sprites.get_sprite(fire_offset + 3), default_frame_time)
-        fire_run.add_frame(big_player_sprites.get_sprite(fire_offset + 2), default_frame_time)
-        fire_run.add_frame(big_player_sprites.get_sprite(fire_offset + 1), default_frame_time)
+        fire_run.add_frame(
+            big_player_sprites.get_sprite(fire_offset + 0), default_frame_time
+        )
+        fire_run.add_frame(
+            big_player_sprites.get_sprite(fire_offset + 1), default_frame_time
+        )
+        fire_run.add_frame(
+            big_player_sprites.get_sprite(fire_offset + 2), default_frame_time
+        )
+        fire_run.add_frame(
+            big_player_sprites.get_sprite(fire_offset + 3), default_frame_time
+        )
+        fire_run.add_frame(
+            big_player_sprites.get_sprite(fire_offset + 2), default_frame_time
+        )
+        fire_run.add_frame(
+            big_player_sprites.get_sprite(fire_offset + 1), default_frame_time
+        )
         fire_run.does_loop = True
 
         fireswitch_direction = AnimationState()
         fireswitch_direction.title = "Fire Switch Direction"
-        fireswitch_direction.add_frame(big_player_sprites.get_sprite(fire_offset + 4), 0.1)
+        fireswitch_direction.add_frame(
+            big_player_sprites.get_sprite(fire_offset + 4), 0.1
+        )
         fireswitch_direction.does_loop = False
 
         fire_idle = AnimationState()
@@ -131,52 +147,82 @@ class Prefabs:
         state_machine.add_state(fire_jump)
 
         state_machine.set_default_state(idle.title)
-        state_machine.add_state_trigger(run.title, switch_direction.title, "switch_direction")
+        state_machine.add_state_trigger(
+            run.title, switch_direction.title, "switch_direction"
+        )
         state_machine.add_state_trigger(run.title, idle.title, "stopRunning")
         state_machine.add_state_trigger(run.title, jump.title, "jump")
-        state_machine.add_state_trigger(switch_direction.title, idle.title, "stopRunning")
-        state_machine.add_state_trigger(switch_direction.title, run.title, "startRunning")
+        state_machine.add_state_trigger(
+            switch_direction.title, idle.title, "stopRunning"
+        )
+        state_machine.add_state_trigger(
+            switch_direction.title, run.title, "startRunning"
+        )
         state_machine.add_state_trigger(switch_direction.title, jump.title, "jump")
         state_machine.add_state_trigger(idle.title, run.title, "startRunning")
         state_machine.add_state_trigger(idle.title, jump.title, "jump")
         state_machine.add_state_trigger(jump.title, idle.title, "stopJumping")
 
-        state_machine.add_state_trigger(big_run.title, big_switch_direction.title, "switch_direction")
+        state_machine.add_state_trigger(
+            big_run.title, big_switch_direction.title, "switch_direction"
+        )
         state_machine.add_state_trigger(big_run.title, big_idle.title, "stopRunning")
         state_machine.add_state_trigger(big_run.title, big_jump.title, "jump")
-        state_machine.add_state_trigger(big_switch_direction.title, big_idle.title, "stopRunning")
-        state_machine.add_state_trigger(big_switch_direction.title, big_run.title, "startRunning")
-        state_machine.add_state_trigger(big_switch_direction.title, big_jump.title, "jump")
+        state_machine.add_state_trigger(
+            big_switch_direction.title, big_idle.title, "stopRunning"
+        )
+        state_machine.add_state_trigger(
+            big_switch_direction.title, big_run.title, "startRunning"
+        )
+        state_machine.add_state_trigger(
+            big_switch_direction.title, big_jump.title, "jump"
+        )
         state_machine.add_state_trigger(big_idle.title, big_run.title, "startRunning")
         state_machine.add_state_trigger(big_idle.title, big_jump.title, "jump")
         state_machine.add_state_trigger(big_jump.title, big_idle.title, "stopJumping")
 
-        state_machine.add_state_trigger(fire_run.title, fireswitch_direction.title, "switch_direction")
+        state_machine.add_state_trigger(
+            fire_run.title, fireswitch_direction.title, "switch_direction"
+        )
         state_machine.add_state_trigger(fire_run.title, fire_idle.title, "stopRunning")
         state_machine.add_state_trigger(fire_run.title, fire_jump.title, "jump")
-        state_machine.add_state_trigger(fireswitch_direction.title, fire_idle.title, "stopRunning")
-        state_machine.add_state_trigger(fireswitch_direction.title, fire_run.title, "startRunning")
-        state_machine.add_state_trigger(fireswitch_direction.title, fire_jump.title, "jump")
+        state_machine.add_state_trigger(
+            fireswitch_direction.title, fire_idle.title, "stopRunning"
+        )
+        state_machine.add_state_trigger(
+            fireswitch_direction.title, fire_run.title, "startRunning"
+        )
+        state_machine.add_state_trigger(
+            fireswitch_direction.title, fire_jump.title, "jump"
+        )
         state_machine.add_state_trigger(fire_idle.title, fire_run.title, "startRunning")
         state_machine.add_state_trigger(fire_idle.title, fire_jump.title, "jump")
         state_machine.add_state_trigger(fire_jump.title, fire_idle.title, "stopJumping")
 
         state_machine.add_state_trigger(run.title, big_run.title, "powerup")
         state_machine.add_state_trigger(idle.title, big_idle.title, "powerup")
-        state_machine.add_state_trigger(switch_direction.title, big_switch_direction.title, "powerup")
+        state_machine.add_state_trigger(
+            switch_direction.title, big_switch_direction.title, "powerup"
+        )
         state_machine.add_state_trigger(jump.title, big_jump.title, "powerup")
         state_machine.add_state_trigger(big_run.title, fire_run.title, "powerup")
         state_machine.add_state_trigger(big_idle.title, fire_idle.title, "powerup")
-        state_machine.add_state_trigger(big_switch_direction.title, fireswitch_direction.title, "powerup")
+        state_machine.add_state_trigger(
+            big_switch_direction.title, fireswitch_direction.title, "powerup"
+        )
         state_machine.add_state_trigger(big_jump.title, fire_jump.title, "powerup")
 
         state_machine.add_state_trigger(big_run.title, run.title, "damage")
         state_machine.add_state_trigger(big_idle.title, idle.title, "damage")
-        state_machine.add_state_trigger(big_switch_direction.title, switch_direction.title, "damage")
+        state_machine.add_state_trigger(
+            big_switch_direction.title, switch_direction.title, "damage"
+        )
         state_machine.add_state_trigger(big_jump.title, jump.title, "damage")
         state_machine.add_state_trigger(fire_run.title, big_run.title, "damage")
         state_machine.add_state_trigger(fire_idle.title, big_idle.title, "damage")
-        state_machine.add_state_trigger(fireswitch_direction.title, big_switch_direction.title, "damage")
+        state_machine.add_state_trigger(
+            fireswitch_direction.title, big_switch_direction.title, "damage"
+        )
         state_machine.add_state_trigger(fire_jump.title, big_jump.title, "damage")
 
         state_machine.add_state_trigger(run.title, die.title, "die")
@@ -184,17 +230,18 @@ class Prefabs:
         state_machine.add_state_trigger(idle.title, die.title, "die")
         state_machine.add_state_trigger(jump.title, die.title, "die")
         state_machine.add_state_trigger(big_run.title, run.title, "die")
-        state_machine.add_state_trigger(big_switch_direction.title, switch_direction.title, "die")
+        state_machine.add_state_trigger(
+            big_switch_direction.title, switch_direction.title, "die"
+        )
         state_machine.add_state_trigger(big_idle.title, idle.title, "die")
         state_machine.add_state_trigger(big_jump.title, jump.title, "die")
         state_machine.add_state_trigger(fire_run.title, big_run.title, "die")
-        state_machine.add_state_trigger(fireswitch_direction.title, big_switch_direction.title, "die")
+        state_machine.add_state_trigger(
+            fireswitch_direction.title, big_switch_direction.title, "die"
+        )
         state_machine.add_state_trigger(fire_idle.title, big_idle.title, "die")
         state_machine.add_state_trigger(fire_jump.title, big_jump.title, "die")
         mario.add_component(state_machine)
-
-        test_trigger = StateTrigger("fire_run", "jump")
-        print(state_machine._state_transfers[test_trigger])
 
         pillbox_collider = PillboxCollider()
         pillbox_collider.width = 0.39

@@ -11,7 +11,7 @@ if typing.TYPE_CHECKING:
 class RigidBody2D(Component):
     def __init__(self) -> None:
         super().__init__()
-        self._velocity = glm.fvec2()
+        self._velocity = glm.fvec2(1.0)
         self._angular_damping = 0.8
         self._linear_damping = 0.9
         self._mass = 0
@@ -25,6 +25,10 @@ class RigidBody2D(Component):
         self._continuous_collision = True
 
         self._raw_body: body = None
+
+    @property
+    def offset(self):
+        return self._offset
 
     def apply_force(self, force):
         if self._raw_body is not None:

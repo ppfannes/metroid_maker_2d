@@ -81,7 +81,7 @@ class PillboxCollider(Component):
         self._top_circle.offset = glm.add(
             glm.fvec2(self.offset), glm.fvec2(0.0, box_height / 4.0)
         )
-        self._top_circle.offset = glm.sub(
+        self._bottom_circle.offset = glm.sub(
             glm.fvec2(self.offset), glm.fvec2(0.0, box_height / 4.0)
         )
         self._box.half_size = glm.fvec2(self.width / 2.0, box_height / 2.0)

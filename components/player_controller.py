@@ -21,11 +21,11 @@ class PlayerController(Component):
         self._ground_debounce_time = 0.1
         self._rigid_body = None
         self._state_machine = None
-        self._big_jump_boos_factor = 1.05
+        self._big_jump_boost_factor = 1.05
         self._player_width = 0.25
         self._jump_time = 0.0
-        self._acceleration = glm.fvec2(1.0)
-        self._velocity = glm.fvec2(1.0)
+        self._acceleration = glm.fvec2(0.0)
+        self._velocity = glm.fvec2(0.0)
         self._is_dead = False
         self._enemy_bounce = 0.0
 
@@ -71,9 +71,43 @@ class PlayerController(Component):
 
         self._acceleration.y = Window.get_physics().gravity.y * 0.7
 
-        self._velocity = self._acceleration * dt
-        self._velocity.x = max(min(self._velocity.x, self.terminal_velocity.x), -self.terminal_velocity.x)
-        self._velocity.y = max(min(self._velocity.y, self.terminal_velocity.y), -self.terminal_velocity.y)
+        self._velocity += self._acceleration * dt
+        self._velocity.x = max(
+            min(self._velocity.x, self.terminal_velocity.x), -self.terminal_velocity.x
+        )
+        self._velocity.y = max(
+            min(self._velocity.y, self.terminal_velocity.y), -self.terminal_velocity.y
+        )
         self._rigid_body.velocity = self._velocity
         self._rigid_body.angular_velocity = 0.0
 
+    def __getstate__(self):
+        state = self.__dict__.copy()
+        del state["on_ground"]
+        del state["_ground_debounce"]
+        del state["_ground_debounce_time"]
+        del state["_rigid_body"]
+        del state["_state_machine"]
+        del state["_big_jump_boost_factor"]
+        del state["_player_width"]
+        del state["_jump_time"]
+        del state["_acceleration"]
+        del state["_velocity"]
+        del state["_is_dead"]
+        del state["_enemy_bounce"]
+        return state
+
+    def __setstate__(self, state):
+        state["on_ground"] = False
+        state["_ground_debounce"] = 0.0
+        state["_ground_debounce_time"] = 0.1
+        state["_rigid_body"] = None
+        state["_state_machine"] = None
+        state["_big_jump_boost_factor"] = 1.05
+        state["_player_width"] = 0.25
+        state["_jump_time"] = 0.0
+        state["_acceleration"] = glm.fvec2(0.0)
+        state["_velocity"] = glm.fvec2(0.0)
+        state["_is_dead"] = False
+        state["_enemy_bounce"] = 0.0
+        self.__dict__.update(state)
