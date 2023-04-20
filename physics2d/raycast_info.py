@@ -1,4 +1,5 @@
-from Box2D.b2 import rayCastCallback, vec2, fixture
+import glm
+from Box2D.b2 import rayCastCallback, fixture
 from metroid_maker.game_object import GameObject
 
 
@@ -6,8 +7,8 @@ class RaycastInfo(rayCastCallback):
     def __init__(self, requesting_object):
         super().__init__()
         self.fixture: fixture = None
-        self.point: vec2 = vec2()
-        self.normal: vec2 = vec2()
+        self.point: glm.fvec2 = glm.fvec2()
+        self.normal: glm.fvec2 = glm.fvec2()
         self.fraction: float = 0.0
         self.hit: bool = False
         self.hit_object: GameObject = None
@@ -18,8 +19,8 @@ class RaycastInfo(rayCastCallback):
             return 1
 
         self.fixture = fixture
-        self.point = point
-        self.normal = normal
+        self.point = glm.fvec2(*point)
+        self.normal = glm.fvec2(*normal)
         self.fraction = fraction
         self.hit = fraction != 0.0
         self.hit_object = fixture.userData

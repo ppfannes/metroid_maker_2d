@@ -1,6 +1,7 @@
 import glm
 import imgui
 
+from components.breakable_brick import BreakableBrick
 from components.editor_camera import EditorCamera
 from components.gizmo_system import GizmoSystem
 from components.ground import Ground
@@ -169,8 +170,8 @@ class LevelEditorSceneInitializer(SceneInitializer):
                         game_object.add_component(box_2d_collider)
                         game_object.add_component(Ground())
 
-                        # if i == 12:
-                        #     game_object.add_component(Breakable())
+                        if i == 12:
+                            game_object.add_component(BreakableBrick())
 
                         self.level_editor_object.get_component(
                             MouseControls

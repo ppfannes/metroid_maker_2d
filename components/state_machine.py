@@ -45,7 +45,7 @@ class StateMachine(Component):
         state_triggers = [
             state_trigger
             for state_trigger in self._state_transfers.keys()
-            if state_trigger.state.title == self._current_state.title
+            if state_trigger.state == self._current_state.title
             and state_trigger.trigger == trigger
         ]
 

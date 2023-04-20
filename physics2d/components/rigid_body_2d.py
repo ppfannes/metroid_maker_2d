@@ -3,6 +3,7 @@ import glm
 import math
 from components.component import Component
 from physics2d.enums.body_types import BodyType
+from Box2D.b2 import vec2
 
 if typing.TYPE_CHECKING:
     from Box2D.b2 import body
@@ -40,10 +41,25 @@ class RigidBody2D(Component):
 
     def update(self, dt):
         if self._raw_body is not None:
-            self.game_object.transform.position = glm.fvec2(
-                self._raw_body.position.x, self._raw_body.position.y
-            )
-            self.game_object.transform.rotation = math.degrees(self._raw_body.angle)
+            if (
+                self._body_type == BodyType.DYNAMIC
+                or self._body_type == BodyType.KINEMATIC
+            ):
+                self.game_object.transform.position = glm.fvec2(
+                    self._raw_body.position.x, self._raw_body.position.y
+                )
+                self.game_object.transform.rotation = math.degrees(self._raw_body.angle)
+                self._velocity = glm.fvec2(
+                    self._raw_body.linearVelocity.x, self._raw_body.linearVelocity.y
+                )
+            elif self._body_type == BodyType.STATIC:
+                self._raw_body.transform = (
+                    vec2(
+                        self.game_object.transform.position.x,
+                        self.game_object.transform.position.y,
+                    ),
+                    self.game_object.transform.rotation,
+                )
 
     @property
     def velocity(self):

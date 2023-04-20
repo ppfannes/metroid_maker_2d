@@ -175,7 +175,9 @@ class Physics2D:
 
     def raycast(self, requesting_object, point1, point2):
         callback = RaycastInfo(requesting_object)
-        self._world.Raycast(callback, point1, point2)
+        self._world.RayCast(
+            callback, vec2(point1.x, point1.y), vec2(point2.x, point2.y)
+        )
         return callback
 
     def is_locked(self):

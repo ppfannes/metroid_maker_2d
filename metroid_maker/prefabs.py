@@ -1,8 +1,12 @@
 import glm
+from components.block_coin import BlockCoin
+from components.ground import Ground
+from components.question_block import QuestionBlock
 from components.sprite_renderer import SpriteRenderer
 from components.state_machine import StateMachine
 from components.animation_state import AnimationState
 from components.player_controller import PlayerController
+from physics2d.components.box_2d_collider import Box2DCollider
 from physics2d.components.pillbox_collider import PillboxCollider
 from physics2d.components.rigid_body_2d import RigidBody2D
 from physics2d.enums.body_types import BodyType
@@ -148,7 +152,7 @@ class Prefabs:
 
         state_machine.set_default_state(idle.title)
         state_machine.add_state_trigger(
-            run.title, switch_direction.title, "switch_direction"
+            run.title, switch_direction.title, "switchDirection"
         )
         state_machine.add_state_trigger(run.title, idle.title, "stopRunning")
         state_machine.add_state_trigger(run.title, jump.title, "jump")
@@ -164,7 +168,7 @@ class Prefabs:
         state_machine.add_state_trigger(jump.title, idle.title, "stopJumping")
 
         state_machine.add_state_trigger(
-            big_run.title, big_switch_direction.title, "switch_direction"
+            big_run.title, big_switch_direction.title, "switchDirection"
         )
         state_machine.add_state_trigger(big_run.title, big_idle.title, "stopRunning")
         state_machine.add_state_trigger(big_run.title, big_jump.title, "jump")
@@ -182,7 +186,7 @@ class Prefabs:
         state_machine.add_state_trigger(big_jump.title, big_idle.title, "stopJumping")
 
         state_machine.add_state_trigger(
-            fire_run.title, fireswitch_direction.title, "switch_direction"
+            fire_run.title, fireswitch_direction.title, "switchDirection"
         )
         state_machine.add_state_trigger(fire_run.title, fire_idle.title, "stopRunning")
         state_machine.add_state_trigger(fire_run.title, fire_jump.title, "jump")
@@ -273,9 +277,50 @@ class Prefabs:
         flicker.add_frame(item.get_sprite(2), default_frame_time)
         flicker.does_loop = True
 
+        inactive = AnimationState()
+        inactive.title = "Inactive"
+        inactive.add_frame(item.get_sprite(3), default_frame_time)
+        inactive.does_loop = False
+
         state_machine = StateMachine()
         state_machine.add_state(flicker)
+        state_machine.add_state(inactive)
+        state_machine.add_state_trigger(flicker.title, inactive.title, "setInactive")
         state_machine.set_default_state(flicker.title)
         question_block.add_component(state_machine)
+        question_block.add_component(QuestionBlock())
+
+        rigid_body = RigidBody2D()
+        rigid_body.body_type = BodyType.STATIC
+        question_block.add_component(rigid_body)
+        box_2d_collider = Box2DCollider()
+        box_2d_collider.half_size = glm.fvec2(0.25, 0.25)
+        question_block.add_component(box_2d_collider)
+        question_block.add_component(Ground())
 
         return question_block
+
+    @classmethod
+    def generate_block_coin(cls):
+        from utils.asset_pool import AssetPool
+
+        item = AssetPool.get_spritesheet("assets/images/items.jpg")
+        coin = cls.generate_sprite_object(item.get_sprite(7), 0.25, 0.25)
+
+        coin_flip = AnimationState()
+        coin_flip.title = "CoinFlip"
+        default_frame_time = 0.23
+        coin_flip.add_frame(item.get_sprite(7), 0.57)
+        coin_flip.add_frame(item.get_sprite(8), default_frame_time)
+        coin_flip.add_frame(item.get_sprite(9), default_frame_time)
+        coin_flip.does_loop = True
+
+        state_machine = StateMachine()
+        state_machine.add_state(coin_flip)
+        state_machine.set_default_state(coin_flip.title)
+        coin.add_component(state_machine)
+        coin.add_component(QuestionBlock())
+
+        coin.add_component(BlockCoin())
+
+        return coin
