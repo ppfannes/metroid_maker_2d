@@ -33,7 +33,10 @@ class QuestionBlock(Block):
         pass
 
     def do_powerup(self, player_controller):
-        pass
+        if player_controller.is_small():
+            self.spawn_mushroom()
+        else:
+            self.spawn_flower()
 
     def do_coin(self, player_controller):
         from metroid_maker.window import Window
@@ -43,3 +46,21 @@ class QuestionBlock(Block):
         coin.transform.position = glm.fvec2(self.game_object.transform.position)
         coin.transform.position.y += 0.25
         Window.get_scene().add_game_object_to_scene(coin)
+
+    def spawn_mushroom(self):
+        from metroid_maker.window import Window
+        from metroid_maker.prefabs import Prefabs
+
+        mushroom = Prefabs.generate_mushroom()
+        mushroom.transform.position = glm.fvec2(self.game_object.transform.position)
+        mushroom.transform.position.y += 0.25
+        Window.get_scene().add_game_object_to_scene(mushroom)
+
+    def spawn_flower(self):
+        from metroid_maker.window import Window
+        from metroid_maker.prefabs import Prefabs
+
+        flower = Prefabs.generate_flower()
+        flower.transform.position = glm.fvec2(self.game_object.transform.position)
+        flower.transform.position.y += 0.25
+        Window.get_scene().add_game_object_to_scene(flower)

@@ -1,12 +1,15 @@
 import glm
 from components.block_coin import BlockCoin
+from components.flower import Flower
 from components.ground import Ground
+from components.mushroom_ai import MushroomAI
 from components.question_block import QuestionBlock
 from components.sprite_renderer import SpriteRenderer
 from components.state_machine import StateMachine
 from components.animation_state import AnimationState
 from components.player_controller import PlayerController
 from physics2d.components.box_2d_collider import Box2DCollider
+from physics2d.components.circle_collider import CircleCollider
 from physics2d.components.pillbox_collider import PillboxCollider
 from physics2d.components.rigid_body_2d import RigidBody2D
 from physics2d.enums.body_types import BodyType
@@ -324,3 +327,56 @@ class Prefabs:
         coin.add_component(BlockCoin())
 
         return coin
+
+    @classmethod
+    def generate_mushroom(cls):
+        from utils.asset_pool import AssetPool
+
+        item = AssetPool.get_spritesheet("assets/images/items.jpg")
+        mushroom = cls.generate_sprite_object(item.get_sprite(10), 0.25, 0.25)
+
+        rigid_body = RigidBody2D()
+        rigid_body.body_type = BodyType.DYNAMIC
+        rigid_body.fixed_rotation = True
+        rigid_body.continuous_collision = False
+        mushroom.add_component(rigid_body)
+
+        circle_collider = CircleCollider()
+        circle_collider.radius = 0.14
+        mushroom.add_component(circle_collider)
+        mushroom.add_component(MushroomAI())
+
+        return mushroom
+
+    @classmethod
+    def generate_flower(cls):
+        from utils.asset_pool import AssetPool
+
+        item = AssetPool.get_spritesheet("assets/images/items.jpg")
+        flower = cls.generate_sprite_object(item.get_sprite(20), 0.25, 0.25)
+
+        rigid_body = RigidBody2D()
+        rigid_body.body_type = BodyType.STATIC
+        rigid_body.fixed_rotation = True
+        rigid_body.continuous_collision = False
+        flower.add_component(rigid_body)
+
+        flicker = AnimationState()
+        flicker.title = "FlickerFlower"
+        default_frame_time = 0.23
+        flicker.add_frame(item.get_sprite(21), 0.57)
+        flicker.add_frame(item.get_sprite(22), default_frame_time)
+        flicker.add_frame(item.get_sprite(23), default_frame_time)
+        flicker.does_loop = True
+
+        state_machine = StateMachine()
+        state_machine.add_state(flicker)
+        state_machine.set_default_state(flicker.title)
+        flower.add_component(state_machine)
+
+        circle_collider = CircleCollider()
+        circle_collider.radius = 0.14
+        flower.add_component(circle_collider)
+        flower.add_component(Flower())
+
+        return flower

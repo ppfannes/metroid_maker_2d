@@ -14,6 +14,7 @@ class Scene:
         self._is_running = False
         self._camera = None
         self._game_objects = []
+        self._pending_objects = []
         self._renderer = Renderer()
         self._active_game_object = None
         self._scene_initializer = scene_initializer
@@ -27,7 +28,7 @@ class Scene:
             game_object.destroy()
 
     def init(self):
-        self._camera = Camera(glm.fvec2(0.0, 0.0))
+        self._camera = Camera(glm.fvec2(0.0))
         self._scene_initializer.load_resources(self)
         self._scene_initializer.init(self)
 
@@ -42,10 +43,7 @@ class Scene:
         if not self._is_running:
             self._game_objects.append(game_object)
         else:
-            self._game_objects.append(game_object)
-            game_object.start()
-            self._renderer.add_game_object(game_object)
-            self._physics2d.add(game_object)
+            self._pending_objects.append(game_object)
 
     def editor_update(self, dt):
         self._camera.adjust_projection()
@@ -59,6 +57,14 @@ class Scene:
         for game_object in self._game_objects:
             game_object.editor_update(dt)
 
+        for game_object in self._pending_objects:
+            self._game_objects.append(game_object)
+            game_object.start()
+            self._renderer.add_game_object(game_object)
+            self._physics2d.add(game_object)
+
+        self._pending_objects.clear()
+
     def update(self, dt: float):
         self._camera.adjust_projection()
         self._physics2d.update(dt)
@@ -71,6 +77,14 @@ class Scene:
 
         for game_object in self._game_objects:
             game_object.update(dt)
+
+        for game_object in self._pending_objects:
+            self._game_objects.append(game_object)
+            game_object.start()
+            self._renderer.add_game_object(game_object)
+            self._physics2d.add(game_object)
+
+        self._pending_objects.clear()
 
     def _process_dead_game_object(self, game_object):
         if game_object.is_dead():

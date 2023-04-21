@@ -33,11 +33,13 @@ class RigidBody2D(Component):
 
     def apply_force(self, force):
         if self._raw_body is not None:
-            self._raw_body.ApplyForceToCenter(force)
+            self._raw_body.ApplyForceToCenter((force.x, force.y), True)
 
     def apply_impulse(self, impulse):
         if self._raw_body is not None:
-            self._raw_body.ApplyLinearImpulse(impulse, self._raw_body.worldCenter)
+            self._raw_body.ApplyLinearImpulse(
+                (impulse.x, impulse.y), self._raw_body.worldCenter, True
+            )
 
     def update(self, dt):
         if self._raw_body is not None:

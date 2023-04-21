@@ -4,10 +4,10 @@ from glfw import KEY_D, KEY_RIGHT, KEY_A, KEY_LEFT, KEY_SPACE
 from components.component import Component
 from components.ground import Ground
 from components.state_machine import StateMachine
+from physics2d.components.pillbox_collider import PillboxCollider
 from physics2d.components.rigid_body_2d import RigidBody2D
 from utils.asset_pool import AssetPool
 from utils.key_listener import KeyListener
-from openal import *
 
 
 class PlayerState(Enum):
@@ -126,7 +126,6 @@ class PlayerController(Component):
 
     def check_on_ground(self):
         from metroid_maker.window import Window
-        from renderer.debug_draw import DebugDraw
 
         raycast_begin = glm.fvec2(self.game_object.transform.position)
         inner_player_width = self._player_width * 0.6
@@ -158,6 +157,26 @@ class PlayerController(Component):
             and info2.hit_object is not None
             and info2.hit_object.get_component(Ground)
         )
+
+    def powerup(self):
+        if self._player_state == PlayerState.SMALL:
+            self._player_state = PlayerState.BIG
+            if AssetPool.get_sound("assets/sounds/powerup.ogg").is_playing:
+                AssetPool.get_sound("assets/sounds/powerup.ogg").stop()
+            AssetPool.get_sound("assets/sounds/powerup.ogg").play()
+            self.game_object.transform.scale.y = 0.42
+            pillbox_collider = self.game_object.get_component(PillboxCollider)
+            if pillbox_collider is not None:
+                self.jump_boost *= self._big_jump_boost_factor
+                self.walk_speed *= self._big_jump_boost_factor
+                pillbox_collider.height = 0.63
+        elif self._player_state == PlayerState.BIG:
+            self._player_state == PlayerState.FIRE
+            if AssetPool.get_sound("assets/sounds/powerup.ogg").is_playing:
+                AssetPool.get_sound("assets/sounds/powerup.ogg").stop()
+            AssetPool.get_sound("assets/sounds/powerup.ogg").play()
+
+        self._state_machine.trigger("powerup")
 
     def begin_collision(self, colliding_object, contact, collision_normal):
         if self._is_dead:
