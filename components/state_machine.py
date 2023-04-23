@@ -109,12 +109,14 @@ class StateMachine(Component):
         state["_state_transfers_keys"] = list(state["_state_transfers"].keys())
         state["_state_transfers_values"] = list(state["_state_transfers"].values())
         state["_state_transfers"].clear()
+        del state["_current_state"]
         return state
 
     def __setstate__(self, state):
         state["_state_transfers"].update(
             list(zip(state["_state_transfers_keys"], state["_state_transfers_values"]))
         )
+        state["_current_state"] = None
         del state["_state_transfers_keys"]
         del state["_state_transfers_values"]
         self.__dict__.update(state)

@@ -187,7 +187,50 @@ class LevelEditorSceneInitializer(SceneInitializer):
 
                 imgui.end_tab_item()
 
+            if imgui.begin_tab_item("Decoration Blocks").selected:
+                window_position = glm.fvec2(*imgui.get_window_position())
+                window_size = glm.fvec2(*imgui.get_window_size())
+                item_spacing = glm.fvec2(*imgui.get_style().item_spacing)
+
+                window_x2 = window_position.x + window_size.x
+
+                for i in range(34, 61):
+                    if i >= 35 and i < 38:
+                        continue
+                    if i >= 42 and i < 45:
+                        continue
+
+                    sprite = self.sprites.get_sprite(i)
+                    sprite_width = sprite.get_width() * 2
+                    sprite_height = sprite.get_height() * 2
+                    sprite_id = sprite.get_tex_id()
+                    tex_coords = sprite.get_tex_coords()
+
+                    imgui.push_id(str(i))
+                    if imgui.image_button(
+                        sprite_id,
+                        sprite_width,
+                        sprite_height,
+                        (tex_coords[2].x, tex_coords[0].y),
+                        (tex_coords[0].x, tex_coords[2].y),
+                    ):
+                        game_object = Prefabs.generate_sprite_object(sprite, 0.25, 0.25)
+                        self.level_editor_object.get_component(
+                            MouseControls
+                        ).pickup_object(game_object)
+                    imgui.pop_id()
+
+                    last_button_pos = glm.fvec2(*imgui.get_item_rect_max())
+                    last_button_x2 = last_button_pos.x
+                    next_button_x2 = last_button_x2 + item_spacing.x + sprite_width
+
+                    if i < self.sprites.size() and next_button_x2 <= window_x2:
+                        imgui.same_line()
+
+                imgui.end_tab_item()
+
             if imgui.begin_tab_item("Prefabs").selected:
+                uid = 0
                 player_sprite = AssetPool.get_spritesheet(
                     "assets/images/spritesheet.jpg"
                 )
@@ -197,6 +240,8 @@ class LevelEditorSceneInitializer(SceneInitializer):
                 sprite_id = sprite.get_tex_id()
                 tex_coords = sprite.get_tex_coords()
 
+                imgui.push_id(str(uid))
+                uid += 1
                 if imgui.image_button(
                     sprite_id,
                     sprite_width,
@@ -208,6 +253,7 @@ class LevelEditorSceneInitializer(SceneInitializer):
                     self.level_editor_object.get_component(MouseControls).pickup_object(
                         game_object
                     )
+                imgui.pop_id()
                 imgui.same_line()
 
                 item = AssetPool.get_spritesheet("assets/images/items.jpg")
@@ -215,6 +261,8 @@ class LevelEditorSceneInitializer(SceneInitializer):
                 sprite_id = sprite.get_tex_id()
                 tex_coords = sprite.get_tex_coords()
 
+                imgui.push_id(str(uid))
+                uid += 1
                 if imgui.image_button(
                     sprite_id,
                     sprite_width,
@@ -226,6 +274,27 @@ class LevelEditorSceneInitializer(SceneInitializer):
                     self.level_editor_object.get_component(MouseControls).pickup_object(
                         game_object
                     )
+                imgui.pop_id()
+                imgui.same_line()
+
+                sprite = player_sprite.get_sprite(14)
+                sprite_id = sprite.get_tex_id()
+                tex_coords = sprite.get_tex_coords()
+
+                imgui.push_id(str(uid))
+                uid += 1
+                if imgui.image_button(
+                    sprite_id,
+                    sprite_width,
+                    sprite_height,
+                    (tex_coords[2].x, tex_coords[0].y),
+                    (tex_coords[0].x, tex_coords[2].y),
+                ):
+                    game_object = Prefabs.generate_goomba()
+                    self.level_editor_object.get_component(MouseControls).pickup_object(
+                        game_object
+                    )
+                imgui.pop_id()
 
                 imgui.end_tab_item()
 

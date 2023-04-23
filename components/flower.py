@@ -21,3 +21,12 @@ class Flower(Component):
         if player_controller is not None:
             player_controller.powerup()
             self.game_object.destroy()
+
+    def __getstate__(self):
+        state = self.__dict__.copy()
+        del state["_rigid_body"]
+        return state
+
+    def __setstate__(self, state):
+        state["_rigid_body"] = None
+        self.__dict__.update(state)

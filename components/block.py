@@ -59,3 +59,20 @@ class Block(Component):
     @active.setter
     def active(self, value):
         self._active = value
+
+    def __getstate__(self):
+        state = self.__dict__.copy()
+        del state["_bop_going_up"]
+        del state["_do_bop_animation"]
+        del state["_bop_start"]
+        del state["_top_bop_location"]
+        del state["_active"]
+        return state
+
+    def __setstate__(self, state):
+        state["_bop_going_up"] = True
+        state["_do_bop_animation"] = False
+        state["_bop_start"] = glm.fvec2(0.0)
+        state["_top_bop_location"] = glm.fvec2(0.0)
+        state["_active"] = True
+        self.__dict__.update(state)

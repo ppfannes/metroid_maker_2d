@@ -1,4 +1,5 @@
 import math
+import glm
 from Box2D.b2 import (
     vec2,
     world,
@@ -10,6 +11,7 @@ from Box2D.b2 import (
     fixtureDef,
     circleShape,
 )
+from components.ground import Ground
 from physics2d.components.box_2d_collider import Box2DCollider
 from physics2d.components.circle_collider import CircleCollider
 from physics2d.components.pillbox_collider import PillboxCollider
@@ -92,11 +94,11 @@ class Physics2D:
     def set_is_sensor(self, rigid_body, is_sensor):
         body = rigid_body.raw_body
 
-        if body is not None:
+        if body is None:
             return
 
-        for fixture in body.fixtureList:
-            fixture.isSensor = is_sensor
+        for fixture in body.fixtures:
+            fixture.sensor = is_sensor
 
     def reset_box_collider(self, rigid_body, box_collider):
         body = rigid_body.raw_body
@@ -190,3 +192,31 @@ class Physics2D:
     @gravity.setter
     def gravity(self, value):
         self._gravity = value
+
+    @classmethod
+    def check_on_ground(cls, game_object, inner_player_width, height):
+        from metroid_maker.window import Window
+        from renderer.debug_draw import DebugDraw
+
+        raycast_begin = glm.fvec2(game_object.transform.position)
+        raycast_begin = glm.sub(raycast_begin, glm.fvec2(inner_player_width / 2.0, 0.0))
+
+        raycast_end = glm.add(raycast_begin, glm.fvec2(0.0, height))
+
+        info = Window.get_physics().raycast(game_object, raycast_begin, raycast_end)
+
+        raycast2_begin = glm.add(raycast_begin, glm.fvec2(inner_player_width, 0.0))
+        raycast2_end = glm.add(raycast_end, glm.fvec2(inner_player_width, 0.0))
+        info2 = Window.get_physics().raycast(game_object, raycast2_begin, raycast2_end)
+
+        DebugDraw.add_line_2d(raycast_begin, raycast_end, glm.fvec3(1.0, 0.0, 0.0))
+        DebugDraw.add_line_2d(raycast2_begin, raycast2_end, glm.fvec3(1.0, 0.0, 0.0))
+
+        return (
+            info.hit
+            and info.hit_object is not None
+            and info.hit_object.get_component(Ground)
+            or info2.hit
+            and info2.hit_object is not None
+            and info2.hit_object.get_component(Ground)
+        )

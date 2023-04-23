@@ -1,6 +1,7 @@
 import glm
 from components.block_coin import BlockCoin
 from components.flower import Flower
+from components.goomba_ai import GoombaAI
 from components.ground import Ground
 from components.mushroom_ai import MushroomAI
 from components.question_block import QuestionBlock
@@ -380,3 +381,42 @@ class Prefabs:
         flower.add_component(Flower())
 
         return flower
+
+    @classmethod
+    def generate_goomba(cls):
+        from utils.asset_pool import AssetPool
+
+        sprite = AssetPool.get_spritesheet("assets/images/spritesheet.jpg")
+        goomba = cls.generate_sprite_object(sprite.get_sprite(14), 0.25, 0.25)
+
+        walk = AnimationState()
+        walk.title = "Walk"
+        default_frame_time = 0.23
+        walk.add_frame(sprite.get_sprite(14), default_frame_time)
+        walk.add_frame(sprite.get_sprite(15), default_frame_time)
+        walk.does_loop = True
+
+        squashed = AnimationState()
+        squashed.title = "Squashed"
+        squashed.add_frame(sprite.get_sprite(16), 0.1)
+        squashed.does_loop = False
+
+        state_machine = StateMachine()
+        state_machine.add_state(walk)
+        state_machine.add_state(squashed)
+        state_machine.add_state_trigger(walk.title, squashed.title, "getSquashed")
+        state_machine.set_default_state(walk.title)
+        goomba.add_component(state_machine)
+
+        rigid_body = RigidBody2D()
+        rigid_body.body_type = BodyType.DYNAMIC
+        rigid_body.mass = 0.1
+        rigid_body.fixed_rotation = True
+        goomba.add_component(rigid_body)
+        circle = CircleCollider()
+        circle.radius = 0.12
+        goomba.add_component(circle)
+
+        goomba.add_component(GoombaAI())
+
+        return goomba

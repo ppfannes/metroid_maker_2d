@@ -59,15 +59,16 @@ class Window(Observer):
     def get_height(cls):
         return cls.get()._height
 
-    def change_scene(self, scene_initializer):
-        if self._current_scene is not None:
-            self._current_scene.destroy()
+    @classmethod
+    def change_scene(cls, scene_initializer):
+        if cls.get()._current_scene is not None:
+            cls.get()._current_scene.destroy()
 
-        self.get_imgui_layer().get_properties_window().set_active_game_object(None)
-        self._current_scene = Scene(scene_initializer)
-        self._current_scene.load()
-        self._current_scene.init()
-        self._current_scene.start()
+        cls.get().get_imgui_layer().get_properties_window().set_active_game_object(None)
+        cls.get()._current_scene = Scene(scene_initializer)
+        cls.get()._current_scene.load()
+        cls.get()._current_scene.init()
+        cls.get()._current_scene.start()
 
     @classmethod
     def get_physics(cls):

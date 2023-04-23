@@ -12,6 +12,7 @@ class PillboxCollider(Component):
         self._bottom_circle: CircleCollider = CircleCollider()
         self._box: Box2DCollider = Box2DCollider()
         self._reset_fixture_next_frame: bool = False
+
         self.width: float = 0.1
         self.height: float = 0.25
         self.offset: glm.fvec2 = glm.fvec2(0.0)
@@ -86,3 +87,18 @@ class PillboxCollider(Component):
         )
         self._box.half_size = glm.fvec2(self.width / 2.0, box_height / 2.0)
         self._box.offset = self.offset
+
+    def __getstate__(self):
+        state = self.__dict__.copy()
+        del state["_top_circle"]
+        del state["_bottom_circle"]
+        del state["_box"]
+        del state["_reset_fixture_next_frame"]
+        return state
+
+    def __setstate__(self, state):
+        state["_top_circle"] = CircleCollider()
+        state["_bottom_circle"] = CircleCollider()
+        state["_box"] = Box2DCollider()
+        state["_reset_fixture_next_frame"] = False
+        self.__dict__.update(state)

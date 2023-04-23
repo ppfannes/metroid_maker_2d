@@ -39,3 +39,20 @@ class MushroomAI(Component):
 
         if abs(collision_normal[1] < 0.1):
             self._going_right = collision_normal[0] < 0
+
+    def __getstate__(self):
+        state = self.__dict__.copy()
+        del state["_going_right"]
+        del state["_rigid_body"]
+        del state["_speed"]
+        del state["_max_speed"]
+        del state["_hit_player"]
+        return state
+
+    def __setstate__(self, state):
+        state["_going_right"] = True
+        state["_rigid_body"] = None
+        state["_speed"] = glm.fvec2(1.0, 0.0)
+        state["_max_speed"] = 0.8
+        state["_hit_player"] = False
+        self.__dict__.update(state)

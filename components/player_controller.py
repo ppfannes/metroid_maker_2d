@@ -3,7 +3,10 @@ import glm
 from glfw import KEY_D, KEY_RIGHT, KEY_A, KEY_LEFT, KEY_SPACE
 from components.component import Component
 from components.ground import Ground
+from components.sprite_renderer import SpriteRenderer
 from components.state_machine import StateMachine
+from physics2d.physics2d import Physics2D
+from physics2d.enums.body_types import BodyType
 from physics2d.components.pillbox_collider import PillboxCollider
 from physics2d.components.rigid_body_2d import RigidBody2D
 from utils.asset_pool import AssetPool
@@ -41,13 +44,68 @@ class PlayerController(Component):
         self._is_dead = False
         self._enemy_bounce = 0.0
 
+        self._hurt_invincibility_time_left = 0.0
+        self._hurt_invincibility_time = 1.4
+        self._dead_max_height = 0.0
+        self._dead_min_height = 0.0
+        self._dead_going_up = True
+        self._blink_time = 0.0
+        self._sprite_renderer = None
+
     def start(self):
+        self._sprite_renderer = self.game_object.get_component(SpriteRenderer)
         self._rigid_body = self.game_object.get_component(RigidBody2D)
         self._state_machine = self.game_object.get_component(StateMachine)
         self._rigid_body.gravity_scale = 0.0
 
     def update(self, dt):
         from metroid_maker.window import Window
+        from scenes.level_editor_scene_initializer import LevelEditorSceneInitializer
+
+        if self._is_dead:
+            if (
+                self.game_object.transform.position.y < self._dead_max_height
+                and self._dead_going_up
+            ):
+                self.game_object.transform.position.y += dt * self.walk_speed / 2.0
+            elif (
+                self.game_object.transform.position.y >= self._dead_max_height
+                and self._dead_going_up
+            ):
+                self._dead_going_up = False
+            elif (
+                not self._dead_going_up
+                and self.game_object.transform.position.y > self._dead_min_height
+            ):
+                self._rigid_body.body_type = BodyType.KINEMATIC
+                self._acceleration.y = Window.get_physics().gravity.y * 0.7
+                self._velocity.y += self._acceleration.y * dt
+                self._velocity.y = max(
+                    min(self._velocity.y, self.terminal_velocity.y),
+                    -self.terminal_velocity.y,
+                )
+                self._rigid_body.velocity = self._velocity
+                self._rigid_body.angular_velocity = 0.0
+            elif (
+                not self._dead_going_up
+                and self.game_object.transform.position.y <= self._dead_min_height
+            ):
+                Window.change_scene(LevelEditorSceneInitializer())
+            return
+
+        if self._hurt_invincibility_time_left > 0:
+            self._hurt_invincibility_time_left -= dt
+            self._blink_time -= dt
+
+            if self._blink_time <= 0:
+                self._blink_time = 0.2
+                if self._sprite_renderer.get_color().w == 1:
+                    self._sprite_renderer.set_color(glm.fvec4(1.0, 1.0, 1.0, 0.0))
+                else:
+                    self._sprite_renderer.set_color(glm.fvec4(1.0, 1.0, 1.0, 1.0))
+            else:
+                if self._sprite_renderer.get_color().w == 0:
+                    self._sprite_renderer.set_color(glm.fvec4(1.0, 1.0, 1.0, 1.0))
 
         if KeyListener.is_key_pressed(KEY_RIGHT) or KeyListener.is_key_pressed(KEY_D):
             self.game_object.transform.scale.x = self._player_width
@@ -98,6 +156,9 @@ class PlayerController(Component):
             else:
                 self._velocity.y = 0
             self._ground_debounce = 0
+        elif self._enemy_bounce > 0:
+            self._enemy_bounce -= 1
+            self._velocity.y = (self._enemy_bounce / 2.2) * self.jump_boost
         elif not self.on_ground:
             if self._jump_time > 0:
                 self._velocity.y *= 0.35
@@ -125,11 +186,7 @@ class PlayerController(Component):
             self._state_machine.trigger("stopJumping")
 
     def check_on_ground(self):
-        from metroid_maker.window import Window
-
-        raycast_begin = glm.fvec2(self.game_object.transform.position)
         inner_player_width = self._player_width * 0.6
-        raycast_begin = glm.sub(raycast_begin, glm.fvec2(inner_player_width / 2.0, 0.0))
         y_val = 0.0
 
         if self._player_state == PlayerState.SMALL:
@@ -137,25 +194,8 @@ class PlayerController(Component):
         else:
             y_val = -0.24
 
-        raycast_end = glm.add(raycast_begin, glm.fvec2(0.0, y_val))
-
-        info = Window.get_physics().raycast(
-            self.game_object, raycast_begin, raycast_end
-        )
-
-        raycast2_begin = glm.add(raycast_begin, glm.fvec2(inner_player_width, 0.0))
-        raycast2_end = glm.add(raycast_end, glm.fvec2(inner_player_width, 0.0))
-        info2 = Window.get_physics().raycast(
-            self.game_object, raycast2_begin, raycast2_end
-        )
-
-        self.on_ground = (
-            info.hit
-            and info.hit_object is not None
-            and info.hit_object.get_component(Ground)
-            or info2.hit
-            and info2.hit_object is not None
-            and info2.hit_object.get_component(Ground)
+        self.on_ground = Physics2D.check_on_ground(
+            self.game_object, inner_player_width, y_val
         )
 
     def powerup(self):
@@ -171,7 +211,7 @@ class PlayerController(Component):
                 self.walk_speed *= self._big_jump_boost_factor
                 pillbox_collider.height = 0.63
         elif self._player_state == PlayerState.BIG:
-            self._player_state == PlayerState.FIRE
+            self._player_state = PlayerState.FIRE
             if AssetPool.get_sound("assets/sounds/powerup.ogg").is_playing:
                 AssetPool.get_sound("assets/sounds/powerup.ogg").stop()
             AssetPool.get_sound("assets/sounds/powerup.ogg").play()
@@ -190,8 +230,55 @@ class PlayerController(Component):
                 self._acceleration.y = 0
                 self._jump_time = 0
 
+    def enemy_bounce(self):
+        self._enemy_bounce = 8
+
     def is_small(self):
         return self._player_state == PlayerState.SMALL
+
+    def is_dead(self):
+        return self._is_dead
+
+    def is_hurt_invincible(self):
+        return self._hurt_invincibility_time_left > 0
+
+    def is_invincible(self):
+        return (
+            self._player_state == PlayerState.INVINCIBLE
+            or self._hurt_invincibility_time_left > 0
+        )
+
+    def die(self):
+        self._state_machine.trigger("die")
+        if self._player_state == PlayerState.SMALL:
+            self._velocity = glm.fvec2(0.0)
+            self._acceleration = glm.fvec2(0.0)
+            self._rigid_body.velocity = glm.fvec2(0.0)
+            self._is_dead = True
+            self._rigid_body.is_sensor = True
+            AssetPool.get_sound("assets/sounds/mario_die.ogg").play()
+            self._dead_max_height = self.game_object.transform.position.y + 0.3
+            self._rigid_body.body_type = BodyType.STATIC
+            if self.game_object.transform.position.y > 0:
+                self._dead_min_height = -0.25
+        elif self._player_state == PlayerState.BIG:
+            self._player_state = PlayerState.SMALL
+            self.game_object.transform.scale.y = 0.25
+            pillbox_collider = self.game_object.get_component(PillboxCollider)
+            if pillbox_collider is not None:
+                self.jump_boost /= self._big_jump_boost_factor
+                self.walk_speed /= self._big_jump_boost_factor
+                pillbox_collider.height = 0.31
+            self._hurt_invincibility_time_left = self._hurt_invincibility_time
+            if AssetPool.get_sound("assets/sounds/pipe.ogg").is_playing:
+                AssetPool.get_sound("assets/sounds/pipe.ogg").stop()
+            AssetPool.get_sound("assets/sounds/pipe.ogg").play()
+        elif self._player_state == PlayerState.FIRE:
+            self._player_state = PlayerState.BIG
+            self._hurt_invincibility_time_left = self._hurt_invincibility_time
+            if AssetPool.get_sound("assets/sounds/pipe.ogg").is_playing:
+                AssetPool.get_sound("assets/sounds/pipe.ogg").stop()
+            AssetPool.get_sound("assets/sounds/pipe.ogg").play()
 
     def __getstate__(self):
         state = self.__dict__.copy()
@@ -207,6 +294,13 @@ class PlayerController(Component):
         del state["_velocity"]
         del state["_is_dead"]
         del state["_enemy_bounce"]
+        del state["_hurt_invincibility_time_left"]
+        del state["_hurt_invincibility_time"]
+        del state["_dead_max_height"]
+        del state["_dead_min_height"]
+        del state["_dead_going_up"]
+        del state["_blink_time"]
+        del state["_sprite_renderer"]
         return state
 
     def __setstate__(self, state):
@@ -222,4 +316,11 @@ class PlayerController(Component):
         state["_velocity"] = glm.fvec2(0.0)
         state["_is_dead"] = False
         state["_enemy_bounce"] = 0.0
+        state["_hurt_invincibility_time_left"] = 0.0
+        state["_hurt_invincibility_time"] = 1.4
+        state["_dead_max_height"] = 0.0
+        state["_dead_min_height"] = 0.0
+        state["_dead_going_up"] = True
+        state["_blink_time"] = 0.0
+        state["_sprite_renderer"] = None
         self.__dict__.update(state)
