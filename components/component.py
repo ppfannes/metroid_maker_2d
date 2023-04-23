@@ -98,6 +98,12 @@ class Component(ABC):
 
                 continue
 
+            if isinstance(field, str):
+                value = MImGui.input_text(name + ": ", field)
+                setattr(self, name, value)
+
+                continue
+
     def exposed_fields(self):
         fields = self.__dict__.copy()
         del fields["_uid"]

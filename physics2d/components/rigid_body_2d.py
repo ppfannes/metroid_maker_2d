@@ -173,6 +173,13 @@ class RigidBody2D(Component):
     def raw_body(self, value):
         self._raw_body = value
 
+    def set_position(self, new_pos):
+        if self._raw_body is not None:
+            self._raw_body.transform = (
+                vec2(new_pos.x, new_pos.y),
+                self.game_object.transform.rotation,
+            )
+
     def __getstate__(self):
         state = self.__dict__.copy()
         del state["_raw_body"]

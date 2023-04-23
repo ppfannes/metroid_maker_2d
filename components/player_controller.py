@@ -198,6 +198,10 @@ class PlayerController(Component):
             self.game_object, inner_player_width, y_val
         )
 
+    def set_position(self, new_pos):
+        self.game_object.transform.position = new_pos
+        self._rigid_body.set_position(new_pos)
+
     def powerup(self):
         if self._player_state == PlayerState.SMALL:
             self._player_state = PlayerState.BIG

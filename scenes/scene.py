@@ -111,6 +111,15 @@ class Scene:
             None,
         )
 
+    def get_game_object_by_name(self, game_object_name):
+        return next(
+            filter(
+                lambda game_object: game_object.name == game_object_name,
+                self._game_objects,
+            ),
+            None,
+        )
+
     def get_game_objects(self):
         return self._game_objects
 

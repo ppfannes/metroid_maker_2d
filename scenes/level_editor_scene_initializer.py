@@ -11,6 +11,7 @@ from components.mouse_controls import MouseControls
 from components.sprite_renderer import SpriteRenderer
 from components.spritesheet import Spritesheet
 from components.state_machine import StateMachine
+from metroid_maker.direction import Direction
 from metroid_maker.prefabs import Prefabs
 from physics2d.components.box_2d_collider import Box2DCollider
 from physics2d.components.rigid_body_2d import RigidBody2D
@@ -291,6 +292,87 @@ class LevelEditorSceneInitializer(SceneInitializer):
                     (tex_coords[0].x, tex_coords[2].y),
                 ):
                     game_object = Prefabs.generate_goomba()
+                    self.level_editor_object.get_component(MouseControls).pickup_object(
+                        game_object
+                    )
+                imgui.pop_id()
+                imgui.same_line()
+
+                pipes = AssetPool.get_spritesheet("assets/images/pipes.jpg")
+                sprite = pipes.get_sprite(0)
+                sprite_id = sprite.get_tex_id()
+                tex_coords = sprite.get_tex_coords()
+
+                imgui.push_id(str(uid))
+                uid += 1
+                if imgui.image_button(
+                    sprite_id,
+                    sprite_width,
+                    sprite_height,
+                    (tex_coords[2].x, tex_coords[0].y),
+                    (tex_coords[0].x, tex_coords[2].y),
+                ):
+                    game_object = Prefabs.generate_pipe(Direction.DOWN)
+                    self.level_editor_object.get_component(MouseControls).pickup_object(
+                        game_object
+                    )
+                imgui.pop_id()
+                imgui.same_line()
+
+                sprite = pipes.get_sprite(1)
+                sprite_id = sprite.get_tex_id()
+                tex_coords = sprite.get_tex_coords()
+
+                imgui.push_id(str(uid))
+                uid += 1
+                if imgui.image_button(
+                    sprite_id,
+                    sprite_width,
+                    sprite_height,
+                    (tex_coords[2].x, tex_coords[0].y),
+                    (tex_coords[0].x, tex_coords[2].y),
+                ):
+                    game_object = Prefabs.generate_pipe(Direction.UP)
+                    self.level_editor_object.get_component(MouseControls).pickup_object(
+                        game_object
+                    )
+                imgui.pop_id()
+                imgui.same_line()
+
+                sprite = pipes.get_sprite(2)
+                sprite_id = sprite.get_tex_id()
+                tex_coords = sprite.get_tex_coords()
+
+                imgui.push_id(str(uid))
+                uid += 1
+                if imgui.image_button(
+                    sprite_id,
+                    sprite_width,
+                    sprite_height,
+                    (tex_coords[2].x, tex_coords[0].y),
+                    (tex_coords[0].x, tex_coords[2].y),
+                ):
+                    game_object = Prefabs.generate_pipe(Direction.RIGHT)
+                    self.level_editor_object.get_component(MouseControls).pickup_object(
+                        game_object
+                    )
+                imgui.pop_id()
+                imgui.same_line()
+
+                sprite = pipes.get_sprite(3)
+                sprite_id = sprite.get_tex_id()
+                tex_coords = sprite.get_tex_coords()
+
+                imgui.push_id(str(uid))
+                uid += 1
+                if imgui.image_button(
+                    sprite_id,
+                    sprite_width,
+                    sprite_height,
+                    (tex_coords[2].x, tex_coords[0].y),
+                    (tex_coords[0].x, tex_coords[2].y),
+                ):
+                    game_object = Prefabs.generate_pipe(Direction.LEFT)
                     self.level_editor_object.get_component(MouseControls).pickup_object(
                         game_object
                     )

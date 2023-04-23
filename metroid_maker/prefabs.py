@@ -4,6 +4,7 @@ from components.flower import Flower
 from components.goomba_ai import GoombaAI
 from components.ground import Ground
 from components.mushroom_ai import MushroomAI
+from components.pipe import Pipe
 from components.question_block import QuestionBlock
 from components.sprite_renderer import SpriteRenderer
 from components.state_machine import StateMachine
@@ -420,3 +421,37 @@ class Prefabs:
         goomba.add_component(GoombaAI())
 
         return goomba
+
+    @classmethod
+    def generate_pipe(cls, direction):
+        from utils.asset_pool import AssetPool
+        from metroid_maker.direction import Direction
+
+        pipes = AssetPool.get_spritesheet("assets/images/pipes.jpg")
+        index = None
+
+        match direction:
+            case Direction.DOWN:
+                index = 0
+            case Direction.UP:
+                index = 1
+            case Direction.RIGHT:
+                index = 2
+            case Direction.LEFT:
+                index = 3
+
+        pipe = cls.generate_sprite_object(pipes.get_sprite(index), 0.5, 0.5)
+
+        rigid_body = RigidBody2D()
+        rigid_body.body_type = BodyType.STATIC
+        rigid_body.fixed_rotation = True
+        rigid_body.continuous_collision = False
+        pipe.add_component(rigid_body)
+
+        box_2d_collider = Box2DCollider()
+        box_2d_collider.half_size = glm.fvec2(0.5, 0.5)
+        pipe.add_component(box_2d_collider)
+        pipe.add_component(Pipe(direction))
+        pipe.add_component(Ground())
+
+        return pipe
