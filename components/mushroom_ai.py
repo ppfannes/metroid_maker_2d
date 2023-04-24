@@ -37,7 +37,7 @@ class MushroomAI(Component):
                 self.game_object.destroy()
                 self._hit_player = True
 
-        if abs(collision_normal[1] < 0.1):
+        if abs(collision_normal[1]) < 0.1:
             self._going_right = collision_normal[0] < 0
 
     def __getstate__(self):

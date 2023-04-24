@@ -33,7 +33,6 @@ class Prefabs:
     @classmethod
     def generate_mario(cls):
         from utils.asset_pool import AssetPool
-        from components.state_machine import StateTrigger
 
         player_sprites = AssetPool.get_spritesheet("assets/images/spritesheet.jpg")
         big_player_sprites = AssetPool.get_spritesheet(
@@ -284,14 +283,14 @@ class Prefabs:
 
         inactive = AnimationState()
         inactive.title = "Inactive"
-        inactive.add_frame(item.get_sprite(3), default_frame_time)
+        inactive.add_frame(item.get_sprite(3), 0.1)
         inactive.does_loop = False
 
         state_machine = StateMachine()
         state_machine.add_state(flicker)
         state_machine.add_state(inactive)
-        state_machine.add_state_trigger(flicker.title, inactive.title, "setInactive")
         state_machine.set_default_state(flicker.title)
+        state_machine.add_state_trigger(flicker.title, inactive.title, "setInactive")
         question_block.add_component(state_machine)
         question_block.add_component(QuestionBlock())
 

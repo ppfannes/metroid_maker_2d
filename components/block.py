@@ -10,8 +10,8 @@ class Block(Component):
         super().__init__()
         self._bop_going_up = True
         self._do_bop_animation = False
-        self._bop_start = glm.fvec2(0.0)
-        self._top_bop_location = glm.fvec2(0.0)
+        self._bop_start = None
+        self._top_bop_location = None
         self._active = True
 
         self.bop_speed = 0.4
@@ -72,7 +72,7 @@ class Block(Component):
     def __setstate__(self, state):
         state["_bop_going_up"] = True
         state["_do_bop_animation"] = False
-        state["_bop_start"] = glm.fvec2(0.0)
-        state["_top_bop_location"] = glm.fvec2(0.0)
+        state["_bop_start"] = None
+        state["_top_bop_location"] = None
         state["_active"] = True
         self.__dict__.update(state)

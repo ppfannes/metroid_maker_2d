@@ -52,6 +52,9 @@ class PlayerController(Component):
         self._blink_time = 0.0
         self._sprite_renderer = None
 
+    def has_won(self):
+        return False
+
     def start(self):
         self._sprite_renderer = self.game_object.get_component(SpriteRenderer)
         self._rigid_body = self.game_object.get_component(RigidBody2D)
@@ -60,7 +63,7 @@ class PlayerController(Component):
 
     def update(self, dt):
         from metroid_maker.window import Window
-        from scenes.level_editor_scene_initializer import LevelEditorSceneInitializer
+        from scenes.level_scene_initializer import LevelSceneInitializer
 
         if self._is_dead:
             if (
@@ -90,7 +93,7 @@ class PlayerController(Component):
                 not self._dead_going_up
                 and self.game_object.transform.position.y <= self._dead_min_height
             ):
-                Window.change_scene(LevelEditorSceneInitializer())
+                Window.change_scene(LevelSceneInitializer())
             return
 
         if self._hurt_invincibility_time_left > 0:

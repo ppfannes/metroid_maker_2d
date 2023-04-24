@@ -20,7 +20,7 @@ def rotate(point, angle, origin):
 
 
 class DebugDraw:
-    _MAX_LINES = 500
+    _MAX_LINES = 3000
 
     _lines = []
     _vertex_array = np.zeros(_MAX_LINES * 6 * 2, dtype=np.float32)
@@ -124,7 +124,25 @@ class DebugDraw:
 
     @classmethod
     def add_line_2d(cls, start, end, color=glm.fvec3(0.0, 1.0, 0.0), lifetime=2):
-        if len(cls._lines) >= cls._MAX_LINES:
+        from metroid_maker.window import Window
+
+        camera = Window.get_scene().camera()
+        camera_left = glm.add(camera._position, glm.fvec2(-2.0, -2.0))
+        camera_right = glm.add(
+            glm.add(
+                camera.get_projection_size(),
+                glm.mul(camera.get_projection_size(), camera.get_zoom()),
+            ),
+            glm.fvec2(4.0, 4.0),
+        )
+        line_in_view = (
+            (start.x >= camera_left.x and start.x <= camera_right.x)
+            and (start.y >= camera_left.y and start.y <= camera_right.y)
+        ) or (
+            (end.x >= camera_left.x and end.x <= camera_right.x)
+            and (end.y >= camera_left.y and end.y <= camera_right.y)
+        )
+        if len(cls._lines) >= cls._MAX_LINES or not line_in_view:
             return
         cls._lines.append(Line2D(start, end, color, lifetime))
 

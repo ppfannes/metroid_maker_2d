@@ -9,7 +9,6 @@ from glfw.GLFW import (
 )
 import OpenGL.GL as gl
 import openal.alc as alc
-import openal.al as al
 
 from metroid_maker.imgui_layer import ImGuiLayer
 from observers.event_system import EventSystem
@@ -19,6 +18,7 @@ from renderer.debug_draw import DebugDraw
 from renderer.framebuffer import Framebuffer
 from renderer.picking_texture import PickingTexture
 from scenes.level_editor_scene_initializer import LevelEditorSceneInitializer
+from scenes.level_scene_initializer import LevelSceneInitializer
 from scenes.scene import Scene
 from utils.key_listener import KeyListener
 from utils.mouse_listener import MouseListener
@@ -108,7 +108,7 @@ class Window(Observer):
             case EventType.GAME_ENGINE_START_PLAYING:
                 self._runtime_playing = True
                 self._current_scene.save()
-                self.change_scene(LevelEditorSceneInitializer())
+                self.change_scene(LevelSceneInitializer())
             case EventType.GAME_ENGINE_STOP_PLAYING:
                 self._runtime_playing = False
                 self.change_scene(LevelEditorSceneInitializer())
@@ -207,7 +207,8 @@ class Window(Observer):
 
             self._framebuffer.bind()
 
-            gl.glClearColor(1.0, 1.0, 1.0, 1.0)
+            clear_color = self._current_scene.camera().clear_color
+            gl.glClearColor(clear_color.x, clear_color.y, clear_color.z, clear_color.w)
             gl.glClear(gl.GL_COLOR_BUFFER_BIT)
 
             if dt >= 0:

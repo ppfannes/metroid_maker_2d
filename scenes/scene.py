@@ -120,6 +120,13 @@ class Scene:
             None,
         )
 
+    def get_game_object_with_component(self, game_object_component):
+        for game_object in self._game_objects:
+            if game_object.get_component(game_object_component) is not None:
+                return game_object
+
+        return None
+
     def get_game_objects(self):
         return self._game_objects
 
