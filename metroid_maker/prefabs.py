@@ -8,6 +8,7 @@ from components.pipe import Pipe
 from components.question_block import QuestionBlock
 from components.sprite_renderer import SpriteRenderer
 from components.state_machine import StateMachine
+from components.turtle_ai import TurtleAI
 from components.animation_state import AnimationState
 from components.player_controller import PlayerController
 from physics2d.components.box_2d_collider import Box2DCollider
@@ -420,6 +421,46 @@ class Prefabs:
         goomba.add_component(GoombaAI())
 
         return goomba
+
+    @classmethod
+    def generate_turtle(cls):
+        from utils.asset_pool import AssetPool
+
+        sprite = AssetPool.get_spritesheet("assets/images/turtle.jpg")
+        turtle = cls.generate_sprite_object(sprite.get_sprite(0), 0.25, 0.35)
+
+        walk = AnimationState()
+        walk.title = "Walk"
+        default_frame_time = 0.23
+        walk.add_frame(sprite.get_sprite(0), default_frame_time)
+        walk.add_frame(sprite.get_sprite(1), default_frame_time)
+        walk.does_loop = True
+
+        shell_spin = AnimationState()
+        shell_spin.title = "TurtleShellSpin"
+        shell_spin.add_frame(sprite.get_sprite(2), 0.1)
+        shell_spin.does_loop = False
+
+        state_machine = StateMachine()
+        state_machine.add_state(walk)
+        state_machine.add_state(shell_spin)
+        state_machine.add_state_trigger(walk.title, shell_spin.title, "shellSpin")
+        state_machine.set_default_state(walk.title)
+        turtle.add_component(state_machine)
+
+        rigid_body = RigidBody2D()
+        rigid_body.body_type = BodyType.DYNAMIC
+        rigid_body.mass = 0.1
+        rigid_body.fixed_rotation = True
+        turtle.add_component(rigid_body)
+        circle = CircleCollider()
+        circle.radius = 0.13
+        circle.offset = glm.fvec2(0.0, -0.05)
+        turtle.add_component(circle)
+
+        turtle.add_component(TurtleAI())
+
+        return turtle
 
     @classmethod
     def generate_pipe(cls, direction):

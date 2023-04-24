@@ -65,6 +65,12 @@ class LevelEditorSceneInitializer(SceneInitializer):
             ),
         )
         AssetPool.add_sprite_sheet(
+            "assets/images/turtle.jpg",
+            Spritesheet(
+                AssetPool.get_texture("assets/images/turtle.jpg"), 16, 24, 4, 0
+            ),
+        )
+        AssetPool.add_sprite_sheet(
             "assets/images/items.jpg",
             Spritesheet(
                 AssetPool.get_texture("assets/images/items.jpg"),
@@ -292,6 +298,27 @@ class LevelEditorSceneInitializer(SceneInitializer):
                     (tex_coords[0].x, tex_coords[2].y),
                 ):
                     game_object = Prefabs.generate_goomba()
+                    self.level_editor_object.get_component(MouseControls).pickup_object(
+                        game_object
+                    )
+                imgui.pop_id()
+                imgui.same_line()
+
+                turtle = AssetPool.get_spritesheet("assets/images/turtle.jpg")
+                sprite = turtle.get_sprite(0)
+                sprite_id = sprite.get_tex_id()
+                tex_coords = sprite.get_tex_coords()
+
+                imgui.push_id(str(uid))
+                uid += 1
+                if imgui.image_button(
+                    sprite_id,
+                    sprite_width,
+                    sprite_height,
+                    (tex_coords[2].x, tex_coords[0].y),
+                    (tex_coords[0].x, tex_coords[2].y),
+                ):
+                    game_object = Prefabs.generate_turtle()
                     self.level_editor_object.get_component(MouseControls).pickup_object(
                         game_object
                     )

@@ -196,7 +196,6 @@ class Physics2D:
     @classmethod
     def check_on_ground(cls, game_object, inner_player_width, height):
         from metroid_maker.window import Window
-        from renderer.debug_draw import DebugDraw
 
         raycast_begin = glm.fvec2(game_object.transform.position)
         raycast_begin = glm.sub(raycast_begin, glm.fvec2(inner_player_width / 2.0, 0.0))
@@ -208,9 +207,6 @@ class Physics2D:
         raycast2_begin = glm.add(raycast_begin, glm.fvec2(inner_player_width, 0.0))
         raycast2_end = glm.add(raycast_end, glm.fvec2(inner_player_width, 0.0))
         info2 = Window.get_physics().raycast(game_object, raycast2_begin, raycast2_end)
-
-        DebugDraw.add_line_2d(raycast_begin, raycast_end, glm.fvec3(1.0, 0.0, 0.0))
-        DebugDraw.add_line_2d(raycast2_begin, raycast2_end, glm.fvec3(1.0, 0.0, 0.0))
 
         return (
             info.hit
