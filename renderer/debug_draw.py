@@ -20,7 +20,7 @@ def rotate(point, angle, origin):
 
 
 class DebugDraw:
-    _MAX_LINES = 3000
+    _MAX_LINES = 5000
 
     _lines = []
     _vertex_array = np.zeros(_MAX_LINES * 6 * 2, dtype=np.float32)

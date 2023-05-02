@@ -1,5 +1,6 @@
 import glm
 from components.block_coin import BlockCoin
+from components.flagpole import Flagpole
 from components.flower import Flower
 from components.goomba_ai import GoombaAI
 from components.ground import Ground
@@ -16,6 +17,7 @@ from physics2d.components.circle_collider import CircleCollider
 from physics2d.components.pillbox_collider import PillboxCollider
 from physics2d.components.rigid_body_2d import RigidBody2D
 from physics2d.enums.body_types import BodyType
+from utils.asset_pool import AssetPool
 
 
 class Prefabs:
@@ -461,6 +463,44 @@ class Prefabs:
         turtle.add_component(TurtleAI())
 
         return turtle
+
+    @classmethod
+    def generate_flagtop(cls):
+        items = AssetPool.get_spritesheet("assets/images/items.jpg")
+        flagtop = cls.generate_sprite_object(items.get_sprite(6), 0.25, 0.25)
+
+        rigid_body = RigidBody2D()
+        rigid_body.body_type = BodyType.DYNAMIC
+        rigid_body.fixed_rotation = True
+        rigid_body.continuous_collision = False
+        flagtop.add_component(rigid_body)
+
+        box_2d_collider = Box2DCollider()
+        box_2d_collider.half_size = glm.fvec2(0.1, 0.25)
+        box_2d_collider.offset = glm.fvec2(-0.075, 0.0)
+        flagtop.add_component(box_2d_collider)
+        flagtop.add_component(Flagpole(True))
+
+        return flagtop
+
+    @classmethod
+    def generate_flagpole(cls):
+        items = AssetPool.get_spritesheet("assets/images/items.jpg")
+        flagtop = cls.generate_sprite_object(items.get_sprite(33), 0.25, 0.25)
+
+        rigid_body = RigidBody2D()
+        rigid_body.body_type = BodyType.DYNAMIC
+        rigid_body.fixed_rotation = True
+        rigid_body.continuous_collision = False
+        flagtop.add_component(rigid_body)
+
+        box_2d_collider = Box2DCollider()
+        box_2d_collider.half_size = glm.fvec2(0.1, 0.25)
+        box_2d_collider.offset = glm.fvec2(-0.075, 0.0)
+        flagtop.add_component(box_2d_collider)
+        flagtop.add_component(Flagpole(False))
+
+        return flagtop
 
     @classmethod
     def generate_pipe(cls, direction):

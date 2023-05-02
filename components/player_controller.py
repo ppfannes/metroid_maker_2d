@@ -52,6 +52,10 @@ class PlayerController(Component):
         self._blink_time = 0.0
         self._sprite_renderer = None
 
+        self._play_win_animation = False
+        self._time_to_castle = 4.5
+        self._walk_time = 2.2
+
     def has_won(self):
         return False
 
@@ -64,6 +68,29 @@ class PlayerController(Component):
     def update(self, dt):
         from metroid_maker.window import Window
         from scenes.level_scene_initializer import LevelSceneInitializer
+        from scenes.level_editor_scene_initializer import LevelEditorSceneInitializer
+
+        if self._play_win_animation:
+            self.check_on_ground()
+            if not self.on_ground:
+                self.game_object.transform.scale.x = -0.25
+                self.game_object.transform.position.y -= dt
+                self._state_machine.trigger("stopRunning")
+                self._state_machine.trigger("stopJumping")
+            else:
+                if self._walk_time > 0.0:
+                    self.game_object.transform.scale.x = 0.25
+                    self.game_object.transform.position.x += dt
+                    self._state_machine.trigger("startRunning")
+                if not AssetPool.get_sound("assets/sounds/stage_clear.ogg").is_playing:
+                    AssetPool.get_sound("assets/sounds/stage_clear.ogg").play()
+                self._time_to_castle -= dt
+                self._walk_time -= dt
+
+                if self._time_to_castle <= 0.0:
+                    Window.change_scene(LevelEditorSceneInitializer())
+
+            return
 
         if self._is_dead:
             if (
@@ -225,6 +252,17 @@ class PlayerController(Component):
 
         self._state_machine.trigger("powerup")
 
+    def play_win_animation(self, flagpole):
+        if not self._play_win_animation:
+            self._play_win_animation = True
+            self._velocity = glm.fvec2(0.0)
+            self._acceleration = glm.fvec2(0.0)
+            self._rigid_body.velocity = self._velocity
+            self._rigid_body.is_sensor = True
+            self._rigid_body.body_type = BodyType.STATIC
+            self.game_object.transform.position.x = flagpole.transform.position.x
+            AssetPool.get_sound("assets/sounds/flagpole.ogg").play()
+
     def begin_collision(self, colliding_object, contact, collision_normal):
         if self._is_dead:
             return
@@ -247,12 +285,12 @@ class PlayerController(Component):
         return self._is_dead
 
     def is_hurt_invincible(self):
-        return self._hurt_invincibility_time_left > 0
+        return self._hurt_invincibility_time_left > 0 or self._play_win_animation
 
     def is_invincible(self):
         return (
             self._player_state == PlayerState.INVINCIBLE
-            or self._hurt_invincibility_time_left > 0
+            or self._hurt_invincibility_time_left > 0 or self._play_win_animation
         )
 
     def die(self):
@@ -308,6 +346,9 @@ class PlayerController(Component):
         del state["_dead_going_up"]
         del state["_blink_time"]
         del state["_sprite_renderer"]
+        del state["_play_win_animation"]
+        del state["_time_to_castle"]
+        del state["_walk_time"]
         return state
 
     def __setstate__(self, state):
@@ -330,4 +371,7 @@ class PlayerController(Component):
         state["_dead_going_up"] = True
         state["_blink_time"] = 0.0
         state["_sprite_renderer"] = None
+        state["_play_win_animation"] = False
+        state["_time_to_castle"] = 4.5
+        state["_walk_time"] = 2.2
         self.__dict__.update(state)
