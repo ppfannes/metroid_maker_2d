@@ -13076,7 +13076,7 @@
                                     "_width": 0,
                                     "_height": 0
                                 },
-                                "_time_tracker": 0.0013636000001952253,
+                                "_time_tracker": 0.05009850000496954,
                                 "_current_sprite": 0,
                                 "_does_loop": false
                             },
@@ -15109,7 +15109,7 @@
                                     "_width": 0,
                                     "_height": 0
                                 },
-                                "_time_tracker": 0.09680130000013379,
+                                "_time_tracker": 0.23,
                                 "_current_sprite": 1,
                                 "_does_loop": true
                             },
@@ -16149,7 +16149,7 @@
                                     "py/object": "glm.vec2",
                                     "py/state": {
                                         "py/tuple": [
-                                            0.2857142984867096,
+                                            0.1428571492433548,
                                             1.0
                                         ]
                                     }
@@ -16158,15 +16158,6 @@
                                     "py/object": "glm.vec2",
                                     "py/state": {
                                         "py/tuple": [
-                                            0.2857142984867096,
-                                            0.800000011920929
-                                        ]
-                                    }
-                                },
-                                {
-                                    "py/object": "glm.vec2",
-                                    "py/state": {
-                                        "py/tuple": [
                                             0.1428571492433548,
                                             0.800000011920929
                                         ]
@@ -16176,7 +16167,16 @@
                                     "py/object": "glm.vec2",
                                     "py/state": {
                                         "py/tuple": [
-                                            0.1428571492433548,
+                                            0.0,
+                                            0.800000011920929
+                                        ]
+                                    }
+                                },
+                                {
+                                    "py/object": "glm.vec2",
+                                    "py/state": {
+                                        "py/tuple": [
+                                            0.0,
                                             1.0
                                         ]
                                     }
@@ -16203,6 +16203,13 @@
                                     {
                                         "py/object": "components.frame.Frame",
                                         "sprite": {
+                                            "py/id": 2447
+                                        },
+                                        "frame_time": 0.57
+                                    },
+                                    {
+                                        "py/object": "components.frame.Frame",
+                                        "sprite": {
                                             "py/object": "components.sprite.Sprite",
                                             "_texture": {
                                                 "py/id": 2448
@@ -16212,7 +16219,7 @@
                                                     "py/object": "glm.vec2",
                                                     "py/state": {
                                                         "py/tuple": [
-                                                            0.1428571492433548,
+                                                            0.2857142984867096,
                                                             1.0
                                                         ]
                                                     }
@@ -16221,6 +16228,15 @@
                                                     "py/object": "glm.vec2",
                                                     "py/state": {
                                                         "py/tuple": [
+                                                            0.2857142984867096,
+                                                            0.800000011920929
+                                                        ]
+                                                    }
+                                                },
+                                                {
+                                                    "py/object": "glm.vec2",
+                                                    "py/state": {
+                                                        "py/tuple": [
                                                             0.1428571492433548,
                                                             0.800000011920929
                                                         ]
@@ -16230,16 +16246,7 @@
                                                     "py/object": "glm.vec2",
                                                     "py/state": {
                                                         "py/tuple": [
-                                                            0.0,
-                                                            0.800000011920929
-                                                        ]
-                                                    }
-                                                },
-                                                {
-                                                    "py/object": "glm.vec2",
-                                                    "py/state": {
-                                                        "py/tuple": [
-                                                            0.0,
+                                                            0.1428571492433548,
                                                             1.0
                                                         ]
                                                     }
@@ -16247,13 +16254,6 @@
                                             ],
                                             "_width": 16,
                                             "_height": 16
-                                        },
-                                        "frame_time": 0.57
-                                    },
-                                    {
-                                        "py/object": "components.frame.Frame",
-                                        "sprite": {
-                                            "py/id": 2447
                                         },
                                         "frame_time": 0.23
                                     },
@@ -16352,8 +16352,8 @@
                                     "_width": 0,
                                     "_height": 0
                                 },
-                                "_time_tracker": 0.06578890000012508,
-                                "_current_sprite": 1,
+                                "_time_tracker": 0.46994450000813226,
+                                "_current_sprite": 0,
                                 "_does_loop": true
                             },
                             {
@@ -16629,7 +16629,7 @@
                                     "py/object": "glm.vec2",
                                     "py/state": {
                                         "py/tuple": [
-                                            0.2857142984867096,
+                                            0.1428571492433548,
                                             1.0
                                         ]
                                     }
@@ -16638,15 +16638,6 @@
                                     "py/object": "glm.vec2",
                                     "py/state": {
                                         "py/tuple": [
-                                            0.2857142984867096,
-                                            0.800000011920929
-                                        ]
-                                    }
-                                },
-                                {
-                                    "py/object": "glm.vec2",
-                                    "py/state": {
-                                        "py/tuple": [
                                             0.1428571492433548,
                                             0.800000011920929
                                         ]
@@ -16656,7 +16647,16 @@
                                     "py/object": "glm.vec2",
                                     "py/state": {
                                         "py/tuple": [
-                                            0.1428571492433548,
+                                            0.0,
+                                            0.800000011920929
+                                        ]
+                                    }
+                                },
+                                {
+                                    "py/object": "glm.vec2",
+                                    "py/state": {
+                                        "py/tuple": [
+                                            0.0,
                                             1.0
                                         ]
                                     }
@@ -16683,6 +16683,13 @@
                                     {
                                         "py/object": "components.frame.Frame",
                                         "sprite": {
+                                            "py/id": 2523
+                                        },
+                                        "frame_time": 0.57
+                                    },
+                                    {
+                                        "py/object": "components.frame.Frame",
+                                        "sprite": {
                                             "py/object": "components.sprite.Sprite",
                                             "_texture": {
                                                 "py/id": 2448
@@ -16692,7 +16699,7 @@
                                                     "py/object": "glm.vec2",
                                                     "py/state": {
                                                         "py/tuple": [
-                                                            0.1428571492433548,
+                                                            0.2857142984867096,
                                                             1.0
                                                         ]
                                                     }
@@ -16701,6 +16708,15 @@
                                                     "py/object": "glm.vec2",
                                                     "py/state": {
                                                         "py/tuple": [
+                                                            0.2857142984867096,
+                                                            0.800000011920929
+                                                        ]
+                                                    }
+                                                },
+                                                {
+                                                    "py/object": "glm.vec2",
+                                                    "py/state": {
+                                                        "py/tuple": [
                                                             0.1428571492433548,
                                                             0.800000011920929
                                                         ]
@@ -16710,16 +16726,7 @@
                                                     "py/object": "glm.vec2",
                                                     "py/state": {
                                                         "py/tuple": [
-                                                            0.0,
-                                                            0.800000011920929
-                                                        ]
-                                                    }
-                                                },
-                                                {
-                                                    "py/object": "glm.vec2",
-                                                    "py/state": {
-                                                        "py/tuple": [
-                                                            0.0,
+                                                            0.1428571492433548,
                                                             1.0
                                                         ]
                                                     }
@@ -16727,13 +16734,6 @@
                                             ],
                                             "_width": 16,
                                             "_height": 16
-                                        },
-                                        "frame_time": 0.57
-                                    },
-                                    {
-                                        "py/object": "components.frame.Frame",
-                                        "sprite": {
-                                            "py/id": 2523
                                         },
                                         "frame_time": 0.23
                                     },
@@ -16832,8 +16832,8 @@
                                     "_width": 0,
                                     "_height": 0
                                 },
-                                "_time_tracker": 0.06578890000012508,
-                                "_current_sprite": 1,
+                                "_time_tracker": 0.46994450000813226,
+                                "_current_sprite": 0,
                                 "_does_loop": true
                             },
                             {
@@ -17100,7 +17100,7 @@
                                     "py/object": "glm.vec2",
                                     "py/state": {
                                         "py/tuple": [
-                                            0.2857142984867096,
+                                            0.1428571492433548,
                                             1.0
                                         ]
                                     }
@@ -17109,15 +17109,6 @@
                                     "py/object": "glm.vec2",
                                     "py/state": {
                                         "py/tuple": [
-                                            0.2857142984867096,
-                                            0.800000011920929
-                                        ]
-                                    }
-                                },
-                                {
-                                    "py/object": "glm.vec2",
-                                    "py/state": {
-                                        "py/tuple": [
                                             0.1428571492433548,
                                             0.800000011920929
                                         ]
@@ -17127,7 +17118,16 @@
                                     "py/object": "glm.vec2",
                                     "py/state": {
                                         "py/tuple": [
-                                            0.1428571492433548,
+                                            0.0,
+                                            0.800000011920929
+                                        ]
+                                    }
+                                },
+                                {
+                                    "py/object": "glm.vec2",
+                                    "py/state": {
+                                        "py/tuple": [
+                                            0.0,
                                             1.0
                                         ]
                                     }
@@ -17154,6 +17154,13 @@
                                     {
                                         "py/object": "components.frame.Frame",
                                         "sprite": {
+                                            "py/id": 2596
+                                        },
+                                        "frame_time": 0.57
+                                    },
+                                    {
+                                        "py/object": "components.frame.Frame",
+                                        "sprite": {
                                             "py/object": "components.sprite.Sprite",
                                             "_texture": {
                                                 "py/id": 2448
@@ -17163,7 +17170,7 @@
                                                     "py/object": "glm.vec2",
                                                     "py/state": {
                                                         "py/tuple": [
-                                                            0.1428571492433548,
+                                                            0.2857142984867096,
                                                             1.0
                                                         ]
                                                     }
@@ -17172,6 +17179,15 @@
                                                     "py/object": "glm.vec2",
                                                     "py/state": {
                                                         "py/tuple": [
+                                                            0.2857142984867096,
+                                                            0.800000011920929
+                                                        ]
+                                                    }
+                                                },
+                                                {
+                                                    "py/object": "glm.vec2",
+                                                    "py/state": {
+                                                        "py/tuple": [
                                                             0.1428571492433548,
                                                             0.800000011920929
                                                         ]
@@ -17181,16 +17197,7 @@
                                                     "py/object": "glm.vec2",
                                                     "py/state": {
                                                         "py/tuple": [
-                                                            0.0,
-                                                            0.800000011920929
-                                                        ]
-                                                    }
-                                                },
-                                                {
-                                                    "py/object": "glm.vec2",
-                                                    "py/state": {
-                                                        "py/tuple": [
-                                                            0.0,
+                                                            0.1428571492433548,
                                                             1.0
                                                         ]
                                                     }
@@ -17198,13 +17205,6 @@
                                             ],
                                             "_width": 16,
                                             "_height": 16
-                                        },
-                                        "frame_time": 0.57
-                                    },
-                                    {
-                                        "py/object": "components.frame.Frame",
-                                        "sprite": {
-                                            "py/id": 2596
                                         },
                                         "frame_time": 0.23
                                     },
@@ -17303,8 +17303,8 @@
                                     "_width": 0,
                                     "_height": 0
                                 },
-                                "_time_tracker": 0.06578890000012508,
-                                "_current_sprite": 1,
+                                "_time_tracker": 0.46994450000813226,
+                                "_current_sprite": 0,
                                 "_does_loop": true
                             },
                             {
@@ -29285,7 +29285,7 @@
                                     "_width": 0,
                                     "_height": 0
                                 },
-                                "_time_tracker": 0.09680130000013379,
+                                "_time_tracker": 0.23,
                                 "_current_sprite": 1,
                                 "_does_loop": true
                             },

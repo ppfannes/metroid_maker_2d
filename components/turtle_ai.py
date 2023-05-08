@@ -1,7 +1,7 @@
 import glm
 from components.component import Component
+from components.fireball import Fireball
 from components.goomba_ai import GoombaAI
-from components.player_controller import PlayerController
 from components.state_machine import StateMachine
 from physics2d.components.rigid_body_2d import RigidBody2D
 from physics2d.physics2d import Physics2D
@@ -10,6 +10,7 @@ from utils.asset_pool import AssetPool
 
 class TurtleAI(Component):
     def __init__(self):
+        super().__init__()
         self._going_right = False
         self._rigid_body = None
         self._walk_speed = 0.6
@@ -86,6 +87,8 @@ class TurtleAI(Component):
         AssetPool.get_sound("assets/sounds/bump.ogg").play()
 
     def begin_collision(self, colliding_object, contact, collision_normal):
+        from components.player_controller import PlayerController
+
         player_controller = colliding_object.get_component(PlayerController)
         if player_controller is not None:
             if (
@@ -123,6 +126,10 @@ class TurtleAI(Component):
                 if AssetPool.get_sound("assets/sounds/bump.ogg").is_playing:
                     AssetPool.get_sound("assets/sounds/bump.ogg").stop()
                 AssetPool.get_sound("assets/sounds/bump.ogg").play()
+
+        if colliding_object.get_component(Fireball) is not None:
+            self.stomp()
+            colliding_object.get_component(Fireball).disappear()
 
     def pre_solve(self, colliding_object, contact, collision_normal):
         goomba = colliding_object.get_component(GoombaAI)

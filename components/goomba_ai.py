@@ -1,6 +1,6 @@
 import glm
 from components.component import Component
-from components.player_controller import PlayerController
+from components.fireball import Fireball
 from components.state_machine import StateMachine
 from physics2d.components.rigid_body_2d import RigidBody2D
 from physics2d.physics2d import Physics2D
@@ -74,6 +74,8 @@ class GoombaAI(Component):
         )
 
     def begin_collision(self, colliding_object, contact, collision_normal):
+        from components.player_controller import PlayerController
+
         if self._is_dead:
             return
 
@@ -90,10 +92,13 @@ class GoombaAI(Component):
                 not player_controller.is_dead()
                 and not player_controller.is_invincible()
             ):
-                pass
                 player_controller.die()
         elif abs(collision_normal[1]) < 0.1:
             self._going_right = collision_normal[0] < 0.0
+
+        if colliding_object.get_component(Fireball) is not None:
+            self.stomp()
+            colliding_object.get_component(Fireball).disappear()
 
     def stomp(self, play_sound=True):
         self._is_dead = True

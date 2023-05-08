@@ -1,6 +1,5 @@
 import glm
 from components.component import Component
-from components.player_controller import PlayerController
 from physics2d.components.rigid_body_2d import RigidBody2D
 from utils.asset_pool import AssetPool
 
@@ -29,6 +28,8 @@ class MushroomAI(Component):
             self._rigid_body.apply_force(glm.fvec2(-self._speed.x, self._speed.y))
 
     def pre_solve(self, colliding_object, contact, collision_normal):
+        from components.player_controller import PlayerController
+
         player_controller = colliding_object.get_component(PlayerController)
         if player_controller is not None:
             contact.enabled = False

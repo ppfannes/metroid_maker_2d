@@ -115,7 +115,7 @@ class DebugDraw:
         gl.glEnableVertexAttribArray(0)
         gl.glEnableVertexAttribArray(1)
 
-        gl.glDrawArrays(gl.GL_LINES, 0, len(cls._lines) * 6 * 2)
+        gl.glDrawArrays(gl.GL_LINES, 0, len(cls._lines))
 
         gl.glDisableVertexAttribArray(0)
         gl.glDisableVertexAttribArray(1)

@@ -1,10 +1,12 @@
 from enum import Enum
 import glm
-from glfw import KEY_D, KEY_RIGHT, KEY_A, KEY_LEFT, KEY_SPACE
+from glfw import KEY_D, KEY_RIGHT, KEY_A, KEY_LEFT, KEY_SPACE, KEY_E
 from components.component import Component
+from components.fireball import Fireball
 from components.ground import Ground
 from components.sprite_renderer import SpriteRenderer
 from components.state_machine import StateMachine
+from metroid_maker.prefabs import Prefabs
 from physics2d.physics2d import Physics2D
 from physics2d.enums.body_types import BodyType
 from physics2d.components.pillbox_collider import PillboxCollider
@@ -168,6 +170,18 @@ class PlayerController(Component):
 
             if self._velocity.x == 0:
                 self._state_machine.trigger("stopRunning")
+
+        if KeyListener.key_begin_press(KEY_E) and self._player_state == PlayerState.FIRE and Fireball.can_spawn():
+            position = glm.fvec2(self.game_object.transform.position)
+
+            if self.game_object.transform.scale.x > 0.0:
+                position += glm.fvec2(0.26, 0.0)
+            else:
+                position += glm.fvec2(-0.26, 0.0)
+
+            fireball = Prefabs.generate_fireball(position)
+            fireball.get_component(Fireball)._going_right = self.game_object.transform.scale.x > 0
+            Window.get_scene().add_game_object_to_scene(fireball)
 
         self.check_on_ground()
 

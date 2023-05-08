@@ -1,12 +1,12 @@
 import glm
 from components.component import Component
-from components.player_controller import PlayerController
 from metroid_maker.direction import Direction
 from glfw import KEY_W, KEY_A, KEY_S, KEY_D, KEY_DOWN, KEY_UP, KEY_LEFT, KEY_RIGHT
 
 
 class Pipe(Component):
     def __init__(self, direction):
+        super().__init__()
         self._direction = direction
         self._connecting_pipe_name = ""
         self._is_entrance = False
@@ -36,25 +36,25 @@ class Pipe(Component):
                     if (
                         KeyListener.is_key_pressed(KEY_DOWN)
                         or KeyListener.is_key_pressed(KEY_S)
-                    ) and self._is_entrance:
+                    ) and self._is_entrance and self.player_at_entrance():
                         player_entering = True
                 case Direction.LEFT:
                     if (
                         KeyListener.is_key_pressed(KEY_RIGHT)
                         or KeyListener.is_key_pressed(KEY_D)
-                    ) and self._is_entrance:
+                    ) and self._is_entrance and self.player_at_entrance():
                         player_entering = True
                 case Direction.RIGHT:
                     if (
                         KeyListener.is_key_pressed(KEY_LEFT)
                         or KeyListener.is_key_pressed(KEY_A)
-                    ) and self._is_entrance:
+                    ) and self._is_entrance and self.player_at_entrance():
                         player_entering = True
                 case Direction.DOWN:
                     if (
                         KeyListener.is_key_pressed(KEY_UP)
                         or KeyListener.is_key_pressed(KEY_W)
-                    ) and self._is_entrance:
+                    ) and self._is_entrance and self.player_at_entrance():
                         player_entering = True
 
             if player_entering:
@@ -75,28 +75,39 @@ class Pipe(Component):
                 return glm.add(pipe.transform.position, glm.fvec2(0.5, 0.0))
             case Direction.DOWN:
                 return glm.add(pipe.transform.position, glm.fvec2(0.0, -0.5))
+            
+    def player_at_entrance(self):
+        if self._colliding_player is None:
+            return False
+        
+        object_min = glm.sub(glm.fvec2(self.game_object.transform.position), glm.mul(glm.fvec2(self.game_object.transform.scale), 0.5))
+        object_max = glm.add(glm.fvec2(self.game_object.transform.position), glm.mul(glm.fvec2(self.game_object.transform.scale), 0.5))
+        player_max = glm.add(glm.fvec2(self._colliding_player.game_object.transform.position), glm.mul(glm.fvec2(self._colliding_player.game_object.transform.scale), 0.5))
+        player_min = glm.sub(glm.fvec2(self._colliding_player.game_object.transform.position), glm.mul(glm.fvec2(self._colliding_player.game_object.transform.scale), 0.5))
+        
+        match self._direction:
+            case Direction.UP:
+                return player_min.y >= object_max.y and player_max.x > object_min.x and player_min.x < object_max.x
+            case Direction.DOWN:
+                return player_max.y <= object_min.y and player_max.x > object_min.x and player_min.x < object_max.x
+            case Direction.RIGHT:
+                return player_max.x <= object_min.x and player_max.y > object_min.y and player_min.y < object_max.y
+            case Direction.LEFT:
+                return player_min.x >= object_max.x and player_max.y > object_min.y and player_min.y < object_max.y
+            
+        return False
 
     def begin_collision(self, colliding_object, contact, collision_normal):
+        from components.player_controller import PlayerController
+
         player_controller = colliding_object.get_component(PlayerController)
 
         if player_controller is not None:
-            match self._direction:
-                case Direction.UP:
-                    if collision_normal.y < self._entrance_vector_tolerance:
-                        return
-                case Direction.RIGHT:
-                    if collision_normal.x < self._entrance_vector_tolerance:
-                        return
-                case Direction.DOWN:
-                    if collision_normal.y > -self._entrance_vector_tolerance:
-                        return
-                case Direction.LEFT:
-                    if collision_normal.x > -self._entrance_vector_tolerance:
-                        return
-
             self._colliding_player = player_controller
 
     def end_collision(self, colliding_object, contact, collision_normal):
+        from components.player_controller import PlayerController
+
         player_controller = colliding_object.get_component(PlayerController)
 
         if player_controller is not None:

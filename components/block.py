@@ -1,7 +1,6 @@
 import glm
 from abc import abstractmethod
 from components.component import Component
-from components.player_controller import PlayerController
 from utils.asset_pool import AssetPool
 
 
@@ -36,6 +35,8 @@ class Block(Component):
                     self._do_bop_animation = False
 
     def begin_collision(self, colliding_object, contact, collision_normal):
+        from components.player_controller import PlayerController
+
         player_controller = colliding_object.get_component(PlayerController)
         if (
             self._active

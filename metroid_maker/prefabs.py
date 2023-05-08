@@ -1,5 +1,6 @@
 import glm
 from components.block_coin import BlockCoin
+from components.fireball import Fireball
 from components.flagpole import Flagpole
 from components.flower import Flower
 from components.goomba_ai import GoombaAI
@@ -11,7 +12,6 @@ from components.sprite_renderer import SpriteRenderer
 from components.state_machine import StateMachine
 from components.turtle_ai import TurtleAI
 from components.animation_state import AnimationState
-from components.player_controller import PlayerController
 from physics2d.components.box_2d_collider import Box2DCollider
 from physics2d.components.circle_collider import CircleCollider
 from physics2d.components.pillbox_collider import PillboxCollider
@@ -35,6 +35,7 @@ class Prefabs:
 
     @classmethod
     def generate_mario(cls):
+        from components.player_controller import PlayerController
         from utils.asset_pool import AssetPool
 
         player_sprites = AssetPool.get_spritesheet("assets/images/spritesheet.jpg")
@@ -463,6 +464,25 @@ class Prefabs:
         turtle.add_component(TurtleAI())
 
         return turtle
+    
+    @classmethod
+    def generate_fireball(cls, position):
+        items = AssetPool.get_spritesheet("assets/images/items.jpg")
+        fireball = cls.generate_sprite_object(items.get_sprite(32), 0.18, 0.18)
+        fireball.transform.position = position
+
+        rigid_body = RigidBody2D()
+        rigid_body.body_type = BodyType.DYNAMIC
+        rigid_body.fixed_rotation = True
+        rigid_body.continuous_collision = False
+        fireball.add_component(rigid_body)
+
+        circle_collider = CircleCollider()
+        circle_collider.radius = 0.08
+        fireball.add_component(circle_collider)
+        fireball.add_component(Fireball())
+
+        return fireball
 
     @classmethod
     def generate_flagtop(cls):

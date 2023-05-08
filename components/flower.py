@@ -1,5 +1,4 @@
 from components.component import Component
-from components.player_controller import PlayerController
 from physics2d.components.rigid_body_2d import RigidBody2D
 from utils.asset_pool import AssetPool
 
@@ -17,6 +16,8 @@ class Flower(Component):
         self._rigid_body.is_sensor = True
 
     def begin_collision(self, colliding_object, contact, collision_normal):
+        from components.player_controller import PlayerController
+
         player_controller = colliding_object.get_component(PlayerController)
         if player_controller is not None:
             player_controller.powerup()
