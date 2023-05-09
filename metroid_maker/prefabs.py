@@ -1,5 +1,6 @@
 import glm
 from components.block_coin import BlockCoin
+from components.coin import Coin
 from components.fireball import Fireball
 from components.flagpole import Flagpole
 from components.flower import Flower
@@ -390,6 +391,37 @@ class Prefabs:
         return flower
 
     @classmethod
+    def generate_coin(cls):
+        from utils.asset_pool import AssetPool
+
+        item = AssetPool.get_spritesheet("assets/images/items.jpg")
+        coin = cls.generate_sprite_object(item.get_sprite(7), 0.25, 0.25)
+
+        coin_flip = AnimationState()
+        coin_flip.title = "CoinFlip"
+        default_frame_time = 0.23
+        coin_flip.add_frame(item.get_sprite(7), 0.57)
+        coin_flip.add_frame(item.get_sprite(8), default_frame_time)
+        coin_flip.add_frame(item.get_sprite(9), default_frame_time)
+        coin_flip.does_loop = True
+
+        state_machine = StateMachine()
+        state_machine.add_state(coin_flip)
+        state_machine.set_default_state(coin_flip.title)
+        coin.add_component(state_machine)
+        coin.add_component(Coin())
+
+        circle_collider = CircleCollider()
+        circle_collider.radius = 0.12
+        coin.add_component(circle_collider)
+
+        rigid_body = RigidBody2D()
+        rigid_body.body_type = BodyType.STATIC
+        coin.add_component(rigid_body)
+
+        return coin
+
+    @classmethod
     def generate_goomba(cls):
         from utils.asset_pool import AssetPool
 
@@ -467,7 +499,7 @@ class Prefabs:
         turtle.add_component(TurtleAI())
 
         return turtle
-    
+
     @classmethod
     def generate_fireball(cls, position):
         items = AssetPool.get_spritesheet("assets/images/items.jpg")
