@@ -172,7 +172,6 @@ class Physics2D:
             return
 
         self.add_box_2d_collider(rigid_body, pillbox_collider.box)
-        self.add_circle_collider(rigid_body, pillbox_collider.top_circle)
         self.add_circle_collider(rigid_body, pillbox_collider.bottom_circle)
 
     def raycast(self, requesting_object, point1, point2):
@@ -183,7 +182,7 @@ class Physics2D:
         return callback
 
     def is_locked(self):
-        return self._world.IsLocked
+        return self._world.locked
 
     @property
     def gravity(self):

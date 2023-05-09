@@ -256,16 +256,17 @@ class Prefabs:
         mario.add_component(state_machine)
 
         pillbox_collider = PillboxCollider()
-        pillbox_collider.width = 0.39
-        pillbox_collider.height = 0.31
+        pillbox_collider.width = 0.21
+        pillbox_collider.height = 0.25
+        mario.add_component(pillbox_collider)
+
         rigid_body = RigidBody2D()
         rigid_body.body_type = BodyType.DYNAMIC
         rigid_body.continuous_collision = False
         rigid_body.fixed_rotation = True
         rigid_body.mass = 25.0
-
         mario.add_component(rigid_body)
-        mario.add_component(pillbox_collider)
+
         mario.add_component(PlayerController())
 
         return mario

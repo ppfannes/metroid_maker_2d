@@ -257,7 +257,7 @@ class PlayerController(Component):
             if pillbox_collider is not None:
                 self.jump_boost *= self._big_jump_boost_factor
                 self.walk_speed *= self._big_jump_boost_factor
-                pillbox_collider.height = 0.63
+                pillbox_collider.height = 0.42
         elif self._player_state == PlayerState.BIG:
             self._player_state = PlayerState.FIRE
             if AssetPool.get_sound("assets/sounds/powerup.ogg").is_playing:
