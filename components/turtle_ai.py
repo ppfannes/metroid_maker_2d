@@ -2,6 +2,7 @@ import glm
 from components.component import Component
 from components.fireball import Fireball
 from components.goomba_ai import GoombaAI
+from components.mushroom_ai import MushroomAI
 from components.state_machine import StateMachine
 from physics2d.components.rigid_body_2d import RigidBody2D
 from physics2d.physics2d import Physics2D
@@ -132,9 +133,16 @@ class TurtleAI(Component):
                     self._is_moving = True
                     self._going_right = collision_normal[0] < 0.0
                     self._moving_debounce = 0.32
-                elif not player_controller.is_dead() and player_controller.is_hurt_invincible():
+                elif (
+                    not player_controller.is_dead()
+                    and player_controller.is_hurt_invincible()
+                ):
                     contact.enabled = False
-        elif abs(collision_normal[1]) < 0.1 and not colliding_object.is_dead():
+        elif (
+            abs(collision_normal[1]) < 0.1
+            and not colliding_object.is_dead()
+            and colliding_object.get_component(MushroomAI) is None
+        ):
             self._going_right = collision_normal[0] < 0.0
             if self._is_moving and self._is_dead:
                 if AssetPool.get_sound("assets/sounds/bump.ogg").is_playing:

@@ -65,6 +65,11 @@ class GoombaAI(Component):
             min(self._velocity.y, self._terminal_velocity.y), -self._terminal_velocity.y
         )
         self._rigid_body.velocity = self._velocity
+        if (
+            self.game_object.transform.position.x
+            < Window.get_scene().camera()._position.x - 0.5
+        ):
+            self.game_object.destroy()
 
     def check_on_ground(self):
         inner_player_width = 0.25 * 0.7

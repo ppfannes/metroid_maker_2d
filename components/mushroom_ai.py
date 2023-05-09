@@ -35,7 +35,12 @@ class MushroomAI(Component):
         if player_controller is not None:
             contact.enabled = False
             if not self._hit_player:
-                player_controller.powerup()
+                if player_controller.is_small():
+                    player_controller.powerup()
+                else:
+                    if AssetPool.get_sound("assets/sounds/coin.ogg").is_playing:
+                        AssetPool.get_sound("assets/sounds/coin.ogg").stop()
+                    AssetPool.get_sound("assets/sounds/coin.ogg").play()
                 self.game_object.destroy()
                 self._hit_player = True
             elif colliding_object.get_component(Ground) is None:
