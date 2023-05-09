@@ -310,7 +310,7 @@ class RenderBatch:
         return self._has_room
 
     def has_texture_room(self):
-        return len(self._textures) < 8
+        return len(self._textures) < 7
 
     def has_texture(self, texture):
         return texture in self._textures

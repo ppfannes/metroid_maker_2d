@@ -77,7 +77,7 @@ class ImGuiLayer:
         if not io.want_capture_mouse and io.mouse_down[1]:
             imgui.set_window_focus(None)
 
-        if not io.want_capture_mouse or self._game_view_window.want_capture_mouse():
+        if self._game_view_window.want_capture_mouse():
             MouseListener.mouse_button_callback(window, button, action, mods)
 
     def _scroll_callback(self, window, x_offset, y_offset):

@@ -7,11 +7,9 @@ from utils.mouse_listener import MouseListener
 
 
 class GameViewWindow:
-    left_x = 0.0
-    bottom_y = 0.0
-    top_y = 0.0
-    right_x = 0.0
-    _is_playing = False
+    def __init__(self):
+        self._is_playing = False
+        self._window_is_hovered = False
 
     def imgui(self):
         from metroid_maker.window import Window
@@ -25,18 +23,18 @@ class GameViewWindow:
 
         if imgui.begin_menu_bar():
             clicked_start, _ = imgui.menu_item(
-                "Play", "", GameViewWindow._is_playing, not GameViewWindow._is_playing
+                "Play", "", self._is_playing, not self._is_playing
             )
             clicked_stop, _ = imgui.menu_item(
-                "Stop", "", not GameViewWindow._is_playing, GameViewWindow._is_playing
+                "Stop", "", not self._is_playing, self._is_playing
             )
 
             if clicked_start:
-                GameViewWindow._is_playing = True
+                self._is_playing = True
                 EventSystem.notify(None, Event(EventType.GAME_ENGINE_START_PLAYING))
 
             if clicked_stop:
-                GameViewWindow._is_playing = False
+                self._is_playing = False
                 EventSystem.notify(None, Event(EventType.GAME_ENGINE_STOP_PLAYING))
 
             imgui.end_menu_bar()
@@ -47,13 +45,10 @@ class GameViewWindow:
         imgui.set_cursor_pos(window_pos)
 
         top_left = imgui.get_cursor_screen_pos()
-        GameViewWindow.left_x = top_left[0]
-        GameViewWindow.bottom_y = top_left[1]
-        GameViewWindow.right_x = top_left[0] + window_size[0]
-        GameViewWindow.top_y = top_left[1] + window_size[1]
 
         texture_id = Window.get_framebuffer().get_texture_id()
-        imgui.image(texture_id, window_size[0], window_size[1], (0, 1), (1, 0))
+        imgui.image_button(texture_id, window_size[0], window_size[1], (0, 1), (1, 0))
+        self._window_is_hovered = imgui.is_item_hovered()
 
         MouseListener.set_game_viewport_pos(glm.fvec2(*top_left))
         MouseListener.set_game_viewport_size(glm.fvec2(*window_size))
@@ -61,14 +56,7 @@ class GameViewWindow:
         imgui.end()
 
     def want_capture_mouse(self):
-        from utils.mouse_listener import MouseListener
-
-        return (
-            MouseListener.get_x_pos() >= GameViewWindow.left_x
-            and MouseListener.get_x_pos() <= GameViewWindow.right_x
-            and MouseListener.get_y_pos() >= GameViewWindow.bottom_y
-            and MouseListener.get_y_pos() <= GameViewWindow.top_y
-        )
+        return self._window_is_hovered
 
     def _get_largest_size_for_viewport(self):
         from metroid_maker.window import Window
