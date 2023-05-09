@@ -277,7 +277,7 @@ class PlayerController(Component):
             self.game_object.transform.position.x = flagpole.transform.position.x
             AssetPool.get_sound("assets/sounds/flagpole.ogg").play()
 
-    def begin_collision(self, colliding_object, contact, collision_normal):
+    def pre_solve(self, colliding_object, contact, collision_normal):
         if self._is_dead:
             return
 
@@ -327,7 +327,7 @@ class PlayerController(Component):
             if pillbox_collider is not None:
                 self.jump_boost /= self._big_jump_boost_factor
                 self.walk_speed /= self._big_jump_boost_factor
-                pillbox_collider.height = 0.31
+                pillbox_collider.height = 0.25
             self._hurt_invincibility_time_left = self._hurt_invincibility_time
             if AssetPool.get_sound("assets/sounds/pipe.ogg").is_playing:
                 AssetPool.get_sound("assets/sounds/pipe.ogg").stop()

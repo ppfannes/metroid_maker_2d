@@ -1,5 +1,6 @@
 import glm
 from components.component import Component
+from components.ground import Ground
 from physics2d.components.rigid_body_2d import RigidBody2D
 from utils.asset_pool import AssetPool
 
@@ -37,6 +38,9 @@ class MushroomAI(Component):
                 player_controller.powerup()
                 self.game_object.destroy()
                 self._hit_player = True
+            elif colliding_object.get_component(Ground) is None:
+                contact.enabled = False
+                return
 
         if abs(collision_normal[1]) < 0.1:
             self._going_right = collision_normal[0] < 0

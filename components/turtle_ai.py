@@ -86,8 +86,16 @@ class TurtleAI(Component):
             AssetPool.get_sound("assets/sounds/bump.ogg").stop()
         AssetPool.get_sound("assets/sounds/bump.ogg").play()
 
-    def begin_collision(self, colliding_object, contact, collision_normal):
+    def pre_solve(self, colliding_object, contact, collision_normal):
         from components.player_controller import PlayerController
+
+        goomba = colliding_object.get_component(GoombaAI)
+        if self._is_dead and self._is_moving and goomba is not None:
+            goomba.stomp()
+            contact.enabled = False
+            if AssetPool.get_sound("assets/sounds/kick.ogg").is_playing:
+                AssetPool.get_sound("assets/sounds/kick.ogg").stop()
+            AssetPool.get_sound("assets/sounds/kick.ogg").play()
 
         player_controller = colliding_object.get_component(PlayerController)
         if player_controller is not None:
@@ -108,6 +116,8 @@ class TurtleAI(Component):
                 and collision_normal[1] < 0.58
             ):
                 player_controller.die()
+                if not player_controller.is_dead():
+                    contact.enabled = False
             elif (
                 not player_controller.is_dead()
                 and not player_controller.is_hurt_invincible()
@@ -120,6 +130,8 @@ class TurtleAI(Component):
                     self._is_moving = True
                     self._going_right = collision_normal[0] < 0.0
                     self._moving_debounce = 0.32
+                elif not player_controller.is_dead() and player_controller.is_hurt_invincible():
+                    contact.enabled = False
         elif abs(collision_normal[1]) < 0.1 and not colliding_object.is_dead():
             self._going_right = collision_normal[0] < 0.0
             if self._is_moving and self._is_dead:
@@ -130,15 +142,6 @@ class TurtleAI(Component):
         if colliding_object.get_component(Fireball) is not None:
             self.stomp()
             colliding_object.get_component(Fireball).disappear()
-
-    def pre_solve(self, colliding_object, contact, collision_normal):
-        goomba = colliding_object.get_component(GoombaAI)
-        if self._is_dead and self._is_moving and goomba is not None:
-            goomba.stomp()
-            contact.enabled = False
-            if AssetPool.get_sound("assets/sounds/kick.ogg").is_playing:
-                AssetPool.get_sound("assets/sounds/kick.ogg").stop()
-            AssetPool.get_sound("assets/sounds/kick.ogg").play()
 
     def __getstate__(self):
         state = self.__dict__.copy()

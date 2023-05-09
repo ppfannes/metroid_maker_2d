@@ -73,7 +73,7 @@ class GoombaAI(Component):
             self.game_object, inner_player_width, y_val
         )
 
-    def begin_collision(self, colliding_object, contact, collision_normal):
+    def pre_solve(self, colliding_object, contact, collision_normal):
         from components.player_controller import PlayerController
 
         if self._is_dead:
@@ -93,6 +93,10 @@ class GoombaAI(Component):
                 and not player_controller.is_invincible()
             ):
                 player_controller.die()
+                if not player_controller.is_dead():
+                    contact.enabled = False
+            elif not player_controller.is_dead() and player_controller.is_invincible():
+                contact.enabled = False
         elif abs(collision_normal[1]) < 0.1:
             self._going_right = collision_normal[0] < 0.0
 

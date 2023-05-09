@@ -269,6 +269,8 @@ class Prefabs:
 
         mario.add_component(PlayerController())
 
+        mario.transform.z_index = 10
+
         return mario
 
     @classmethod
