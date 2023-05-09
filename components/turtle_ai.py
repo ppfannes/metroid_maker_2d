@@ -46,9 +46,11 @@ class TurtleAI(Component):
             if self._going_right:
                 self.game_object.transform.scale.x = -0.25
                 self._velocity.x = self._walk_speed
+                self._acceleration.x = 0.0
             else:
                 self.game_object.transform.scale.x = 0.25
                 self._velocity.x = -self._walk_speed
+                self._acceleration.x = 0.0
         else:
             self._velocity.x = 0.0
 
@@ -140,8 +142,15 @@ class TurtleAI(Component):
                 AssetPool.get_sound("assets/sounds/bump.ogg").play()
 
         if colliding_object.get_component(Fireball) is not None:
-            self.stomp()
+            if not self._is_dead:
+                self._walk_speed *= 3.0
+                self.stomp()
+            else:
+                self._is_moving = not self._is_moving
+                self._going_right = collision_normal[0] < 0.0
+
             colliding_object.get_component(Fireball).disappear()
+            contact.enabled = False
 
     def __getstate__(self):
         state = self.__dict__.copy()
